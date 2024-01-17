@@ -13,9 +13,9 @@ export const POST = async (req: Request) => {
          * create Product
          */
 
-        const { name, rate } = await req.json();
+        const { name, price } = await req.json();
 
-        if (!name || !rate) {
+        if (!name || !price) {
             return NextResponse.json(
                 { message: "all fields are required.", success: false },
                 { status: 400 }
@@ -37,7 +37,7 @@ export const POST = async (req: Request) => {
         const Product = await Prisma.product.create({
             data: {
                 name,
-                rate,
+                price: Number(price),
             },
         });
 
@@ -102,11 +102,11 @@ export const PUT = async (req: Request) => {
             );
         }
 
-        const { name, rate } = await req.json();
+        const { name, price } = await req.json();
 
-        if (!(name || rate)) {
+        if (!(name || price)) {
             return NextResponse.json(
-                { message: "name or rate required.", success: false },
+                { message: "name or price required.", success: false },
                 { status: 400 }
             );
         }
@@ -123,24 +123,24 @@ export const PUT = async (req: Request) => {
             );
         }
 
-        const Product = await Prisma.product.update({
+        const product = await Prisma.product.update({
             where: {
                 id,
             },
             data: {
                 name,
-                rate,
+                price: Number(price),
             },
         });
 
-        if (!Product) {
+        if (!product) {
             return NextResponse.json("Error while updating Product", {
                 status: 500,
             });
         }
 
         return NextResponse.json(
-            { Product, message: "Product updated" },
+            { product, message: "Product updated" },
             { status: 201 }
         );
     } catch (error: any) {
