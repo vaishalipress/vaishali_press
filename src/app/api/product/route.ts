@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { Prisma } from "../../../../prisma";
-
+import CONNECT_TO_DB from "@/lib/connectToDb";
+import Product from "@/models/product";
+CONNECT_TO_DB();
 /**
  * REGISTER Product
  */
@@ -21,10 +22,8 @@ export const POST = async (req: Request) => {
                 { status: 400 }
             );
         }
-        const isExist = await Prisma.product.findUnique({
-            where: {
-                name,
-            },
+        const isExist = await Product.findOne({
+            name,
         });
 
         if (isExist) {
@@ -34,21 +33,19 @@ export const POST = async (req: Request) => {
             );
         }
 
-        const Product = await Prisma.product.create({
-            data: {
-                name,
-                price: Number(price),
-            },
+        const product = await Product.create({
+            name,
+            price: Number(price),
         });
 
-        if (!Product) {
+        if (!product) {
             return NextResponse.json("Error while creating Product", {
                 status: 500,
             });
         }
 
         return NextResponse.json(
-            { Product, message: "Product registered" },
+            { product, message: "Product registered" },
             { status: 201 }
         );
     } catch (error) {
@@ -63,7 +60,7 @@ export const POST = async (req: Request) => {
 
 export const GET = async (req: Request) => {
     try {
-        const products = await Prisma.product.findMany();
+        const products = await Product.find();
 
         if (!products) {
             return NextResponse.json(
@@ -110,11 +107,7 @@ export const PUT = async (req: Request) => {
                 { status: 400 }
             );
         }
-        const isExist = await Prisma.product.findUnique({
-            where: {
-                id,
-            },
-        });
+        const isExist = await Product.findById(id);
 
         if (!isExist) {
             return NextResponse.json(
@@ -123,15 +116,14 @@ export const PUT = async (req: Request) => {
             );
         }
 
-        const product = await Prisma.product.update({
-            where: {
-                id,
+        const product = await Product.findByIdAndUpdate(
+            id,
+            {
+                name: name ? name : isExist.name,
+                price: price ? Number(price) : isExist.price,
             },
-            data: {
-                name,
-                price: Number(price),
-            },
-        });
+            { new: true }
+        );
 
         if (!product) {
             return NextResponse.json("Error while updating Product", {
@@ -144,6 +136,7 @@ export const PUT = async (req: Request) => {
             { status: 201 }
         );
     } catch (error: any) {
+        console.log(error);
         return NextResponse.json(
             error?.meta && error?.meta?.target
                 ? "product already exist with same name"
@@ -165,11 +158,7 @@ export const DELETE = async (req: Request) => {
             );
         }
 
-        const product = await Prisma.product.delete({
-            where: {
-                id,
-            },
-        });
+        const product = await Product.findByIdAndDelete(id);
 
         if (!product) {
             return NextResponse.json(

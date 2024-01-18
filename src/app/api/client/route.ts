@@ -1,6 +1,8 @@
+import Client from "@/models/client";
 import { NextResponse } from "next/server";
-import { Prisma } from "../../../../prisma";
+import CONNECT_TO_DB from "@/lib/connectToDb";
 
+CONNECT_TO_DB();
 /**
  * REGISTER CLIENT
  */
@@ -21,13 +23,11 @@ export const POST = async (req: Request) => {
             );
         }
 
-        const client = await Prisma.client.create({
-            data: {
-                name,
-                district,
-                block,
-                mobile,
-            },
+        const client = await Client.create({
+            name,
+            district,
+            block,
+            mobile,
         });
 
         if (!client) {
@@ -41,12 +41,10 @@ export const POST = async (req: Request) => {
             { status: 201 }
         );
     } catch (error: any) {
-        return NextResponse.json(
-            error?.meta && error?.meta?.cause
-                ? error?.meta?.cause
-                : "internal error",
-            { status: error?.meta && error?.meta?.cause ? 400 : 500 }
-        );
+        console.log(error);
+        return NextResponse.json("internal error", {
+            status: 500,
+        });
     }
 };
 
@@ -56,7 +54,81 @@ export const POST = async (req: Request) => {
 
 export const GET = async (req: Request) => {
     try {
-        const clients = await Prisma.client.findMany();
+        const clients = await Client.find();
+        // const clients = await Client.create([
+        //     {
+        //         name: "aditya",
+        //         district: "muzaffarpur",
+        //         block: "marwan",
+        //         mobile: "000000",
+        //     },
+        //     {
+        //         name: "rohit",
+        //         district: "muzaffarpur",
+        //         block: "marwan",
+        //         mobile: "000000",
+        //     },
+        //     {
+        //         name: "abhisek",
+        //         district: "muzaffarpur",
+        //         block: "marwan",
+        //         mobile: "000000",
+        //     },
+        //     {
+        //         name: "vivek",
+        //         district: "patna",
+        //         block: "danapur",
+        //         mobile: "123456789",
+        //     },
+        //     {
+        //         name: "suraj",
+        //         district: "patna",
+        //         block: "danapur",
+        //         mobile: "123456789",
+        //     },
+        //     {
+        //         name: "aman",
+        //         district: "patna",
+        //         block: "danapur",
+        //         mobile: "123456789",
+        //     },
+        //     {
+        //         name: "vishal",
+        //         district: "patna",
+        //         block: "fatuha",
+        //         mobile: "000123456789000",
+        //     },
+        //     {
+        //         name: "golu",
+        //         district: "patna",
+        //         block: "fatuha",
+        //         mobile: "123456789",
+        //     },
+        //     {
+        //         name: "vicky",
+        //         district: "patna",
+        //         block: "fatuha",
+        //         mobile: "123456789",
+        //     },
+        //     {
+        //         name: "manish",
+        //         district: "muzaffarpur",
+        //         block: "kanti",
+        //         mobile: "123456789",
+        //     },
+        //     {
+        //         name: "karan",
+        //         district: "muzaffarpur",
+        //         block: "kanti",
+        //         mobile: "123456789",
+        //     },
+        //     {
+        //         name: "ajeet",
+        //         district: "muzaffarpur",
+        //         block: "kanti",
+        //         mobile: "123456789",
+        //     },
+        // ]);
 
         if (!clients) {
             return NextResponse.json(
@@ -92,11 +164,7 @@ export const DELETE = async (req: Request) => {
             );
         }
 
-        const client = await Prisma.client.delete({
-            where: {
-                id,
-            },
-        });
+        const client = await Client.findByIdAndDelete(id);
 
         if (!client) {
             return NextResponse.json(
@@ -109,12 +177,7 @@ export const DELETE = async (req: Request) => {
             { status: 200 }
         );
     } catch (error: any) {
-        return NextResponse.json(
-            error?.meta && error?.meta?.cause
-                ? error?.meta?.cause
-                : "internal error",
-            { status: error?.meta && error?.meta?.cause ? 400 : 500 }
-        );
+        return NextResponse.json("internal error", { status: 500 });
     }
 };
 /**
@@ -146,11 +209,7 @@ export const PUT = async (req: Request) => {
                 { status: 400 }
             );
         }
-        const isExist = await Prisma.client.findUnique({
-            where: {
-                id,
-            },
-        });
+        const isExist = await Client.findById(id);
 
         if (!isExist) {
             return NextResponse.json(
@@ -159,17 +218,16 @@ export const PUT = async (req: Request) => {
             );
         }
 
-        const client = await Prisma.client.update({
-            where: {
-                id,
+        const client = await Client.findByIdAndUpdate(
+            id,
+            {
+                name: name ? name : isExist.name,
+                district: district ? district : isExist.district,
+                block: block ? block : isExist.block,
+                mobile: mobile ? mobile : isExist.mobile,
             },
-            data: {
-                name,
-                district,
-                block,
-                mobile,
-            },
-        });
+            { new: true }
+        );
 
         if (!client) {
             return NextResponse.json("Error while updating client", {
@@ -183,11 +241,8 @@ export const PUT = async (req: Request) => {
         );
     } catch (error: any) {
         console.log(error);
-        return NextResponse.json(
-            error?.meta && error?.meta?.target
-                ? "product already exist with same name"
-                : "internal error",
-            { status: error?.meta && error?.meta?.target ? 400 : 500 }
-        );
+        return NextResponse.json("internal error", {
+            status: 500,
+        });
     }
 };

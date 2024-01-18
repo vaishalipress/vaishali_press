@@ -1,10 +1,13 @@
-import { Client, Product } from "@prisma/client";
-import { Prisma } from "../../../../prisma";
+import Client from "@/models/client";
+import Product from "@/models/product";
+import Sale from "@/models/sale";
+import CONNECT_TO_DB from "@/lib/connectToDb";
+
+CONNECT_TO_DB();
 
 /**
  * CREATE SALE
  */
-
 export const POST = async (req: Request) => {
     try {
         const { client, product, qty, rate, payment } = await req.json();
@@ -19,11 +22,7 @@ export const POST = async (req: Request) => {
             );
         }
 
-        const isClientExist = await Prisma.client.findUnique({
-            where: {
-                id: client,
-            },
-        });
+        const isClientExist = await Client.findById(client);
 
         if (!isClientExist) {
             return Response.json(
@@ -34,11 +33,7 @@ export const POST = async (req: Request) => {
                 { status: 400 }
             );
         }
-        const isProductExist = await Prisma.product.findUnique({
-            where: {
-                id: product,
-            },
-        });
+        const isProductExist = await Product.findById(product);
         if (!isProductExist) {
             return Response.json(
                 {
@@ -48,15 +43,13 @@ export const POST = async (req: Request) => {
                 { status: 400 }
             );
         }
-        const sale = await Prisma.sale.create({
-            data: {
-                client,
-                product: isProductExist.id,
-                name: isProductExist.name,
-                qty: Number(qty),
-                rate: rate ? Number(rate) : isProductExist.price,
-                payment: Number(payment),
-            },
+        const sale = await Sale.create({
+            client,
+            product: isProductExist.id,
+            name: isProductExist.name,
+            qty: Number(qty),
+            rate: rate ? Number(rate) : isProductExist.price,
+            payment: Number(payment),
         });
 
         if (!sale) {
@@ -84,7 +77,7 @@ export const POST = async (req: Request) => {
  */
 export const GET = async (req: Request) => {
     try {
-        const sales = await Prisma.sale.findMany();
+        const sales = await Sale.find();
         if (!sales) {
             return Response.json("something went wrong while fetching sales", {
                 status: 500,
@@ -129,11 +122,7 @@ export const PUT = async (req: Request) => {
                 { status: 400 }
             );
         }
-        const isExist = await Prisma.sale.findUnique({
-            where: {
-                id,
-            },
-        });
+        const isExist = await Sale.findById(id);
 
         if (!isExist) {
             return Response.json(
@@ -142,13 +131,9 @@ export const PUT = async (req: Request) => {
             );
         }
 
-        let isClientExist: Client | null = null;
+        let isClientExist = null;
         if (client) {
-            isClientExist = await Prisma.client.findUnique({
-                where: {
-                    id: client,
-                },
-            });
+            isClientExist = await Client.findById(client);
             if (!isClientExist) {
                 return Response.json(
                     {
@@ -160,13 +145,9 @@ export const PUT = async (req: Request) => {
             }
         }
 
-        let isProductExist: Product | null = null;
+        let isProductExist = null;
         if (product) {
-            isProductExist = await Prisma.product.findUnique({
-                where: {
-                    id: product,
-                },
-            });
+            isProductExist = await Product.findById(product);
             if (!isProductExist) {
                 return Response.json(
                     {
@@ -178,21 +159,20 @@ export const PUT = async (req: Request) => {
             }
         }
 
-        const sale = await Prisma.sale.update({
-            where: {
-                id,
-            },
-            data: {
-                product: isProductExist ? isProductExist.id : isExist.product,
+        const sale = await Sale.findByIdAndUpdate(
+            id,
+            {
+                product: isProductExist ? isProductExist._id : isExist.product,
                 name: isProductExist?.name
                     ? isProductExist?.name
                     : isExist.name,
-                client: isClientExist ? isClientExist.id : isExist.client,
+                client: isClientExist ? isClientExist._id : isExist.client,
                 qty: qty ? Number(qty) : isExist.qty,
                 rate: rate ? Number(rate) : isExist.rate,
                 payment: payment ? Number(payment) : isExist.payment,
             },
-        });
+            { new: true }
+        );
 
         if (!sale) {
             return Response.json("Error while updating sale", {
@@ -206,10 +186,7 @@ export const PUT = async (req: Request) => {
         );
     } catch (error: any) {
         console.log(error);
-        return Response.json(
-            error?.meta && error?.meta?.message ? error.meta.message : error,
-            { status: error?.meta ? 400 : 500 }
-        );
+        return Response.json(error, { status: 500 });
     }
 };
 
@@ -229,11 +206,7 @@ export const DELETE = async (req: Request) => {
             );
         }
 
-        const sale = await Prisma.sale.delete({
-            where: {
-                id,
-            },
-        });
+        const sale = await Sale.findByIdAndDelete(id);
 
         if (!sale) {
             return Response.json(
@@ -246,11 +219,6 @@ export const DELETE = async (req: Request) => {
             { status: 200 }
         );
     } catch (error: any) {
-        return Response.json(
-            error?.meta && error?.meta?.cause
-                ? error?.meta?.cause
-                : "internal error",
-            { status: error?.meta && error?.meta?.cause ? 400 : 500 }
-        );
+        return Response.json("internal error", { status: 500 });
     }
 };
