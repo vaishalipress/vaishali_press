@@ -3,9 +3,11 @@ import { NextResponse } from "next/server";
 import CONNECT_TO_DB from "@/lib/connectToDb";
 
 CONNECT_TO_DB();
+
 /**
  * REGISTER CLIENT
  */
+
 export const POST = async (req: Request) => {
     try {
         /**
@@ -55,80 +57,6 @@ export const POST = async (req: Request) => {
 export const GET = async (req: Request) => {
     try {
         const clients = await Client.find();
-        // const clients = await Client.create([
-        //     {
-        //         name: "aditya",
-        //         district: "muzaffarpur",
-        //         block: "marwan",
-        //         mobile: "000000",
-        //     },
-        //     {
-        //         name: "rohit",
-        //         district: "muzaffarpur",
-        //         block: "marwan",
-        //         mobile: "000000",
-        //     },
-        //     {
-        //         name: "abhisek",
-        //         district: "muzaffarpur",
-        //         block: "marwan",
-        //         mobile: "000000",
-        //     },
-        //     {
-        //         name: "vivek",
-        //         district: "patna",
-        //         block: "danapur",
-        //         mobile: "123456789",
-        //     },
-        //     {
-        //         name: "suraj",
-        //         district: "patna",
-        //         block: "danapur",
-        //         mobile: "123456789",
-        //     },
-        //     {
-        //         name: "aman",
-        //         district: "patna",
-        //         block: "danapur",
-        //         mobile: "123456789",
-        //     },
-        //     {
-        //         name: "vishal",
-        //         district: "patna",
-        //         block: "fatuha",
-        //         mobile: "000123456789000",
-        //     },
-        //     {
-        //         name: "golu",
-        //         district: "patna",
-        //         block: "fatuha",
-        //         mobile: "123456789",
-        //     },
-        //     {
-        //         name: "vicky",
-        //         district: "patna",
-        //         block: "fatuha",
-        //         mobile: "123456789",
-        //     },
-        //     {
-        //         name: "manish",
-        //         district: "muzaffarpur",
-        //         block: "kanti",
-        //         mobile: "123456789",
-        //     },
-        //     {
-        //         name: "karan",
-        //         district: "muzaffarpur",
-        //         block: "kanti",
-        //         mobile: "123456789",
-        //     },
-        //     {
-        //         name: "ajeet",
-        //         district: "muzaffarpur",
-        //         block: "kanti",
-        //         mobile: "123456789",
-        //     },
-        // ]);
 
         if (!clients) {
             return NextResponse.json(
