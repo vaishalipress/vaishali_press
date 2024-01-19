@@ -2,6 +2,7 @@ import Client from "@/models/client";
 import Product from "@/models/product";
 import Sale from "@/models/sale";
 import CONNECT_TO_DB from "@/lib/connectToDb";
+import mongoose from "mongoose";
 
 CONNECT_TO_DB();
 
@@ -77,7 +78,7 @@ export const POST = async (req: Request) => {
  */
 export const GET = async (req: Request) => {
     try {
-        const sales = await Sale.find();
+        const sales = await Sale.find().sort({ createdAt: -1 });
         if (!sales) {
             return Response.json("something went wrong while fetching sales", {
                 status: 500,
@@ -185,8 +186,7 @@ export const PUT = async (req: Request) => {
             { status: 201 }
         );
     } catch (error: any) {
-        console.log(error);
-        return Response.json(error, { status: 500 });
+        return Response.json(error.name, { status: error.name ? 400 : 500 });
     }
 };
 
@@ -219,6 +219,6 @@ export const DELETE = async (req: Request) => {
             { status: 200 }
         );
     } catch (error: any) {
-        return Response.json("internal error", { status: 500 });
+        return Response.json(error.name, { status: error.name ? 400 : 500 });
     }
 };

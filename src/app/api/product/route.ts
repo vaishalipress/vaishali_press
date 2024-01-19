@@ -136,13 +136,7 @@ export const PUT = async (req: Request) => {
             { status: 201 }
         );
     } catch (error: any) {
-        console.log(error);
-        return NextResponse.json(
-            error?.meta && error?.meta?.target
-                ? "product already exist with same name"
-                : "internal error",
-            { status: error?.meta && error?.meta?.target ? 400 : 500 }
-        );
+        return Response.json(error.name, { status: error.name ? 400 : 500 });
     }
 };
 
@@ -171,11 +165,6 @@ export const DELETE = async (req: Request) => {
             { status: 200 }
         );
     } catch (error: any) {
-        return NextResponse.json(
-            error?.meta && error?.meta?.cause
-                ? error?.meta?.cause
-                : "internal error",
-            { status: error?.meta && error?.meta?.cause ? 400 : 500 }
-        );
+        return Response.json(error.name, { status: error.name ? 400 : 500 });
     }
 };
