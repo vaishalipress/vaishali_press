@@ -2,6 +2,7 @@ import CONNECT_TO_DB from "@/lib/connectToDb";
 import Client from "@/models/client";
 
 CONNECT_TO_DB();
+
 export const GET = async (req: Request) => {
     try {
         const searchParams = new URL(req.url).searchParams;
