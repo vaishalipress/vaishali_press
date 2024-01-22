@@ -26,7 +26,7 @@ const Login = () => {
     return (
         <div className="w-full h-full min-h-full flex justify-center pt-[100px]">
             <div className="flex h-fit w-fit max-w-[350px] flex-1 flex-col  px-8 pt-4 rounded-xl pb-10 shadow-2xl dark:bg-white/5">
-                <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+                <div className="sm:mx-auto sm:w-full sm:max-w-sm flex flex-col gap-2">
                     <Image
                         className="mx-auto w-auto h-8 drop-shadow-xl"
                         src={"/logo.png"}
@@ -34,6 +34,9 @@ const Login = () => {
                         width={100}
                         height={100}
                     />
+                    <h1 className="text-center">
+                        <span className="text-xl text-orange-700 font-semibold">Vaishali</span> <span className="text-xl text-pink-800 font-semibold">Press</span>
+                    </h1>
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -91,7 +94,7 @@ const Login = () => {
                                 {isLoading ? (
                                     <Loader2 className="animate-spin" />
                                 ) : (
-                                    "Login in"
+                                    "Login"
                                 )}
                             </button>
                         </div>
