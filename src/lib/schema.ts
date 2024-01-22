@@ -7,16 +7,16 @@ export const phoneRegex = new RegExp(
 export const clientSchema = z.object({
     name: z
         .string({ required_error: "name is required." })
-        .min(3, { message: "name must be atleat 3 characters" }),
+        .min(3, { message: "Enter valid name" }),
     district: z
-        .string({ required_error: "district is required." })
-        .min(3, { message: "district is required." }),
+        .string({ required_error: "Select a district" })
+        .min(3, { message: "Select a valid district" }),
 
     block: z
-        .string({ required_error: "block is required." })
-        .min(3, { message: "block is required." }),
+        .string({ required_error: "Select a block" })
+        .min(3, { message: "Select a valid block" }),
     mobile: z
-        .string({ required_error: "Please Enter mobile number" })
+        .string({ required_error: "Enter mobile number" })
         .trim()
         .regex(phoneRegex, "Invalid mobile number")
         .min(10, { message: "Invalid mobile number" })

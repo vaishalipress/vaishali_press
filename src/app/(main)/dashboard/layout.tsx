@@ -10,14 +10,15 @@ export default function DashboardRoot({
         <ThemeProvider
             attribute="class"
             defaultTheme="dark"
-            enableSystem
             storageKey="vaishaliTheme"
         >
             <div className="flex w-full h-full">
                 <div className="min-h-screen h-screen sticky">
                     <SideBar />
                 </div>
-                <div className="w-full h-screen min-h-screen overflow-y-auto">{children}</div>
+                <div className="w-full h-screen min-h-screen overflow-y-auto px-2 relative">
+                    {children}
+                </div>
             </div>
         </ThemeProvider>
     );
