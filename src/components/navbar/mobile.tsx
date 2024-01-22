@@ -5,21 +5,9 @@ import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-    Album,
-    BookUser,
-    Boxes,
-    GraduationCap,
-    Home,
-    LayoutDashboard,
-    LibraryBig,
-    Menu,
-    User,
-    Users,
-} from "lucide-react";
-import { useSession } from "next-auth/react";
+import { Menu } from "lucide-react";
 import { navigation } from "@/lib/contants";
-import { IsAuth } from "./isAuth";
+import { IsAuth } from "@/components/navbar/isAuth";
 
 const LinkStyle3 =
     "text-lg font-medium flex items-center gap-3 hover:bg-primary/10 px-3 py-3 rounded-md hover:underline";

@@ -6,7 +6,7 @@ export default function PublicRoot({
     children: React.ReactNode;
 }) {
     return (
-        <div className="bg-white">
+        <div className="bg-white dark:bg-white">
             <Navbar />
             {children}
         </div>
