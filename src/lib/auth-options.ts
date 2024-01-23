@@ -2,7 +2,9 @@ import { AuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import User from "@/models/user";
 import bcrypt from "bcrypt";
+import CONNECT_TO_DB from "./connectToDb";
 
+CONNECT_TO_DB();
 export const authOptions: AuthOptions = {
     pages: {
         signIn: "/login",

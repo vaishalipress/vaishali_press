@@ -18,7 +18,7 @@ export const SidebarItem: FC<NavigationItemProps> = ({ link, name, Icon }) => {
 
     return (
         <ActionTooltip side="right" align="center" label={name}>
-            <Link href={link} className="group relative flex items-center">
+            <Link href={link} className="group relative flex items-center z-50">
                 <div
                     className={cn(
                         "absolute left-0 bg-primary rounded-r-full transition-all w-[5px]",
@@ -30,7 +30,7 @@ export const SidebarItem: FC<NavigationItemProps> = ({ link, name, Icon }) => {
 
                 <div
                     className={cn(
-                        "relative group flex items-center bg-primary/10 justify-center mx-3 h-[48px] w-[48px] rounded-[24px] group-hover:rounded-[16px] transition-all overflow-hidden ",
+                        "relative group flex items-center bg-primary/10 justify-center mx-3 h-[40px] w-[40px] md:h-[48px] md:w-[48px] rounded-[24px] group-hover:rounded-[16px] transition-all overflow-hidden ",
                         paths[paths.length - 1] === name.toLowerCase() &&
                             "bg-primary/10 text-primary rounded-[16px]"
                     )}

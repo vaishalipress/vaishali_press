@@ -5,8 +5,13 @@ import { LogOut } from "lucide-react";
 
 export const Logout = () => {
     return (
-        <Button size={"icon"} variant={"outline"} onClick={() => signOut()}>
-            <LogOut className="w-5 h-5 text-gray-700 dark:text-white" />
+        <Button
+            className="bg-transparent bottom-0"
+            variant="outline"
+            size="icon"
+            onClick={() => signOut()}
+        >
+            <LogOut className="w-4 h-4 text-gray-700 dark:text-white" />
         </Button>
     );
 };

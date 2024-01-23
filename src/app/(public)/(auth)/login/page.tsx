@@ -14,7 +14,6 @@ const Login = () => {
     const onSubmit = async (data: FormData) => {
         const userId = data.get("userid");
         const password = data.get("password");
-        console.log(userId, password);
         try {
             setIsLoading(true);
             signIn("credentials", { userId, password });
@@ -35,7 +34,12 @@ const Login = () => {
                         height={100}
                     />
                     <h1 className="text-center">
-                        <span className="text-xl text-orange-700 font-semibold">Vaishali</span> <span className="text-xl text-pink-800 font-semibold">Press</span>
+                        <span className="text-xl text-orange-700 font-semibold">
+                            Vaishali
+                        </span>{" "}
+                        <span className="text-xl text-pink-800 font-semibold">
+                            Press
+                        </span>
                     </h1>
                 </div>
 

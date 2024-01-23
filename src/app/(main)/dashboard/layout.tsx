@@ -1,5 +1,8 @@
+import ModalProvider from "@/components/providers/modal-provider";
+import QueryProvider from "@/components/providers/react-query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SideBar } from "@/components/sidebar/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function DashboardRoot({
     children,
@@ -7,19 +10,23 @@ export default function DashboardRoot({
     children: React.ReactNode;
 }) {
     return (
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            storageKey="vaishaliTheme"
-        >
-            <div className="flex w-full h-full">
-                <div className="min-h-screen h-screen sticky">
-                    <SideBar />
+        <QueryProvider>
+            <ThemeProvider
+                attribute="class"
+                defaultTheme="dark"
+                storageKey="vaishaliTheme"
+            >
+                <div className="flex w-screen h-full">
+                    <div className="min-h-screen h-screen sticky z-50">
+                        <SideBar />
+                    </div>
+                    <div className="w-full h-screen min-h-screen overflow-y-auto px-2 relative">
+                        {children}
+                    </div>
+                    <Toaster />
+                    <ModalProvider />
                 </div>
-                <div className="w-full h-screen min-h-screen overflow-y-auto px-2 relative">
-                    {children}
-                </div>
-            </div>
-        </ThemeProvider>
+            </ThemeProvider>
+        </QueryProvider>
     );
 }
