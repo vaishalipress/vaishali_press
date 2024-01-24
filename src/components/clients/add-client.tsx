@@ -30,9 +30,9 @@ import axios from "axios";
 import { toast } from "sonner";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/lib/queries";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
-export default function AddClient() {
+export default function AddClientForm() {
     const form = useForm<z.infer<typeof clientSchema>>({
         resolver: zodResolver(clientSchema),
         defaultValues: {
@@ -42,9 +42,10 @@ export default function AddClient() {
             mobile: "",
         },
     });
+    const [isFormOpen, setIsFormOpen] = useState(false);
     const [district, setDistrict] = useState("");
     const { addData } = useCustumQuery();
-    
+
     const { mutate, isPending } = useMutation({
         mutationFn: async (values: z.infer<typeof clientSchema>) => {
             const { data } = await axios.post(`/api/client`, values);
@@ -63,154 +64,193 @@ export default function AddClient() {
     });
 
     return (
-        <div className="max-w-lg border px-4 py-3 rounded-md">
-            <h1 className="uppercase font-semibold mb-3">add Clients</h1>
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit((value) => mutate(value))}
-                    className="flex flex-col gap-3"
-                >
-                    <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Name</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Name" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    {/* District */}
-                    <FormField
-                        control={form.control}
-                        name="district"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>District</FormLabel>
-                                <FormControl>
-                                    <Select
-                                        value={field.value}
-                                        defaultValue={field.value}
-                                        onValueChange={(e: string) => {
-                                            form.setValue("block", "");
-                                            setDistrict(e);
-                                            field.onChange(e);
-                                        }}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue
-                                                placeholder={"Select district"}
+        <div className="max-w-3xl w-full border px-4 py-3 rounded-md">
+            {!isFormOpen ? (
+                <Input
+                    readOnly
+                    defaultValue={"ADD CLIENT"}
+                    onClick={() => setIsFormOpen(true)}
+                />
+            ) : (
+                <>
+                    <div className="flex justify-between">
+                        <h1 className="uppercase font-semibold mb-3">
+                            add Clients
+                        </h1>
+                        <Button
+                            variant={"ghost"}
+                            size={"icon"}
+                            onClick={() => setIsFormOpen(false)}
+                        >
+                            <X className="w-4 h-4" />
+                        </Button>
+                    </div>
+                    <Form {...form}>
+                        <form
+                            onSubmit={form.handleSubmit((value) =>
+                                mutate(value)
+                            )}
+                            className="flex flex-col gap-3"
+                        >
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Name</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                autoFocus
+                                                placeholder="Name"
+                                                {...field}
                                             />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel>
-                                                    Districts
-                                                </SelectLabel>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                                                {districtsAndBlocks.map((d) => (
-                                                    <SelectItem
-                                                        key={d.name}
-                                                        value={d.name.toLowerCase()}
-                                                    >
-                                                        {d.name.toUpperCase()}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                            {/* District */}
+                            <FormField
+                                control={form.control}
+                                name="district"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>District</FormLabel>
+                                        <FormControl>
+                                            <Select
+                                                value={field.value}
+                                                defaultValue={field.value}
+                                                onValueChange={(e: string) => {
+                                                    form.setValue("block", "");
+                                                    setDistrict(e);
+                                                    field.onChange(e);
+                                                }}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue
+                                                        placeholder={
+                                                            "Select district"
+                                                        }
+                                                    />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel>
+                                                            Districts
+                                                        </SelectLabel>
 
-                    {/* Block */}
-                    <FormField
-                        control={form.control}
-                        name="block"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Block</FormLabel>
-                                <FormControl>
-                                    <Select
-                                        value={field.value}
-                                        onValueChange={(e: string) => {
-                                            field.onChange(e);
-                                        }}
-                                        defaultValue={field.value}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue
-                                                placeholder={"Select block"}
-                                            />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel>
-                                                    Blocks
-                                                </SelectLabel>
-                                                {districtsAndBlocks.map((d) => {
-                                                    if (
-                                                        d.name.toLowerCase() ===
-                                                        district
-                                                    ) {
-                                                        return d.block.map(
-                                                            (block) => (
+                                                        {districtsAndBlocks.map(
+                                                            (d) => (
                                                                 <SelectItem
-                                                                    key={block}
-                                                                    value={block.toLowerCase()}
+                                                                    key={d.name}
+                                                                    value={d.name.toLowerCase()}
                                                                 >
-                                                                    {block.toUpperCase()}
+                                                                    {d.name.toUpperCase()}
                                                                 </SelectItem>
                                                             )
-                                                        );
-                                                    }
-                                                })}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                                                        )}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                    {/* Phone */}
-                    <FormField
-                        control={form.control}
-                        name="mobile"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Mobile</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        {...field}
-                                        placeholder="Enter Mobile no."
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                            {/* Block */}
+                            <FormField
+                                control={form.control}
+                                name="block"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Block</FormLabel>
+                                        <FormControl>
+                                            <Select
+                                                value={field.value}
+                                                onValueChange={(e: string) => {
+                                                    field.onChange(e);
+                                                }}
+                                                defaultValue={field.value}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue
+                                                        placeholder={
+                                                            "Select block"
+                                                        }
+                                                    />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel>
+                                                            Blocks
+                                                        </SelectLabel>
+                                                        {districtsAndBlocks.map(
+                                                            (d) => {
+                                                                if (
+                                                                    d.name.toLowerCase() ===
+                                                                    district
+                                                                ) {
+                                                                    return d.block.map(
+                                                                        (
+                                                                            block
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    block
+                                                                                }
+                                                                                value={block.toLowerCase()}
+                                                                            >
+                                                                                {block.toUpperCase()}
+                                                                            </SelectItem>
+                                                                        )
+                                                                    );
+                                                                }
+                                                            }
+                                                        )}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                    <Button
-                        type="submit"
-                        variant={"secondary"}
-                        disabled={isPending}
-                    >
-                        {isPending ? (
-                            <Loader2 className="animate-spin" />
-                        ) : (
-                            "Submit"
-                        )}
-                    </Button>
-                </form>
-            </Form>
+                            {/* Phone */}
+                            <FormField
+                                control={form.control}
+                                name="mobile"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Mobile</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                {...field}
+                                                placeholder="Enter Mobile no."
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <Button
+                                type="submit"
+                                variant={"secondary"}
+                                disabled={isPending}
+                            >
+                                {isPending ? (
+                                    <Loader2 className="animate-spin" />
+                                ) : (
+                                    "Submit"
+                                )}
+                            </Button>
+                        </form>
+                    </Form>
+                </>
+            )}
         </div>
     );
 }

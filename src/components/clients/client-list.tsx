@@ -26,7 +26,7 @@ export default function ClientList() {
     });
 
     return (
-        <div className="border max-w-3xl rounded-md py-3">
+        <div className="border max-w-3xl w-full rounded-md py-3">
             <h1 className="uppercase font-semibold mb-3 px-3 text-sm md:text-base">
                 Clients
             </h1>
