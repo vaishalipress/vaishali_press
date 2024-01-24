@@ -32,10 +32,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "sonner";
-
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { clientSchema } from "@/lib/schema";
 import { districtsAndBlocks } from "@/lib/contants";
+import { Loader2 } from "lucide-react";
+import { handleAxiosError } from "@/lib/error";
+import { useCustumQuery } from "@/lib/queries";
 
 export const EditClientModal = () => {
     const { isOpen, onClose, type, data } = useModal();
@@ -53,10 +55,6 @@ export const EditClientModal = () => {
     });
     const [district, setDistrict] = useState("");
 
-    function onSubmit(values: z.infer<typeof clientSchema>) {
-        console.log(values);
-    }
-
     useEffect(() => {
         if (client) {
             form.setValue("name", client.name);
@@ -67,57 +65,26 @@ export const EditClientModal = () => {
         }
     }, [form, client]);
 
-    const queryClient = useQueryClient();
+    const { updateData } = useCustumQuery();
+
     const { mutate, isPending } = useMutation({
         mutationFn: async (values: z.infer<typeof clientSchema>) => {
-            const { data } = await axios.put("/api/users", values);
+            const { data } = await axios.put(
+                `/api/client?id=${client?._id}`,
+                values
+            );
             return data;
         },
 
-        onSuccess(data, variables) {
-            if (data) {
-                toast(data?.message);
+        onSuccess(data) {
+            toast("✅ " + (data?.message as string).toUpperCase());
+            if (data.success) {
+                updateData(["clients-list"], data.client);
+                form.reset();
+                onClose();
             }
-            // if (data.success) {
-            //     queryClient.setQueryData(
-            //         ["users", searchParams?.page, searchParams?.userId],
-            //         (old: {
-            //             total: number;
-            //             users: z.infer<typeof franchiseEditSchema>[];
-            //         }) => {
-            //             const users = old.users.map((user) =>
-            //                 user.id === variables.id
-            //                     ? {
-            //                           img: variables.img,
-            //                           id: variables.id,
-            //                           isActive: variables.isActive,
-            //                           password: variables.password,
-            //                           role: variables.role,
-            //                           userId: variables.userId,
-            //                           name: variables.name,
-            //                           branch: variables.branch,
-            //                           email: variables.email,
-            //                           phone: variables.phone,
-            //                           address: {
-            //                               state: variables.state,
-            //                               district: variables.district,
-            //                               pincode: variables.pincode,
-            //                               street: variables.address,
-            //                           },
-            //                       }
-            //                     : user
-            //             );
-
-            //             return {
-            //                 total: old.total,
-            //                 users,
-            //             };
-            //         }
-            //     );
-            //     form.reset();
-            //     onClose();
-            // }
         },
+        onError: handleAxiosError,
     });
 
     return (
@@ -271,8 +238,16 @@ export const EditClientModal = () => {
                             )}
                         />
 
-                        <Button type="submit" variant={"secondary"}>
-                            Submit
+                        <Button
+                            type="submit"
+                            variant={"secondary"}
+                            disabled={isPending}
+                        >
+                            {isPending ? (
+                                <Loader2 className="animate-spin" />
+                            ) : (
+                                "Submit"
+                            )}
                         </Button>
                     </form>
                 </Form>

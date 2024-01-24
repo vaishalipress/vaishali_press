@@ -10,12 +10,6 @@ CONNECT_TO_DB();
 
 export const POST = async (req: Request) => {
     try {
-        /**
-         * To create client
-         * get - name , district , block , mobile
-         * create client
-         */
-
         const { name, district, block, mobile } = await req.json();
 
         if (!name || !district || !block || !mobile) {
@@ -39,7 +33,7 @@ export const POST = async (req: Request) => {
         }
 
         return NextResponse.json(
-            { client, message: "client registered" },
+            { client, message: "client registered", success: true },
             { status: 201 }
         );
     } catch (error: any) {
@@ -56,7 +50,9 @@ export const POST = async (req: Request) => {
 
 export const GET = async (req: Request) => {
     try {
-        const clients = await Client.find();
+        const clients = await Client.find().sort({
+            createdAt: -1,
+        });
 
         if (!clients) {
             return NextResponse.json(
@@ -96,12 +92,12 @@ export const DELETE = async (req: Request) => {
 
         if (!client) {
             return NextResponse.json(
-                { message: "invalid id" },
+                { message: "invalid id", success: false },
                 { status: 400 }
             );
         }
         return NextResponse.json(
-            { client, message: "client deleted." },
+            { client, message: "client deleted.", success: true },
             { status: 200 }
         );
     } catch (error: any) {
@@ -113,12 +109,6 @@ export const DELETE = async (req: Request) => {
  */
 export const PUT = async (req: Request) => {
     try {
-        /**
-         * To update Product
-         * get - name or rate
-         * name must be unique
-         * create Product
-         */
         const url = new URL(req.url);
         const id = url.searchParams.get("id");
 
@@ -141,7 +131,7 @@ export const PUT = async (req: Request) => {
 
         if (!isExist) {
             return NextResponse.json(
-                { message: "invalid id" },
+                { message: "invalid id", success: false },
                 { status: 400 }
             );
         }
@@ -164,7 +154,7 @@ export const PUT = async (req: Request) => {
         }
 
         return NextResponse.json(
-            { client, message: "client updated" },
+            { client, message: "client updated", success: true },
             { status: 201 }
         );
     } catch (error: any) {

@@ -12,8 +12,6 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
     Select,
     SelectContent,
@@ -23,8 +21,16 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { districtsAndBlocks } from "@/lib/contants";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { toast } from "sonner";
+import { handleAxiosError } from "@/lib/error";
+import { useCustumQuery } from "@/lib/queries";
+import { Loader2 } from "lucide-react";
 
 export default function AddClient() {
     const form = useForm<z.infer<typeof clientSchema>>({
@@ -37,17 +43,31 @@ export default function AddClient() {
         },
     });
     const [district, setDistrict] = useState("");
+    const { addData } = useCustumQuery();
+    
+    const { mutate, isPending } = useMutation({
+        mutationFn: async (values: z.infer<typeof clientSchema>) => {
+            const { data } = await axios.post(`/api/client`, values);
+            return data;
+        },
 
-    function onSubmit(values: z.infer<typeof clientSchema>) {
-        console.log(values);
-    }
+        onSuccess(data) {
+            toast("✅ " + (data?.message as string).toUpperCase());
+            if (data.success) {
+                addData(["clients-list"], data.client);
+                form.reset();
+            }
+        },
+
+        onError: handleAxiosError,
+    });
 
     return (
         <div className="max-w-lg border px-4 py-3 rounded-md">
             <h1 className="uppercase font-semibold mb-3">add Clients</h1>
             <Form {...form}>
                 <form
-                    onSubmit={form.handleSubmit(onSubmit)}
+                    onSubmit={form.handleSubmit((value) => mutate(value))}
                     className="flex flex-col gap-3"
                 >
                     <FormField
@@ -178,7 +198,17 @@ export default function AddClient() {
                         )}
                     />
 
-                    <Button type="submit" variant={"secondary"}>Submit</Button>
+                    <Button
+                        type="submit"
+                        variant={"secondary"}
+                        disabled={isPending}
+                    >
+                        {isPending ? (
+                            <Loader2 className="animate-spin" />
+                        ) : (
+                            "Submit"
+                        )}
+                    </Button>
                 </form>
             </Form>
         </div>

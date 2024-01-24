@@ -10,29 +10,21 @@ import {
 import { Button } from "../ui/button";
 import { Pen, Trash } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { ClientI } from "@/models/client";
+import { LoadingCells } from "../loading";
 
-const clients = [
-    {
-        name: "Aditya Kumar",
-        district: "muzaffarpur",
-        block: "marwan",
-        mobile: "7479796212",
-    },
-    {
-        name: "rohit Kumar",
-        district: "muzaffarpur",
-        block: "marwan",
-        mobile: "7479796212",
-    },
-    {
-        name: "abhishek Kumar",
-        district: "muzaffarpur",
-        block: "marwan",
-        mobile: "7479796212",
-    },
-];
 export default function ClientList() {
     const { onOpen } = useModal();
+    const { data, isLoading } = useQuery({
+        queryKey: ["clients-list"],
+        queryFn: async () => {
+            const { data } = await axios.get("/api/client");
+            return data?.clients;
+        },
+    });
+
     return (
         <div className="border max-w-3xl rounded-md py-3">
             <h1 className="uppercase font-semibold mb-3 px-3 text-sm md:text-base">
@@ -56,8 +48,9 @@ export default function ClientList() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {clients.map((client) => (
-                            <TableRow key={client.name}>
+                        {isLoading && <LoadingCells />}
+                        {data?.map((client: ClientI & { _id: string }) => (
+                            <TableRow key={client?._id}>
                                 <TableCell className="font-medium capitalize">
                                     {client.name}
                                 </TableCell>

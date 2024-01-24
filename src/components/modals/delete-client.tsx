@@ -9,46 +9,34 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-
 import { Loader } from "lucide-react";
 import axios from "axios";
 import { useModal } from "@/hooks/use-modal-store";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { handleAxiosError } from "@/lib/error";
+import { useCustumQuery } from "@/lib/queries";
 
 export const DeleteClientModal = () => {
     const { isOpen, onClose, type, data } = useModal();
     const isModalOpen = isOpen && type === "deleteClient";
     const { client } = data;
-    const queryClient = useQueryClient();
+    const { removeData } = useCustumQuery();
 
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {
             const { data } = await axios.delete(
-                `/api/users?clientId=${client?._id}`
+                `/api/client?id=${client?._id}`
             );
             return data;
         },
-        // onSuccess(data) {
-        //     if (data) {
-        //         toast({ description: data?.message });
-        //         onClose();
-        //     }
-        //     if (!!data?.success) {
-        //         queryClient.setQueryData(
-        //             ["users", searchParams?.page, searchParams?.userId],
-        //             (old: { total: number; users: User[] }) => {
-        //                 const users = old.users.filter(
-        //                     (Singaluser) => Singaluser.id !== user?.id
-        //                 );
-
-        //                 return {
-        //                     total: old.total,
-        //                     users,
-        //                 };
-        //             }
-        //         );
-        //     }
-        // },
+        onSuccess(data) {
+            toast("😝 " +data?.message.toUpperCase());
+            if (data.success) {
+                removeData(["clients-list"], data.client._id);
+                onClose();
+            }
+        },
+        onError: handleAxiosError,
     });
 
     return (
