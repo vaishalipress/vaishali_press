@@ -1,10 +1,15 @@
 import { create } from "zustand";
-import { ClientI } from "@/models/client";
+import { ClientTypeExtented, ProductTypeExtended } from "@/lib/types";
 
-export type ModalType = "editClient" | "deleteClient";
+export type ModalType =
+    | "editClient"
+    | "deleteClient"
+    | "editProduct"
+    | "deleteProduct";
 
 interface ModalData {
-    client?: ClientI & { _id: string };
+    client?: ClientTypeExtented;
+    product?: ProductTypeExtended;
 }
 
 interface modalStore {

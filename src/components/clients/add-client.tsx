@@ -29,7 +29,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "sonner";
 import { handleAxiosError } from "@/lib/error";
-import { useCustumQuery } from "@/lib/queries";
+import { useCustumQuery } from "@/hooks/use-queries";
 import { Loader2, X } from "lucide-react";
 
 export default function AddClientForm() {

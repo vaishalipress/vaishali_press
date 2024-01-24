@@ -7,13 +7,6 @@ CONNECT_TO_DB();
  */
 export const POST = async (req: Request) => {
     try {
-        /**
-         * To create Product
-         * get - name , rate
-         * name must be unique
-         * create Product
-         */
-
         const { name, price } = await req.json();
 
         if (!name || !price) {
@@ -45,7 +38,7 @@ export const POST = async (req: Request) => {
         }
 
         return NextResponse.json(
-            { product, message: "Product registered" },
+            { product, message: "Product registered", success: true },
             { status: 201 }
         );
     } catch (error) {
@@ -60,7 +53,7 @@ export const POST = async (req: Request) => {
 
 export const GET = async (req: Request) => {
     try {
-        const products = await Product.find();
+        const products = await Product.find().sort({ createdAt: -1 });
 
         if (!products) {
             return NextResponse.json(
@@ -83,12 +76,6 @@ export const GET = async (req: Request) => {
 
 export const PUT = async (req: Request) => {
     try {
-        /**
-         * To update Product
-         * get - name or rate
-         * name must be unique
-         * create Product
-         */
         const url = new URL(req.url);
         const id = url.searchParams.get("id");
 
@@ -132,7 +119,7 @@ export const PUT = async (req: Request) => {
         }
 
         return NextResponse.json(
-            { product, message: "Product updated" },
+            { product, message: "Product updated", success: true },
             { status: 201 }
         );
     } catch (error: any) {
@@ -161,7 +148,7 @@ export const DELETE = async (req: Request) => {
             );
         }
         return NextResponse.json(
-            { product, message: "product deleted." },
+            { product, message: "product deleted.", success: true },
             { status: 200 }
         );
     } catch (error: any) {

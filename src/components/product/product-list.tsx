@@ -12,16 +12,16 @@ import { Pen, Trash } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { LoadingCells } from "../loading";
 import { format } from "date-fns";
-import { useClient } from "@/hooks/use-fetch-data";
+import { useProduct } from "@/hooks/use-fetch-data";
 
-export default function ClientList() {
+export default function ProductList() {
     const { onOpen } = useModal();
-    const { data, isLoading } = useClient();
+    const { data, isLoading } = useProduct();
 
     return (
         <div className="border max-w-3xl w-full rounded-md py-3">
             <h1 className="uppercase font-semibold mb-3 px-3 text-sm md:text-base">
-                Clients
+                Products
             </h1>
             <div>
                 <Table>
@@ -30,11 +30,7 @@ export default function ClientList() {
                             <TableHead className="w-[150px] uppercase">
                                 name
                             </TableHead>
-                            <TableHead className="uppercase">
-                                District
-                            </TableHead>
-                            <TableHead className="uppercase">Block</TableHead>
-                            <TableHead className="uppercase">Mobile</TableHead>
+                            <TableHead className="uppercase">Price</TableHead>
                             <TableHead className="uppercase">Date</TableHead>
                             <TableHead className="text-right uppercase min-w-[130px] md:min-w-[150px]">
                                 Actions
@@ -42,22 +38,19 @@ export default function ClientList() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {isLoading && <LoadingCells cols={6} />}
-                        {data?.map((client) => (
-                            <TableRow key={client?._id}>
+                        {isLoading && <LoadingCells rows={10} cols={4} />}
+                        {data?.map((product) => (
+                            <TableRow key={product?._id}>
                                 <TableCell className="font-medium capitalize">
-                                    {client.name}
+                                    {product.name}
                                 </TableCell>
                                 <TableCell className="capitalize">
-                                    {client.district}
+                                    {product.price}
                                 </TableCell>
-                                <TableCell className="capitalize">
-                                    {client.block}
-                                </TableCell>
-                                <TableCell>{client.mobile}</TableCell>
+
                                 <TableCell>
                                     {format(
-                                        new Date(client.createdAt),
+                                        new Date(product.createdAt),
                                         "dd-MM-yyyy"
                                     )}
                                 </TableCell>
@@ -67,7 +60,7 @@ export default function ClientList() {
                                         variant={"outline"}
                                         className="px-2 py-0"
                                         onClick={() => {
-                                            onOpen("editClient", { client });
+                                            onOpen("editProduct", { product });
                                         }}
                                     >
                                         <Pen className="w-3 h-3 md:w-4 md:h-4" />
@@ -77,7 +70,9 @@ export default function ClientList() {
                                         variant={"outline"}
                                         className="ml-2 px-2 py-0"
                                         onClick={() => {
-                                            onOpen("deleteClient", { client });
+                                            onOpen("deleteProduct", {
+                                                product,
+                                            });
                                         }}
                                     >
                                         <Trash className="w-3 h-3 md:w-4 md:h-4" />

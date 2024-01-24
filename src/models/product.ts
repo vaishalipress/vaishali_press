@@ -3,7 +3,7 @@ import mongoose_aggregate_paginate_v2 from "mongoose-aggregate-paginate-v2";
 
 export interface ProductI {
     name: string;
-    price: Number;
+    price: number;
 }
 
 const ProductSchema = new Schema<ProductI>(

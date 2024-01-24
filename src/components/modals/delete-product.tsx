@@ -16,22 +16,22 @@ import { useMutation } from "@tanstack/react-query";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
 
-export const DeleteClientModal = () => {
+export const DeletProductModal = () => {
     const { isOpen, onClose, type, data } = useModal();
-    const isModalOpen = isOpen && type === "deleteClient";
-    const { client } = data;
+    const isModalOpen = isOpen && type === "deleteProduct";
+    const { product } = data;
     const { removeData } = useCustumQuery();
 
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {
             const { data } = await axios.delete(
-                `/api/client?id=${client?._id}`
+                `/api/product?id=${product?._id}`
             );
             return data;
         },
         onSuccess(data) {
             toast("😝 " + data?.message.toUpperCase());
-            removeData(["clients-list"], data.client._id);
+            removeData(["products-list"], data.product._id);
             onClose();
         },
         onError: handleAxiosError,
@@ -41,13 +41,13 @@ export const DeleteClientModal = () => {
         <Dialog open={isModalOpen} onOpenChange={onClose}>
             <DialogContent className="w-[95vw]">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl text-center font-bold">
-                        Delete Client
+                    <DialogTitle className="text-2xl text-center uppercase font-bold">
+                        Delete Product
                     </DialogTitle>
                     <DialogDescription className="text-center text-zinc-500">
                         Are you sure you want to do this? <br />
                         <span className="font-semibold text-indigo-500">
-                            {client?.name}
+                            {product?.name}
                         </span>{" "}
                     </DialogDescription>
                 </DialogHeader>

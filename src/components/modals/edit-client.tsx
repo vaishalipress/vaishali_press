@@ -37,7 +37,7 @@ import { clientSchema } from "@/lib/schema";
 import { districtsAndBlocks } from "@/lib/contants";
 import { Loader2 } from "lucide-react";
 import { handleAxiosError } from "@/lib/error";
-import { useCustumQuery } from "@/lib/queries";
+import { useCustumQuery } from "@/hooks/use-queries";
 
 export const EditClientModal = () => {
     const { isOpen, onClose, type, data } = useModal();
@@ -78,11 +78,9 @@ export const EditClientModal = () => {
 
         onSuccess(data) {
             toast("✅ " + (data?.message as string).toUpperCase());
-            if (data.success) {
-                updateData(["clients-list"], data.client);
-                form.reset();
-                onClose();
-            }
+            updateData(["clients-list"], data.client);
+            form.reset();
+            onClose();
         },
         onError: handleAxiosError,
     });
