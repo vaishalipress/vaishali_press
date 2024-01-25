@@ -33,7 +33,7 @@ const MobileNavBar = () => {
                         <Button
                             variant={"outline"}
                             size={"sm"}
-                            className="py-5 px-3 drop-shadow-md"
+                            className="dark:bg-white py-5 px-3 drop-shadow-md"
                             suppressHydrationWarning
                         >
                             <Menu className="h-[1.2rem] w-[1.2rem] text-red-700" />
@@ -42,7 +42,7 @@ const MobileNavBar = () => {
                     </SheetTrigger>
                     <SheetContent
                         side={"left"}
-                        className="flex flex-col gap-0 pt-16"
+                        className="flex flex-col gap-0 pt-16 dark:bg-white dark:text-black"
                     >
                         <ScrollArea>
                             <div className="flex flex-col">

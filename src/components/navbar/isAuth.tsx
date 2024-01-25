@@ -45,7 +45,7 @@ export const IsAuth: FC<Props> = ({
                     href={"/login"}
                     onClick={() => !!setOpen && setOpen(!open)}
                 >
-                    Log in <span aria-hidden="true">&rarr;</span>
+                    <span aria-hidden="true">&rarr;</span>Log in 
                 </Link>
             )}
         </>
