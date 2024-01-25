@@ -70,7 +70,7 @@ export const GET = async (req: Request) => {
                         district: "$district",
                         block: "$block",
                     },
-                    users: {
+                    clients: {
                         $push: "$$ROOT",
                     },
                 },
@@ -87,22 +87,22 @@ export const GET = async (req: Request) => {
                     blocks: {
                         $push: {
                             block: "$_id.block",
-                            totalUser: {
-                                $size: "$users",
+                            totalClient: {
+                                $size: "$clients",
                             },
                             totalSale: {
-                                $sum: "$users.totalSale",
+                                $sum: "$clients.totalSale",
                             },
                             totalAmount: {
-                                $sum: "$users.totalAmount",
+                                $sum: "$clients.totalAmount",
                             },
                             totalDues: {
-                                $sum: "$users.totalDues",
+                                $sum: "$clients.totalDues",
                             },
                             totalPayment: {
-                                $sum: "$users.totalPayment",
+                                $sum: "$clients.totalPayment",
                             },
-                            users: "$users",
+                            clients: "$clients",
                         },
                     },
                 },
@@ -112,8 +112,8 @@ export const GET = async (req: Request) => {
                     district: {
                         $first: "$district",
                     },
-                    totalUser: {
-                        $sum: "$blocks.totalUser",
+                    totalClient: {
+                        $sum: "$blocks.totalClient",
                     },
 
                     totalSale: {

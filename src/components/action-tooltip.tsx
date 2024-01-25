@@ -23,7 +23,7 @@ export const ActionTooltip: FC<ActionTooltipProps> = ({
 }) => {
     return (
         <TooltipProvider>
-            <Tooltip delayDuration={50}>
+            <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>{children}</TooltipTrigger>
                 <TooltipContent side={side} align={align}>
                     <p className="font-semibold text-sm capitalize">
