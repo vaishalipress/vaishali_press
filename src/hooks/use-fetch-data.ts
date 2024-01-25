@@ -1,4 +1,8 @@
-import { ClientTypeExtented, ProductTypeExtended } from "@/lib/types";
+import {
+    ClientTypeExtented,
+    ProductTypeExtended,
+    SalesTypeExtended,
+} from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -18,6 +22,16 @@ export const useProduct = () => {
         queryFn: async () => {
             const { data } = await axios.get("/api/product");
             return data?.products;
+        },
+    });
+};
+
+export const useSale = () => {
+    return useQuery<SalesTypeExtended[]>({
+        queryKey: ["sales-list"],
+        queryFn: async () => {
+            const { data } = await axios.get("/api/sale");
+            return data?.sales;
         },
     });
 };

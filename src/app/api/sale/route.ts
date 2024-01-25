@@ -2,7 +2,6 @@ import Client from "@/models/client";
 import Product from "@/models/product";
 import Sale from "@/models/sale";
 import CONNECT_TO_DB from "@/lib/connectToDb";
-import mongoose from "mongoose";
 
 CONNECT_TO_DB();
 
@@ -13,7 +12,7 @@ export const POST = async (req: Request) => {
     try {
         const { client, product, qty, rate, payment } = await req.json();
 
-        if (!client || !product || !qty || !payment) {
+        if (!client || !product || !qty) {
             return Response.json(
                 {
                     message: "All fields are required.",
@@ -22,10 +21,19 @@ export const POST = async (req: Request) => {
                 { status: 400 }
             );
         }
-
-        const isClientExist = await Client.findById(client);
-
-        if (!isClientExist) {
+        let isClientExist;
+        try {
+            isClientExist = await Client.findById(client);
+            if (!isClientExist) {
+                return Response.json(
+                    {
+                        message: "invalid client id",
+                        success: false,
+                    },
+                    { status: 400 }
+                );
+            }
+        } catch (error) {
             return Response.json(
                 {
                     message: "invalid client id",
@@ -34,7 +42,28 @@ export const POST = async (req: Request) => {
                 { status: 400 }
             );
         }
-        const isProductExist = await Product.findById(product);
+
+        let isProductExist;
+        try {
+            isProductExist = await Product.findById(product);
+            if (!isProductExist) {
+                return Response.json(
+                    {
+                        message: "invalid product id",
+                        success: false,
+                    },
+                    { status: 400 }
+                );
+            }
+        } catch (error) {
+            return Response.json(
+                {
+                    message: "invalid product id",
+                    success: false,
+                },
+                { status: 400 }
+            );
+        }
         if (!isProductExist) {
             return Response.json(
                 {
@@ -45,13 +74,19 @@ export const POST = async (req: Request) => {
             );
         }
         const sale = await Sale.create({
-            client,
+            client: isClientExist._id,
             product: isProductExist.id,
             name: isProductExist.name,
             qty: Number(qty),
             rate: rate ? Number(rate) : isProductExist.price,
-            payment: Number(payment),
+            payment: payment ? Number(payment) : 0,
         });
+
+        const modifiedSaleObject = {
+            ...sale._doc,
+            client: isClientExist,
+            product: isProductExist,
+        };
 
         if (!sale) {
             return Response.json(
@@ -64,7 +99,11 @@ export const POST = async (req: Request) => {
         }
 
         return Response.json(
-            { sale, message: "sale created", success: true },
+            {
+                sale: modifiedSaleObject,
+                message: "sale created",
+                success: true,
+            },
             { status: 201 }
         );
     } catch (error) {
@@ -78,7 +117,9 @@ export const POST = async (req: Request) => {
  */
 export const GET = async (req: Request) => {
     try {
-        const sales = await Sale.find().sort({ createdAt: -1 });
+        const sales = await Sale.find()
+            .populate("client product")
+            .sort({ createdAt: -1 });
         if (!sales) {
             return Response.json("something went wrong while fetching sales", {
                 status: 500,
@@ -89,7 +130,7 @@ export const GET = async (req: Request) => {
             { status: 200 }
         );
     } catch (error) {
-        console.log(error);
+        console.log("Sale get", error);
         return Response.json("Internal error", { status: 500 });
     }
 };
@@ -99,12 +140,6 @@ export const GET = async (req: Request) => {
 
 export const PUT = async (req: Request) => {
     try {
-        /**
-         * To update Product
-         * get - name or rate
-         * name must be unique
-         * create Product
-         */
         const url = new URL(req.url);
         const id = url.searchParams.get("id");
 
@@ -173,7 +208,7 @@ export const PUT = async (req: Request) => {
                 payment: payment ? Number(payment) : isExist.payment,
             },
             { new: true }
-        );
+        ).populate("client product");
 
         if (!sale) {
             return Response.json("Error while updating sale", {

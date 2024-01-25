@@ -94,7 +94,9 @@ export default function AddProduct() {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Name</FormLabel>
+                                        <FormLabel className="uppercase">
+                                            Name
+                                        </FormLabel>
                                         <FormControl>
                                             <Input
                                                 autoFocus
@@ -113,7 +115,9 @@ export default function AddProduct() {
                                 name="price"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Mobile</FormLabel>
+                                        <FormLabel className="uppercase">
+                                            Price
+                                        </FormLabel>
                                         <FormControl>
                                             <Input
                                                 {...field}

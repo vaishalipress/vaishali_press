@@ -40,16 +40,13 @@ export const salesSchema = z.object({
     product: z
         .string({ required_error: "product is required." })
         .min(2, { message: "product is required." }),
-    name: z
-        .string({ required_error: "name is required." })
-        .min(3, { message: "name must be atleast length of 3" }),
     qty: z
         .number({ required_error: "qty is required." })
         .min(1, { message: "qty must be greater than 0" }),
     rate: z
         .number({ required_error: "rate is required." })
-        .min(1, { message: "rate must be greater than 0" }),
+        .min(0, { message: "rate must be greater than 0" }),
     payment: z
         .number({ required_error: "payment is required." })
-        .min(1, { message: "payment must be greater than 0" }),
+        .min(0, { message: "payment must be greater than 0" }),
 });

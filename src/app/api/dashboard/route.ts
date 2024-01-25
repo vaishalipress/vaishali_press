@@ -1,6 +1,8 @@
 import CONNECT_TO_DB from "@/lib/connectToDb";
 import Client from "@/models/client";
 
+export const dynamic = "force-dynamic";
+
 CONNECT_TO_DB();
 
 export const GET = async (req: Request) => {
@@ -132,7 +134,7 @@ export const GET = async (req: Request) => {
 
         return Response.json(sales);
     } catch (error) {
-        console.log(error);
+        console.log("Dashboard", error);
         return Response.json(error, { status: 500 });
     }
 };

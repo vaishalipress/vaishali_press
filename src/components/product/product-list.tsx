@@ -31,7 +31,7 @@ export default function ProductList() {
                                 name
                             </TableHead>
                             <TableHead className="uppercase">Price</TableHead>
-                            <TableHead className="uppercase">Date</TableHead>
+                            <TableHead className="uppercase min-w-[120px]">Date</TableHead>
                             <TableHead className="text-right uppercase min-w-[130px] md:min-w-[150px]">
                                 Actions
                             </TableHead>

@@ -20,7 +20,7 @@ export const useCustumQuery = () => {
 
     const removeData = (key: QueryKey, id: string) => {
         queryClient.setQueryData(key, (old: queryType[]) => {
-            const allData = old.filter((client) => client._id !== id);
+            const allData = old.filter((data) => data._id !== id);
             return allData;
         });
     };

@@ -69,7 +69,7 @@ export const GET = async (req: Request) => {
             { status: 200 }
         );
     } catch (error) {
-        console.log(error);
+        console.log("product get", error);
         return NextResponse.json("Internal error", { status: 500 });
     }
 };

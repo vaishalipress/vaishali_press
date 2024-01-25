@@ -5,9 +5,9 @@ export interface SaleI {
     client: mongoose.Types.ObjectId;
     product: mongoose.Types.ObjectId;
     name: string;
-    qty: Number;
-    rate: Number;
-    payment: Number;
+    qty: number;
+    rate: number;
+    payment: number;
 }
 const SalesSchema = new Schema<SaleI>(
     {
