@@ -34,7 +34,7 @@ interface saleType {
     dues: number;
 }
 
-interface userType {
+export interface clientType {
     _id: string;
     name: string;
     district: string;
@@ -49,17 +49,17 @@ interface userType {
     totalPayment: number;
 }
 
-interface blockType {
+export interface blockType {
     block: string;
     totalClient: number;
     totalSale: number;
     totalAmount: number;
     totalDues: number;
     totalPayment: number;
-    users: userType[];
+    clients: clientType[];
 }
 
-export interface dashboardApiType {
+export interface districtType {
     _id: string;
     district: string;
     totalBlock: number;

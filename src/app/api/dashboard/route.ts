@@ -130,7 +130,9 @@ export const GET = async (req: Request) => {
                     },
                 },
             },
-        ]);
+        ]).sort({
+            totalAmount: -1,
+        });
 
         return Response.json(sales);
     } catch (error) {
