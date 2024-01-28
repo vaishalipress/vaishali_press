@@ -3,6 +3,7 @@ import {
     ClientTypeExtented,
     ProductTypeExtended,
     SalesTypeExtended,
+    clientType,
 } from "@/lib/types";
 
 export type ModalType =
@@ -11,12 +12,14 @@ export type ModalType =
     | "editProduct"
     | "deleteProduct"
     | "editSale"
-    | "deleteSale";
+    | "deleteSale"
+    | "userSaleDetails";
 
 interface ModalData {
     client?: ClientTypeExtented;
     product?: ProductTypeExtended;
     sale?: SalesTypeExtended;
+    clientSalesDetail?: clientType;
 }
 
 interface modalStore {

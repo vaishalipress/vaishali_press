@@ -1,3 +1,4 @@
+"use client";
 import { clientType } from "@/lib/types";
 import {
     Table,
@@ -7,8 +8,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { useModal } from "@/hooks/use-modal-store";
 
 export const Clients = ({ clients }: { clients: clientType[] }) => {
+    const { onOpen } = useModal();
     return (
         <Table>
             <TableHeader>
@@ -22,7 +25,14 @@ export const Clients = ({ clients }: { clients: clientType[] }) => {
             </TableHeader>
             <TableBody>
                 {clients?.map((client) => (
-                    <TableRow key={client._id}>
+                    <TableRow
+                        key={client._id}
+                        onClick={() =>
+                            onOpen("userSaleDetails", {
+                                clientSalesDetail: client,
+                            })
+                        }
+                    >
                         <TableCell className="font-medium capitalize">
                             {client.name}
                         </TableCell>

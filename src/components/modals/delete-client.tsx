@@ -48,7 +48,7 @@ export const DeleteClientModal = () => {
                         Are you sure you want to do this? <br />
                         <span className="font-semibold text-indigo-500">
                             {client?.name}
-                        </span>{" "}
+                        </span>
                     </DialogDescription>
                 </DialogHeader>
 

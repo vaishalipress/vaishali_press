@@ -22,12 +22,12 @@ export const DistrictPage = ({
     blocks,
 }: districtType) => {
     return (
-        <div className="w-full border rounded-md px-3 py-3 flex flex-col gap-3">
+        <div className="w-full max-w-5xl border rounded-md px-3 py-3 flex flex-col gap-3">
             {/* District sction */}
-            <div className="flex gap-3 justify-between w-full  py-2">
+            <div className="flex gap-3 justify-between w-full py-2">
                 <Badge
                     variant={"destructive"}
-                    className="h-8 text-sm lg:text-base font-medium  dark:text-zinc-200"
+                    className="h-8 text-sm lg:text-base font-medium  dark:text-zinc-200 uppercase"
                 >
                     {district}
                 </Badge>
@@ -128,7 +128,7 @@ const DistrictHeaderInfo = ({
             {/* Dues */}
             {totalDues && (
                 <Info
-                    toolTip="Payment"
+                    toolTip="Dues"
                     Icon={BadgeMinus}
                     count={totalDues}
                     className="text-rose-800"

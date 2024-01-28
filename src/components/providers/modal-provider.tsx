@@ -1,3 +1,4 @@
+import { ClientSalesDetailsModal } from "../modals/clientSaleDetail";
 import { DeleteClientModal } from "../modals/delete-client";
 import { DeletProductModal } from "../modals/delete-product";
 import { DeleteSaleModal } from "../modals/delete-sale";
@@ -14,6 +15,7 @@ const ModalProvider = () => {
             <DeletProductModal />
             <EditSaleModal />
             <DeleteSaleModal />
+            <ClientSalesDetailsModal />
         </>
     );
 };

@@ -8,10 +8,12 @@ export default async function Dashboard() {
     );
     return (
         <div className="w-full h-full">
-            <h1>Dashboard</h1>
-            {data?.map((district) => (
-                <DistrictPage key={district._id} {...district} />
-            ))}
+            <h1 className="text-xl uppercase">Clients</h1>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                {data?.map((district) => (
+                    <DistrictPage key={district._id} {...district} />
+                ))}
+            </div>
         </div>
     );
 }

@@ -21,11 +21,11 @@ export const BlockSection = ({
     clients,
 }: blockType) => {
     return (
-        <div className="w-full min-h-96 border rounded-md px-3 py-2">
+        <div className="w-full border rounded-md px-3 py-2">
             <div className="flex w-full gap-3 justify-between py-3">
                 <Badge
-                    variant={"default"}
-                    className="h-8 text-sm font-medium bg-indigo-400"
+                    variant={"outline"}
+                    className="h-8 text-sm font-medium uppercase"
                 >
                     {block}
                 </Badge>
@@ -37,22 +37,9 @@ export const BlockSection = ({
                     totalSale={totalSale}
                 />
             </div>
-            <div className="flex w-full justify-between gap-4 flex-wrap">
-                {/* Client */}
-                <div className="flex-1 w-full max-w-5xl">
-                    <h1 className="text-center uppercase font-semibold text-xl py-3 text-indigo-500">
-                        Clients
-                    </h1>
-                    <Clients clients={clients} />
-                </div>
-
-                {/* Product */}
-                <div className="flex-auto w-full max-w-lg">
-                    <h1 className="text-center uppercase font-semibold text-xl py-3 text-zinc-500">
-                        Products
-                    </h1>
-                    <Product />
-                </div>
+            {/* Client */}
+            <div className="flex-1 w-full">
+                <Clients clients={clients} />
             </div>
         </div>
     );
@@ -107,7 +94,7 @@ const BlockHeaderInfo = ({
 
             {/* Dues */}
             <Info
-                toolTip="Payment"
+                toolTip="Dues"
                 Icon={BadgeMinus}
                 count={totalDues}
                 className="text-rose-700"
