@@ -1,5 +1,6 @@
 import CONNECT_TO_DB from "@/lib/connectToDb";
 import Client from "@/models/client";
+import Sale from "@/models/sale";
 
 export const dynamic = "force-dynamic";
 
