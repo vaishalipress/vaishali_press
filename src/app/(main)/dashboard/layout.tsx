@@ -13,7 +13,7 @@ export default function DashboardRoot({
         <QueryProvider>
             <ThemeProvider
                 attribute="class"
-                defaultTheme="dark"
+                defaultTheme="light"
                 storageKey="vaishaliTheme"
             >
                 <div className="flex w-screen h-full">
