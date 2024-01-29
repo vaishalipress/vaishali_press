@@ -81,7 +81,7 @@ const DistrictHeaderInfo = ({
                     toolTip="Block"
                     Icon={Cuboid}
                     count={totalBlock}
-                    className="text-indigo-600 "
+                    className="text-indigo-600"
                 />
             )}
 

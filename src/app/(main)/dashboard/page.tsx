@@ -1,19 +1,26 @@
-import { DistrictPage } from "@/components/dashboard/district";
-import { districtType } from "@/lib/types";
-import axios from "axios";
+import { ClientDashboard } from "@/components/dashboard/Client-Dashboard";
 
-export default async function Dashboard() {
-    const { data } = await axios<districtType[]>(
-        "http://localhost:3000/api/dashboard"
-    );
-    return (
-        <div className="w-full h-full">
-            <h1 className="text-xl uppercase">Clients</h1>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                {data?.map((district) => (
-                    <DistrictPage key={district._id} {...district} />
-                ))}
+export default async function DashboardPage() {
+    try {
+        return (
+            <div className="w-full h-full">
+                {/* Products */}
+                <div className="mb-3">
+                    <h1 className="text-base lg:text-xl uppercase font-semibold">
+                        Products
+                    </h1>
+                    <div>Making</div>
+                </div>
+
+                <ClientDashboard />
             </div>
-        </div>
-    );
+        );
+    } catch (error) {
+        console.log(error);
+        return (
+            <div>
+                <h1>some Error</h1>
+            </div>
+        );
+    }
 }

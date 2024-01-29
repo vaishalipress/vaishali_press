@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Clients } from "@/components/dashboard/client-table";
-import { Product } from "@/components/dashboard/product-table";
 import { blockType } from "@/lib/types";
 
 export const BlockSection = ({

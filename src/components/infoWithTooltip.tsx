@@ -3,6 +3,12 @@ import { FC, HTMLAttributes } from "react";
 import { ActionTooltip } from "./action-tooltip";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "./ui/tooltip";
 
 interface infoProps extends HTMLAttributes<HTMLDivElement> {
     toolTip: string;
@@ -11,19 +17,28 @@ interface infoProps extends HTMLAttributes<HTMLDivElement> {
 }
 export const Info: FC<infoProps> = ({ className, toolTip, Icon, count }) => {
     return (
-        <ActionTooltip label={toolTip}>
-            <Badge
-                variant={"secondary"}
-                className={cn(
-                    "h-8 flex items-center justify-between gap-1",
-                    className
-                )}
-            >
-                <Icon className="w-4 h-4 lg:w-5 lg:h-5" />
-                <span className="lg:ml-3 text-xs lg:text-base dark:text-zinc-300">
-                    {count}
-                </span>
-            </Badge>
-        </ActionTooltip>
+        <TooltipProvider>
+            <Tooltip delayDuration={0}>
+                <TooltipTrigger>
+                    <Badge
+                        variant={"secondary"}
+                        className={cn(
+                            "h-8 flex items-center justify-between gap-1",
+                            className
+                        )}
+                    >
+                        <Icon className="w-4 h-4 lg:w-5 lg:h-5" />
+                        <span className="lg:ml-3 text-xs lg:text-base dark:text-zinc-300">
+                            {count}
+                        </span>
+                    </Badge>
+                </TooltipTrigger>
+                <TooltipContent side={"top"} align={"center"}>
+                    <p className="font-semibold text-sm capitalize">
+                        {toolTip.toLowerCase()}
+                    </p>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
     );
 };

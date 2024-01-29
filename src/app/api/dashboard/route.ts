@@ -1,10 +1,9 @@
 import CONNECT_TO_DB from "@/lib/connectToDb";
 import Client from "@/models/client";
-import Sale from "@/models/sale";
-
-export const dynamic = "force-dynamic";
 
 CONNECT_TO_DB();
+
+export const dynamic = "force-dynamic";
 
 export const GET = async (req: Request) => {
     try {
@@ -137,7 +136,7 @@ export const GET = async (req: Request) => {
 
         return Response.json(sales);
     } catch (error) {
-        console.log("Dashboard", error);
+        console.log("Error in Dashboard");
         return Response.json(error, { status: 500 });
     }
 };

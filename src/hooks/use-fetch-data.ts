@@ -2,6 +2,7 @@ import {
     ClientTypeExtented,
     ProductTypeExtended,
     SalesTypeExtended,
+    districtType,
 } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -32,6 +33,16 @@ export const useSale = () => {
         queryFn: async () => {
             const { data } = await axios.get("/api/sale");
             return data?.sales;
+        },
+    });
+};
+
+export const useClientDashboardInfo = () => {
+    return useQuery<districtType[]>({
+        queryKey: ["clientsAndSalesInfo"],
+        queryFn: async () => {
+            const { data } = await axios.get("/api/dashboard");
+            return data;
         },
     });
 };
