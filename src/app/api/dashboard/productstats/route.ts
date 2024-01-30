@@ -28,21 +28,17 @@ export const GET = async (req: Request) => {
                         product: "$name",
                     },
 
-                    // stats
+                    // Product stats
                     totalQtySold: {
                         $sum: "$qty",
                     },
                     avgPrice: {
                         $avg: "$rate",
                     },
-                    totalSellAmount: {
-                        $sum: {
-                            $multiply: ["$qty", "$rate"],
-                        },
-                    },
                 },
             },
             {
+                // Block
                 $group: {
                     _id: {
                         district: "$_id.district",
@@ -51,20 +47,21 @@ export const GET = async (req: Request) => {
                     totalQtySold: {
                         $sum: "$totalQtySold",
                     },
-                    totalSellAmount: {
-                        $sum: "$totalSellAmount",
+                    totalProduct: {
+                        $count: {},
                     },
+
                     productStats: {
                         $push: {
                             name: "$_id.product",
                             totalQtySold: "$totalQtySold",
                             avgPrice: "$avgPrice",
-                            totalSellAmount: "$totalSellAmount",
                         },
                     },
                 },
             },
             {
+                //  District
                 $group: {
                     _id: "$_id.district",
                     district: {
@@ -73,14 +70,13 @@ export const GET = async (req: Request) => {
                     totalQtySold: {
                         $sum: "$totalQtySold",
                     },
-                    totalSellAmount: {
-                        $sum: "$totalSellAmount",
-                    },
+
                     blocks: {
                         $push: {
                             name: {
                                 $first: "$_id.block",
                             },
+                            totalQtySold: "$totalQtySold",
                             products: "$productStats",
                         },
                     },
@@ -97,7 +93,7 @@ export const GET = async (req: Request) => {
                 },
             },
         ]).sort({
-            totalSellAmount: -1,
+            totalQtySold: -1,
         });
         return Response.json(sales);
     } catch (error) {

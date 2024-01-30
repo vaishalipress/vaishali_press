@@ -32,6 +32,7 @@ export const Clients = ({ clients }: { clients: clientType[] }) => {
                                 clientSalesDetail: client,
                             })
                         }
+                        className="cursor-pointer"
                     >
                         <TableCell className="font-medium capitalize">
                             {client.name}

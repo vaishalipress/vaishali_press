@@ -70,3 +70,20 @@ export interface districtType {
     totalPayment: number;
     blocks: blockType[];
 }
+
+export interface ProductInfo {
+    name: string;
+    totalQtySold: number;
+    avgPrice: number;
+}
+export interface ProductBlockWiseData {
+    name: string;
+    totalQtySold: number;
+    products: ProductInfo[];
+}
+export interface ProductData {
+    _id: string;
+    district: string;
+    totalQtySold: number;
+    blocks: ProductBlockWiseData[];
+}

@@ -1,5 +1,6 @@
 import {
     ClientTypeExtented,
+    ProductData,
     ProductTypeExtended,
     SalesTypeExtended,
     districtType,
@@ -42,6 +43,16 @@ export const useClientDashboardInfo = () => {
         queryKey: ["clientsAndSalesInfo"],
         queryFn: async () => {
             const { data } = await axios.get("/api/dashboard");
+            return data;
+        },
+    });
+};
+
+export const useProductInfo = () => {
+    return useQuery<ProductData[]>({
+        queryKey: ["productAndSoldInfo"],
+        queryFn: async () => {
+            const { data } = await axios.get("/api/dashboard/productstats");
             return data;
         },
     });

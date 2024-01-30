@@ -15,7 +15,13 @@ interface infoProps extends HTMLAttributes<HTMLDivElement> {
     Icon: LucideIcon;
     count: string | number;
 }
-export const Info: FC<infoProps> = ({ className, toolTip, Icon, count }) => {
+export const Info: FC<infoProps> = ({
+    className,
+    toolTip,
+    Icon,
+    count,
+    ...props
+}) => {
     return (
         <TooltipProvider>
             <Tooltip delayDuration={0}>
@@ -26,6 +32,7 @@ export const Info: FC<infoProps> = ({ className, toolTip, Icon, count }) => {
                             "h-8 flex items-center justify-between gap-1",
                             className
                         )}
+                        {...props}
                     >
                         <Icon className="w-4 h-4 lg:w-5 lg:h-5" />
                         <span className="lg:ml-3 text-xs lg:text-base dark:text-zinc-300">
