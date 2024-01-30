@@ -2,6 +2,7 @@ import Client from "@/models/client";
 import Product from "@/models/product";
 import Sale from "@/models/sale";
 import CONNECT_TO_DB from "@/lib/connectToDb";
+import { isAuth } from "@/lib/isAuth";
 
 CONNECT_TO_DB();
 
@@ -10,6 +11,15 @@ CONNECT_TO_DB();
  */
 export const POST = async (req: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isAuth) {
+            return Response.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const { client, product, qty, rate, payment } = await req.json();
 
         if (!client || !product || !qty) {
@@ -117,6 +127,15 @@ export const POST = async (req: Request) => {
  */
 export const GET = async (req: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isAuth) {
+            return Response.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const sales = await Sale.find()
             .populate("client product")
             .sort({ createdAt: -1 });
@@ -140,6 +159,15 @@ export const GET = async (req: Request) => {
 
 export const PUT = async (req: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isAuth) {
+            return Response.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const url = new URL(req.url);
         const id = url.searchParams.get("id");
 
@@ -231,6 +259,15 @@ export const PUT = async (req: Request) => {
 
 export const DELETE = async (req: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isAuth) {
+            return Response.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const url = new URL(req.url);
         const id = url.searchParams.get("id");
 

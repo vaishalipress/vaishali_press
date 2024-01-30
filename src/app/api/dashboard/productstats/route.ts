@@ -1,4 +1,5 @@
 import CONNECT_TO_DB from "@/lib/connectToDb";
+import { isAuth } from "@/lib/isAuth";
 import Sale from "@/models/sale";
 
 export const dynamic = "force-dynamic";
@@ -7,6 +8,15 @@ CONNECT_TO_DB();
 
 export const GET = async (req: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isAuth) {
+            return Response.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const searchParams = new URL(req.url).searchParams;
         const from = searchParams.get("from");
         const to = searchParams.get("to");

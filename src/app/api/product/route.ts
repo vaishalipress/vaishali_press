@@ -1,12 +1,22 @@
 import { NextResponse } from "next/server";
 import CONNECT_TO_DB from "@/lib/connectToDb";
 import Product from "@/models/product";
+import { isAuth } from "@/lib/isAuth";
 CONNECT_TO_DB();
 /**
  * REGISTER Product
  */
 export const POST = async (req: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isAuth) {
+            return Response.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const { name, price } = await req.json();
 
         if (!name || !price) {
@@ -53,6 +63,15 @@ export const POST = async (req: Request) => {
 
 export const GET = async (req: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isAuth) {
+            return Response.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const products = await Product.find().sort({ createdAt: -1 });
 
         if (!products) {
@@ -76,6 +95,15 @@ export const GET = async (req: Request) => {
 
 export const PUT = async (req: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isAuth) {
+            return Response.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const url = new URL(req.url);
         const id = url.searchParams.get("id");
 
@@ -129,6 +157,15 @@ export const PUT = async (req: Request) => {
 
 export const DELETE = async (req: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isAuth) {
+            return Response.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const url = new URL(req.url);
         const id = url.searchParams.get("id");
 

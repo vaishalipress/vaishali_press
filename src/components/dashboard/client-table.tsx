@@ -26,7 +26,7 @@ export const Clients = ({ clients }: { clients: clientType[] }) => {
             <TableBody>
                 {clients?.map((client) => (
                     <TableRow
-                        key={client._id}
+                        key={client?._id}
                         onClick={() =>
                             onOpen("userSaleDetails", {
                                 clientSalesDetail: client,
@@ -35,16 +35,16 @@ export const Clients = ({ clients }: { clients: clientType[] }) => {
                         className="cursor-pointer"
                     >
                         <TableCell className="font-medium capitalize">
-                            {client.name}
+                            {client?.name}
                         </TableCell>
                         <TableCell className="capitalize">
-                            {client.totalSale}
+                            {client?.totalSale}
                         </TableCell>
                         <TableCell className="capitalize">
-                            {client.totalAmount}
+                            {client?.totalAmount}
                         </TableCell>
-                        <TableCell>{client.totalPayment}</TableCell>
-                        <TableCell>{client.totalDues}</TableCell>
+                        <TableCell>{client?.totalPayment}</TableCell>
+                        <TableCell>{client?.totalDues}</TableCell>
                     </TableRow>
                 ))}
             </TableBody>

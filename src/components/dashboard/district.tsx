@@ -59,12 +59,12 @@ export const DistrictPage = ({
 };
 
 const DistrictHeaderInfo = ({
-    totalAmount,
-    totalBlock,
-    totalClient,
-    totalDues,
-    totalPayment,
-    totalSale,
+    totalAmount = 0,
+    totalBlock = 0,
+    totalClient = 0,
+    totalDues = 0,
+    totalPayment = 0,
+    totalSale = 0,
 }: {
     totalBlock: number;
     totalClient: number;
@@ -76,64 +76,52 @@ const DistrictHeaderInfo = ({
     return (
         <div className="grid grid-cols-2 gap-1 lg:flex lg:gap-2 flex-wrap">
             {/* Block */}
-            {totalBlock && (
-                <Info
-                    toolTip="Block"
-                    Icon={Cuboid}
-                    count={totalBlock}
-                    className="text-indigo-600"
-                />
-            )}
+            <Info
+                toolTip="Block"
+                Icon={Cuboid}
+                count={totalBlock}
+                className="text-indigo-600"
+            />
 
             {/* Client */}
-            {totalClient && (
-                <Info
-                    toolTip="Clients"
-                    Icon={User}
-                    count={totalClient}
-                    className="text-orange-800"
-                />
-            )}
+            <Info
+                toolTip="Clients"
+                Icon={User}
+                count={totalClient}
+                className="text-orange-800"
+            />
 
             {/* Sales */}
-            {totalSale && (
-                <Info
-                    toolTip="sales"
-                    Icon={BaggageClaim}
-                    count={totalSale}
-                    className="text-amber-800 "
-                />
-            )}
+            <Info
+                toolTip="sales"
+                Icon={BaggageClaim}
+                count={totalSale}
+                className="text-amber-800 "
+            />
 
             {/* Amount */}
-            {totalAmount && (
-                <Info
-                    toolTip="Amount"
-                    Icon={BadgeIndianRupee}
-                    count={totalAmount}
-                    className="text-green-800  "
-                />
-            )}
+            <Info
+                toolTip="Amount"
+                Icon={BadgeIndianRupee}
+                count={totalAmount}
+                className="text-green-800  "
+            />
 
             {/* Payment */}
-            {totalPayment && (
-                <Info
-                    toolTip="Payment"
-                    Icon={BadgePlus}
-                    count={totalPayment}
-                    className="text-lime-800"
-                />
-            )}
+            <Info
+                toolTip="Payment"
+                Icon={BadgePlus}
+                count={totalPayment}
+                className="text-lime-800"
+            />
 
             {/* Dues */}
-            {totalDues && (
-                <Info
-                    toolTip="Dues"
-                    Icon={BadgeMinus}
-                    count={totalDues}
-                    className="text-rose-800"
-                />
-            )}
+            <Info
+                toolTip="Dues"
+                Icon={BadgeMinus}
+                count={totalDues}
+                className="text-rose-800"
+            />
         </div>
     );
 };

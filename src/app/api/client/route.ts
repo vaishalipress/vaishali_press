@@ -1,6 +1,7 @@
 import Client from "@/models/client";
 import { NextResponse } from "next/server";
 import CONNECT_TO_DB from "@/lib/connectToDb";
+import { isAuth } from "@/lib/isAuth";
 
 CONNECT_TO_DB();
 
@@ -10,6 +11,15 @@ CONNECT_TO_DB();
 
 export const POST = async (req: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isAuth) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const { name, district, block, mobile } = await req.json();
 
         if (!name || !district || !block || !mobile) {
@@ -50,6 +60,15 @@ export const POST = async (req: Request) => {
 
 export const GET = async (req: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isAuth) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const clients = await Client.find().sort({
             createdAt: -1,
         });
@@ -78,6 +97,15 @@ export const GET = async (req: Request) => {
  */
 export const DELETE = async (req: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isAuth) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const url = new URL(req.url);
         const id = url.searchParams.get("id");
 
@@ -109,6 +137,15 @@ export const DELETE = async (req: Request) => {
  */
 export const PUT = async (req: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isAuth) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const url = new URL(req.url);
         const id = url.searchParams.get("id");
 
