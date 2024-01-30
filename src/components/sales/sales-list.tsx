@@ -61,21 +61,21 @@ export default function SalesList() {
                                     )}
                                 </TableCell>
                                 <TableCell className="uppercase">
-                                    {sale.client.name}
+                                    {sale?.client?.name}
                                 </TableCell>
                                 <TableCell className="uppercase">
-                                    {sale.client?.district}
+                                    {sale?.client?.district}
                                 </TableCell>
                                 <TableCell className="uppercase">
                                     {sale.client?.block}
                                 </TableCell>
                                 <TableCell className="capitalize">
-                                    {sale.qty}
+                                    {sale?.qty}
                                 </TableCell>
-                                <TableCell>{sale.rate}</TableCell>
-                                <TableCell>{sale.payment}</TableCell>
+                                <TableCell>{sale?.rate}</TableCell>
+                                <TableCell>{sale?.payment}</TableCell>
                                 <TableCell>
-                                    {sale.rate * sale.qty - sale.payment}
+                                    {sale?.rate * sale?.qty - sale?.payment}
                                 </TableCell>
                                 <TableCell className="text-right">
                                     {/* EDIT BTN */}

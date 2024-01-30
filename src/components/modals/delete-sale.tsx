@@ -29,7 +29,7 @@ export const DeleteSaleModal = () => {
         },
         onSuccess(data) {
             toast("😝 " + data?.message.toUpperCase());
-            removeData(["sales-list"], data.sale._id);
+            removeData(["sales-list"], data?.sale?._id);
         },
         onError: handleAxiosError,
         onSettled: onClose,
@@ -49,7 +49,7 @@ export const DeleteSaleModal = () => {
                         </span>{" "}
                         -{" "}
                         <span className="font-semibold text-indigo-500 uppercase">
-                            {sale?.client.name}
+                            {sale?.client?.name}
                         </span>
                     </DialogDescription>
                 </DialogHeader>

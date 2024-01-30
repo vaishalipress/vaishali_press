@@ -61,13 +61,13 @@ export const EditSaleModal = () => {
 
     useEffect(() => {
         if (sale) {
-            form.setValue("product", sale.product._id);
-            form.setValue("client", sale.client._id);
-            form.setValue("payment", sale.payment);
-            form.setValue("qty", sale.qty);
-            form.setValue("rate", sale.rate);
+            form.setValue("product", sale?.product?._id);
+            form.setValue("client", sale?.client?._id);
+            form.setValue("payment", sale?.payment);
+            form.setValue("qty", sale?.qty);
+            form.setValue("rate", sale?.rate);
 
-            setTotal(sale.qty * sale.rate);
+            setTotal(sale?.qty * sale?.rate);
         }
     }, [form, sale]);
 
@@ -84,7 +84,7 @@ export const EditSaleModal = () => {
 
         onSuccess(data) {
             toast("✅ " + (data?.message as string).toUpperCase());
-            updateData(["sales-list"], data.sale);
+            updateData(["sales-list"], data?.sale);
             form.reset();
             onClose();
         },
