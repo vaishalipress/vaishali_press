@@ -72,7 +72,7 @@ export default function AddClientForm() {
     });
 
     return (
-        <div className="max-w-3xl w-full border px-4 py-3 rounded-md">
+        <div className="max-w-6xl w-full border px-4 py-3 rounded-md">
             {!isFormOpen ? (
                 <Input
                     readOnly

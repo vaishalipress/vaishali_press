@@ -35,12 +35,13 @@ import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { clientSchema } from "@/lib/schema";
 import { districtsAndBlocks } from "@/lib/contants";
-import { Loader2 } from "lucide-react";
+import { Loader2, Pencil } from "lucide-react";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
+import { useMarket } from "@/hooks/use-fetch-data";
 
 export const EditClientModal = () => {
-    const { isOpen, onClose, type, data } = useModal();
+    const { isOpen, onClose, type, data, onOpen } = useModal();
     const isModalOpen = isOpen && type === "editClient";
     const { client } = data;
 
@@ -51,20 +52,27 @@ export const EditClientModal = () => {
             district: "",
             block: "",
             mobile: "",
+            market: "",
         },
     });
     const [district, setDistrict] = useState("");
-
+    const [block, setBlock] = useState("");
     useEffect(() => {
         if (client) {
-            form.setValue("name", client.name);
-            form.setValue("district", client.district);
-            setDistrict(client.district);
-            form.setValue("block", client.block);
-            form.setValue("mobile", client.mobile || "");
+            form.setValue("name", client?.name);
+            form.setValue("district", client?.district);
+            setDistrict(client?.district);
+            form.setValue("block", client?.block);
+            setBlock(client?.block);
+            form.setValue("market", client?.market || "");
+            form.setValue("mobile", client?.mobile || "");
         }
     }, [form, client]);
 
+    const { data: markets, isLoading: isMarketLoading } = useMarket(
+        district,
+        block
+    );
     const { updateData } = useCustumQuery();
 
     const { mutate, isPending } = useMutation({
@@ -175,6 +183,7 @@ export const EditClientModal = () => {
                                             value={field.value}
                                             onValueChange={(e: string) => {
                                                 field.onChange(e);
+                                                setBlock(e);
                                             }}
                                             defaultValue={field.value}
                                         >
@@ -213,6 +222,76 @@ export const EditClientModal = () => {
                                             </SelectContent>
                                         </Select>
                                     </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Market */}
+                        <FormField
+                            control={form.control}
+                            name="market"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Market</FormLabel>
+                                    <div className="flex gap-3 items-center">
+                                        <FormControl>
+                                            <Select
+                                                value={field.value}
+                                                onValueChange={(e: string) => {
+                                                    field.onChange(e);
+                                                }}
+                                                defaultValue={field.value}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue
+                                                        placeholder={
+                                                            "Select Market"
+                                                        }
+                                                    />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel>
+                                                            Markets
+                                                        </SelectLabel>
+                                                        {isMarketLoading && (
+                                                            <SelectLabel>
+                                                                Loading...
+                                                            </SelectLabel>
+                                                        )}
+                                                        {markets?.map(
+                                                            (market) => (
+                                                                <SelectItem
+                                                                    key={
+                                                                        market._id
+                                                                    }
+                                                                    value={market.name.toLowerCase()}
+                                                                >
+                                                                    {market.name.toUpperCase()}
+                                                                </SelectItem>
+                                                            )
+                                                        )}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                        </FormControl>
+                                        <Button
+                                            type="button"
+                                            variant={"secondary"}
+                                            size={"sm"}
+                                            onClick={() =>
+                                                onOpen("market", {
+                                                    market: {
+                                                        district,
+                                                        block,
+                                                    },
+                                                })
+                                            }
+                                        >
+                                            <Pencil className="w-4 h-4" />
+                                        </Button>
+                                    </div>
                                     <FormMessage />
                                 </FormItem>
                             )}

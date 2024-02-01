@@ -19,7 +19,7 @@ export default function ClientList() {
     const { data, isLoading } = useClient();
 
     return (
-        <div className="border max-w-3xl w-full rounded-md py-3">
+        <div className="border max-w-6xl w-full rounded-md py-3">
             <h1 className="uppercase font-semibold mb-3 px-3 text-sm md:text-base">
                 Clients
             </h1>
@@ -30,12 +30,17 @@ export default function ClientList() {
                             <TableHead className="w-[150px] uppercase">
                                 name
                             </TableHead>
+                            <TableHead className="uppercase">Market</TableHead>
+                            <TableHead className="uppercase">Block</TableHead>
                             <TableHead className="uppercase">
                                 District
                             </TableHead>
-                            <TableHead className="uppercase">Block</TableHead>
-                            <TableHead className="uppercase">Mobile</TableHead>
-                            <TableHead className="uppercase min-w-[120px]">Date</TableHead>
+                            <TableHead className="uppercase min-w-[120px]">
+                                Month
+                            </TableHead>
+                            <TableHead className="uppercase min-w-[120px]">
+                                Date
+                            </TableHead>
                             <TableHead className="text-right uppercase min-w-[130px] md:min-w-[150px]">
                                 Actions
                             </TableHead>
@@ -46,18 +51,26 @@ export default function ClientList() {
                         {data?.map((client) => (
                             <TableRow key={client?._id}>
                                 <TableCell className="font-medium capitalize">
-                                    {client.name}
+                                    {client?.name}
                                 </TableCell>
                                 <TableCell className="capitalize">
-                                    {client.district}
+                                    {client?.market}
                                 </TableCell>
                                 <TableCell className="capitalize">
-                                    {client.block}
+                                    {client?.block}
                                 </TableCell>
-                                <TableCell>{client.mobile}</TableCell>
+                                <TableCell className="capitalize">
+                                    {client?.district}
+                                </TableCell>
                                 <TableCell>
                                     {format(
-                                        new Date(client.createdAt),
+                                        new Date(client?.createdAt),
+                                        "MMMM"
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    {format(
+                                        new Date(client?.createdAt),
                                         "dd-MM-yyyy"
                                     )}
                                 </TableCell>
