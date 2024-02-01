@@ -1,9 +1,16 @@
 "use client";
-
-import { clientSchema } from "@/lib/schema";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import axios from "axios";
+import { useModal } from "@/hooks/use-modal-store";
+import { useMutation } from "@tanstack/react-query";
+import { handleAxiosError } from "@/lib/error";
+import { useCustumQuery } from "@/hooks/use-queries";
 import {
     Form,
     FormControl,
@@ -11,7 +18,12 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form";
+} from "../ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { marketSchema } from "@/lib/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "../ui/input";
 import {
     Select,
     SelectContent,
@@ -20,85 +32,97 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "../ui/select";
+import { useEffect, useState } from "react";
 import { districtsAndBlocks } from "@/lib/contants";
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import { Button } from "../ui/button";
+import { Loader2, Pen, Trash } from "lucide-react";
 import { toast } from "sonner";
-import { handleAxiosError } from "@/lib/error";
-import { useCustumQuery } from "@/hooks/use-queries";
-import { Loader2, Pencil, X } from "lucide-react";
 import { useMarket } from "@/hooks/use-fetch-data";
-import { useModal } from "@/hooks/use-modal-store";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "../ui/table";
 
-export default function AddClientForm() {
-    const form = useForm<z.infer<typeof clientSchema>>({
-        resolver: zodResolver(clientSchema),
+export const MarketModal = () => {
+    const { isOpen, onClose, type, data } = useModal();
+    const { market } = data;
+    const isModalOpen = isOpen && type === "market";
+    const form = useForm<z.infer<typeof marketSchema>>({
+        resolver: zodResolver(marketSchema),
         defaultValues: {
             name: "",
             district: "",
             block: "",
-            mobile: "",
-            market: "",
         },
     });
-    const { onOpen } = useModal();
-    const [isFormOpen, setIsFormOpen] = useState(false);
     const [district, setDistrict] = useState("");
     const [block, setBlock] = useState("");
-    const { addData } = useCustumQuery();
-    const { data: markets, isLoading: isMarketLoading } = useMarket(
-        district,
-        block
-    );
+
+    const { addData, removeData } = useCustumQuery();
+    const { data: markets } = useMarket(district, block);
+    // CREATE MARKET
     const { mutate, isPending } = useMutation({
-        mutationFn: async (values: z.infer<typeof clientSchema>) => {
-            const { data } = await axios.post(`/api/client`, values);
+        mutationFn: async (values: z.infer<typeof marketSchema>) => {
+            const { data } = await axios.post(`/api/market`, values);
             return data;
         },
 
         onSuccess(data) {
             toast("✅ " + (data?.message as string).toUpperCase());
             if (data.success) {
-                addData(["clients-list"], data.client);
-                form.reset();
+                addData(["markets", district, block], data.market);
+                form.setValue("name", "");
             }
         },
 
         onError: handleAxiosError,
     });
+    // DELETE MARKET
+    const { mutate: deleteMarket, isPending: isDeleteMarketPending } =
+        useMutation({
+            mutationFn: async (id: string) => {
+                const { data } = await axios.delete(`/api/market?id=${id}`);
+                return data;
+            },
 
+            onSuccess(data) {
+                toast("✅ " + (data?.message as string).toUpperCase());
+                if (data.success) {
+                    removeData(["markets", district, block], data.market._id);
+                }
+            },
+
+            onError: handleAxiosError,
+        });
+
+    useEffect(() => {
+        if (market) {
+            form.setValue("district", market?.district || "");
+            form.setValue("block", market?.block || "");
+            setDistrict(market?.district || "");
+            setBlock(market?.block || "");
+        }
+    }, [form, market]);
     return (
-        <div className="max-w-3xl w-full border px-4 py-3 rounded-md">
-            {!isFormOpen ? (
-                <Input
-                    readOnly
-                    defaultValue={"ADD CLIENT"}
-                    onClick={() => setIsFormOpen(true)}
-                />
-            ) : (
-                <>
-                    <div className="flex justify-between">
-                        <h1 className="uppercase font-semibold mb-3">
-                            add Clients
-                        </h1>
-                        <Button
-                            variant={"ghost"}
-                            size={"icon"}
-                            onClick={() => setIsFormOpen(false)}
-                        >
-                            <X className="w-4 h-4" />
-                        </Button>
-                    </div>
+        <Dialog open={isModalOpen} onOpenChange={onClose}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle className="text-2xl text-center font-bold">
+                        Markets
+                    </DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col gap-3">
                     <Form {...form}>
                         <form
+                            className="flex flex-col gap-3"
                             onSubmit={form.handleSubmit((value) =>
                                 mutate(value)
                             )}
-                            className="flex flex-col gap-3"
                         >
                             {/* Name */}
                             <FormField
@@ -228,99 +252,6 @@ export default function AddClientForm() {
                                 )}
                             />
 
-                            {/* Market */}
-                            <FormField
-                                control={form.control}
-                                name="market"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Market</FormLabel>
-                                        <div className="flex gap-3">
-                                            <FormControl>
-                                                <Select
-                                                    value={field.value}
-                                                    onValueChange={(
-                                                        e: string
-                                                    ) => {
-                                                        field.onChange(e);
-                                                    }}
-                                                    defaultValue={field.value}
-                                                >
-                                                    <SelectTrigger>
-                                                        <SelectValue
-                                                            placeholder={
-                                                                "Select Market"
-                                                            }
-                                                        />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectGroup>
-                                                            <SelectLabel>
-                                                                Markets
-                                                            </SelectLabel>
-                                                            {isMarketLoading && (
-                                                                <SelectLabel>
-                                                                    Loading...
-                                                                </SelectLabel>
-                                                            )}
-                                                            {markets?.map(
-                                                                (market) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            market._id
-                                                                        }
-                                                                        value={market.name.toLowerCase()}
-                                                                        className="uppercase"
-                                                                    >
-                                                                        {
-                                                                            market.name
-                                                                        }
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormControl>
-                                            <Button
-                                                type="button"
-                                                variant={"secondary"}
-                                                size={"sm"}
-                                                onClick={() =>
-                                                    onOpen("market", {
-                                                        market: {
-                                                            district,
-                                                            block,
-                                                        },
-                                                    })
-                                                }
-                                            >
-                                                <Pencil className="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Phone */}
-                            <FormField
-                                control={form.control}
-                                name="mobile"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Mobile</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                placeholder="Enter Mobile no."
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
                             <Button
                                 type="submit"
                                 variant={"secondary"}
@@ -334,8 +265,55 @@ export default function AddClientForm() {
                             </Button>
                         </form>
                     </Form>
-                </>
-            )}
-        </div>
+
+                    {markets && (
+                        <div>
+                            <h3 className="uppercase font-semibold">Markets</h3>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead className="text-right">
+                                            Actions
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {markets?.map((market) => (
+                                        <TableRow key={market?._id}>
+                                            <TableCell className="uppercase">
+                                                {market?.name}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                {/* DELETE BTN */}
+                                                <Button
+                                                    variant={"outline"}
+                                                    className="ml-2 px-2 py-0"
+                                                    onClick={() =>
+                                                        deleteMarket(market._id)
+                                                    }
+                                                >
+                                                    {isDeleteMarketPending ? (
+                                                        <Loader2 className="animate-spin" />
+                                                    ) : (
+                                                        <Trash className="w-3 h-3 md:w-4 md:h-4" />
+                                                    )}
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    )}
+                </div>
+                <DialogFooter>
+                    <p className="text-left text-sm capitalize text-zinc-400">
+                        {" "}
+                        Select District and Block to show markets.
+                    </p>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
-}
+};

@@ -13,13 +13,18 @@ export type ModalType =
     | "deleteProduct"
     | "editSale"
     | "deleteSale"
-    | "userSaleDetails";
+    | "userSaleDetails"
+    | "market";
 
 interface ModalData {
     client?: ClientTypeExtented;
     product?: ProductTypeExtended;
     sale?: SalesTypeExtended;
     clientSalesDetail?: clientType;
+    market?: {
+        district?: string;
+        block?: string;
+    };
 }
 
 interface modalStore {

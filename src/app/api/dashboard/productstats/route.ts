@@ -9,7 +9,7 @@ CONNECT_TO_DB();
 export const GET = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return Response.json(
                 { message: "Unauthorized" },
                 {

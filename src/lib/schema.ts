@@ -15,12 +15,28 @@ export const clientSchema = z.object({
     block: z
         .string({ required_error: "Select a block" })
         .min(3, { message: "Select a valid block" }),
+    market: z
+        .string({ required_error: "Select a market" })
+        .min(3, { message: "Select a valid market" }),
     mobile: z
         .string({ required_error: "Enter mobile number" })
         .trim()
         .regex(phoneRegex, "Invalid mobile number")
         .min(10, { message: "Invalid mobile number" })
         .max(10, { message: "Invalid mobile number" }),
+});
+
+export const marketSchema = z.object({
+    name: z
+        .string({ required_error: "name is required." })
+        .min(3, { message: "Enter valid name" }),
+    district: z
+        .string({ required_error: "Select a district" })
+        .min(3, { message: "Select a valid district" }),
+
+    block: z
+        .string({ required_error: "Select a block" })
+        .min(3, { message: "Select a valid block" }),
 });
 
 export const productSchema = z.object({

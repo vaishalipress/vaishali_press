@@ -1,10 +1,11 @@
-import { ClientSalesDetailsModal } from "../modals/clientSaleDetail";
-import { DeleteClientModal } from "../modals/delete-client";
-import { DeletProductModal } from "../modals/delete-product";
-import { DeleteSaleModal } from "../modals/delete-sale";
-import { EditClientModal } from "../modals/edit-client";
-import { EditProductModal } from "../modals/edit-product";
-import { EditSaleModal } from "../modals/edit-sale";
+import { ClientSalesDetailsModal } from "@/components/modals/clientSaleDetail";
+import { DeleteClientModal } from "@/components/modals/delete-client";
+import { DeletProductModal } from "@/components/modals/delete-product";
+import { DeleteSaleModal } from "@/components/modals/delete-sale";
+import { EditClientModal } from "@/components/modals/edit-client";
+import { EditProductModal } from "@/components/modals/edit-product";
+import { EditSaleModal } from "@/components/modals/edit-sale";
+import { MarketModal } from "@/components/modals/marketModal";
 
 const ModalProvider = () => {
     return (
@@ -16,6 +17,7 @@ const ModalProvider = () => {
             <EditSaleModal />
             <DeleteSaleModal />
             <ClientSalesDetailsModal />
+            <MarketModal />
         </>
     );
 };

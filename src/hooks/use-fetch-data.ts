@@ -1,5 +1,6 @@
 import {
     ClientTypeExtented,
+    MarketType,
     ProductData,
     ProductTypeExtended,
     SalesTypeExtended,
@@ -54,6 +55,21 @@ export const useProductInfo = () => {
         queryFn: async () => {
             const { data } = await axios.get("/api/dashboard/productstats");
             return data;
+        },
+    });
+};
+
+export const useMarket = (district: string, block: string) => {
+    return useQuery<MarketType[] | null>({
+        queryKey: ["markets", district, block],
+        queryFn: async () => {
+            console.log("from market", district, block);
+
+            const { data } = await axios.get(
+                `/api/market?district=${district}&block=${block}`
+            );
+            console.log(data);
+            return data?.markets;
         },
     });
 };

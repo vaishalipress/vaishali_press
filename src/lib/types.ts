@@ -87,3 +87,10 @@ export interface ProductData {
     totalQtySold: number;
     blocks: ProductBlockWiseData[];
 }
+
+export interface MarketType {
+    _id: string;
+    name: string;
+    district: string;
+    block: string;
+}
