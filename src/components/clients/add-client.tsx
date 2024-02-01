@@ -235,7 +235,7 @@ export default function AddClientForm() {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Market</FormLabel>
-                                        <div className="flex gap-3">
+                                        <div className="flex gap-3 items-center">
                                             <FormControl>
                                                 <Select
                                                     value={field.value}
@@ -270,11 +270,8 @@ export default function AddClientForm() {
                                                                             market._id
                                                                         }
                                                                         value={market.name.toLowerCase()}
-                                                                        className="uppercase"
                                                                     >
-                                                                        {
-                                                                            market.name
-                                                                        }
+                                                                        {market.name.toUpperCase()}
                                                                     </SelectItem>
                                                                 )
                                                             )}

@@ -2,6 +2,7 @@ import Client from "@/models/client";
 import { NextResponse } from "next/server";
 import CONNECT_TO_DB from "@/lib/connectToDb";
 import { isAuth } from "@/lib/isAuth";
+import { clientSchema } from "@/lib/schema";
 
 CONNECT_TO_DB();
 
@@ -20,9 +21,10 @@ export const POST = async (req: Request) => {
                 }
             );
         }
-        const { name, district, block, mobile } = await req.json();
+        const data = await req.json();
+        const { success } = clientSchema.safeParse(data);
 
-        if (!name || !district || !block || !mobile) {
+        if (!success) {
             return NextResponse.json(
                 { message: "all fields are required.", success: false },
                 { status: 400 }
@@ -30,10 +32,7 @@ export const POST = async (req: Request) => {
         }
 
         const client = await Client.create({
-            name,
-            district,
-            block,
-            mobile,
+            ...data,
         });
 
         if (!client) {
@@ -156,14 +155,16 @@ export const PUT = async (req: Request) => {
             );
         }
 
-        const { name, district, block, mobile } = await req.json();
+        const data = await req.json();
+        const { success } = clientSchema.safeParse(data);
 
-        if (!(name || district || block || mobile)) {
+        if (!success) {
             return NextResponse.json(
-                { message: "field is required.", success: false },
+                { message: "all fields are required.", success: false },
                 { status: 400 }
             );
         }
+
         const isExist = await Client.findById(id);
 
         if (!isExist) {
@@ -176,10 +177,7 @@ export const PUT = async (req: Request) => {
         const client = await Client.findByIdAndUpdate(
             id,
             {
-                name: name ? name : isExist.name,
-                district: district ? district : isExist.district,
-                block: block ? block : isExist.block,
-                mobile: mobile ? mobile : isExist.mobile,
+                ...data,
             },
             { new: true }
         );

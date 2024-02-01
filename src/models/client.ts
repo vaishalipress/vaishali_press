@@ -5,6 +5,7 @@ export interface ClientI {
     name: string;
     district: string;
     block: string;
+    market?: string;
     mobile?: string;
 }
 
@@ -21,6 +22,9 @@ const clientSchema = new Schema<ClientI>(
         block: {
             type: String,
             required: true,
+        },
+        market: {
+            type: String,
         },
         mobile: {
             type: String,
