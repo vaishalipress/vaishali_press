@@ -57,7 +57,7 @@ export default function ClientList() {
                                     {client?.name}
                                 </TableCell>
                                 <TableCell className="capitalize">
-                                    {client?.market}
+                                    {client?.market ? client?.market : "NA"}
                                 </TableCell>
                                 <TableCell className="capitalize">
                                     {client?.block}

@@ -67,7 +67,9 @@ export default function SalesList() {
                                     {sale?.client?.name}
                                 </TableCell>
                                 <TableCell className="uppercase text-xs lg:text-sm">
-                                    {sale?.client?.market}
+                                    {sale?.client?.market
+                                        ? sale?.client?.market
+                                        : "NA"}
                                 </TableCell>
                                 <TableCell className="uppercase text-xs lg:text-sm">
                                     {sale?.client?.block}
