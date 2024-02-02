@@ -62,7 +62,5 @@ export const salesSchema = z.object({
     rate: z
         .number({ required_error: "rate is required." })
         .min(0, { message: "rate must be greater than 0" }),
-    payment: z
-        .number({ required_error: "payment is required." })
-        .min(0, { message: "payment must be greater than 0" }),
+    date: z.date(),
 });

@@ -34,11 +34,15 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { salesSchema } from "@/lib/schema";
-import { Loader2 } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
 import { Label } from "../ui/label";
 import { useClient, useProduct } from "@/hooks/use-fetch-data";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar } from "../ui/calendar";
 
 export const EditSaleModal = () => {
     const { isOpen, onClose, type, data } = useModal();
@@ -49,10 +53,10 @@ export const EditSaleModal = () => {
         resolver: zodResolver(salesSchema),
         defaultValues: {
             client: "",
-            payment: 0,
             product: "",
             qty: 0,
             rate: 0,
+            date: new Date(),
         },
     });
     const [total, setTotal] = useState(0);
@@ -63,10 +67,9 @@ export const EditSaleModal = () => {
         if (sale) {
             form.setValue("product", sale?.product?._id);
             form.setValue("client", sale?.client?._id);
-            form.setValue("payment", sale?.payment);
             form.setValue("qty", sale?.qty);
             form.setValue("rate", sale?.rate);
-
+            form.setValue("date", new Date(sale?.date));
             setTotal(sale?.qty * sale?.rate);
         }
     }, [form, sale]);
@@ -106,6 +109,49 @@ export const EditSaleModal = () => {
                         onSubmit={form.handleSubmit((value) => mutate(value))}
                         className="flex flex-col gap-3"
                     >
+                        <FormField
+                            control={form.control}
+                            name="date"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col gap-1">
+                                    <FormLabel>Date</FormLabel>
+                                    <FormControl>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={cn(
+                                                        "w-[280px] justify-start text-left font-normal",
+                                                        !field.value &&
+                                                            "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    {field.value ? (
+                                                        format(
+                                                            field.value,
+                                                            "PPP"
+                                                        )
+                                                    ) : (
+                                                        <span>Pick a date</span>
+                                                    )}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
                         {/* Product */}
                         <FormField
                             control={form.control}
@@ -192,7 +238,7 @@ export const EditSaleModal = () => {
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>
-                                                        Clients
+                                                        Client - Market - Block
                                                     </SelectLabel>
                                                     {isClientLoading && (
                                                         <SelectLabel className="text-center">
@@ -206,6 +252,10 @@ export const EditSaleModal = () => {
                                                             value={c._id}
                                                         >
                                                             {c.name.toUpperCase()}
+                                                            {c?.market &&
+                                                                ` - ${c?.market?.toUpperCase()}`}
+                                                            {c?.block &&
+                                                                ` - ${c.block.toUpperCase()}`}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectGroup>
@@ -279,33 +329,6 @@ export const EditSaleModal = () => {
                             )}
                         />
 
-                        {/* Payment */}
-                        <FormField
-                            control={form.control}
-                            name="payment"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="uppercase">
-                                        Payment
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            type="number"
-                                            onChange={(e) =>
-                                                field.onChange(
-                                                    Number(e.target.value)
-                                                )
-                                            }
-                                            min={0}
-                                            placeholder="Payment"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
                         {/* Total */}
                         <div className="flex flex-col gap-3">
                             <Label className="uppercase">Total</Label>
@@ -319,7 +342,7 @@ export const EditSaleModal = () => {
                             {isPending ? (
                                 <Loader2 className="animate-spin" />
                             ) : (
-                                "Submit"
+                                "Update"
                             )}
                         </Button>
                     </form>

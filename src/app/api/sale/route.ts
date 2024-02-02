@@ -3,6 +3,9 @@ import Product from "@/models/product";
 import Sale from "@/models/sale";
 import CONNECT_TO_DB from "@/lib/connectToDb";
 import { isAuth } from "@/lib/isAuth";
+import { salesSchema } from "@/lib/schema";
+import { z } from "zod";
+import { ProductTypeExtended } from "@/lib/types";
 
 CONNECT_TO_DB();
 
@@ -20,9 +23,13 @@ export const POST = async (req: Request) => {
                 }
             );
         }
-        const { client, product, qty, rate, payment } = await req.json();
+        const data: z.infer<typeof salesSchema> = await req.json();
+        const { success } = salesSchema.safeParse({
+            ...data,
+            date: new Date(data.date),
+        });
 
-        if (!client || !product || !qty) {
+        if (!success) {
             return Response.json(
                 {
                     message: "All fields are required.",
@@ -31,9 +38,10 @@ export const POST = async (req: Request) => {
                 { status: 400 }
             );
         }
+
         let isClientExist;
         try {
-            isClientExist = await Client.findById(client);
+            isClientExist = await Client.findById(data?.client);
             if (!isClientExist) {
                 return Response.json(
                     {
@@ -53,9 +61,9 @@ export const POST = async (req: Request) => {
             );
         }
 
-        let isProductExist;
+        let isProductExist: ProductTypeExtended | null;
         try {
-            isProductExist = await Product.findById(product);
+            isProductExist = await Product.findById(data.product);
             if (!isProductExist) {
                 return Response.json(
                     {
@@ -74,23 +82,8 @@ export const POST = async (req: Request) => {
                 { status: 400 }
             );
         }
-        if (!isProductExist) {
-            return Response.json(
-                {
-                    message: "invalid product id",
-                    success: false,
-                },
-                { status: 400 }
-            );
-        }
-        const sale = await Sale.create({
-            client: isClientExist._id,
-            product: isProductExist.id,
-            name: isProductExist.name,
-            qty: Number(qty),
-            rate: rate ? Number(rate) : isProductExist.price,
-            payment: payment ? Number(payment) : 0,
-        });
+
+        const sale = await Sale.create({ ...data, name: isProductExist?.name });
 
         const modifiedSaleObject = {
             ...sale._doc,
@@ -178,11 +171,18 @@ export const PUT = async (req: Request) => {
             );
         }
 
-        const { client, product, qty, rate, payment } = await req.json();
+        const data: z.infer<typeof salesSchema> = await req.json();
+        const { success } = salesSchema.safeParse({
+            ...data,
+            date: new Date(data.date),
+        });
 
-        if (!(client || product || qty || rate || payment)) {
+        if (!success) {
             return Response.json(
-                { message: "one field is required.", success: false },
+                {
+                    message: "All fields are required.",
+                    success: false,
+                },
                 { status: 400 }
             );
         }
@@ -195,9 +195,9 @@ export const PUT = async (req: Request) => {
             );
         }
 
-        let isClientExist = null;
-        if (client) {
-            isClientExist = await Client.findById(client);
+        let isClientExist;
+        try {
+            isClientExist = await Client.findById(data?.client);
             if (!isClientExist) {
                 return Response.json(
                     {
@@ -207,11 +207,19 @@ export const PUT = async (req: Request) => {
                     { status: 400 }
                 );
             }
+        } catch (error) {
+            return Response.json(
+                {
+                    message: "invalid client id",
+                    success: false,
+                },
+                { status: 400 }
+            );
         }
 
-        let isProductExist = null;
-        if (product) {
-            isProductExist = await Product.findById(product);
+        let isProductExist: ProductTypeExtended | null;
+        try {
+            isProductExist = await Product.findById(data.product);
             if (!isProductExist) {
                 return Response.json(
                     {
@@ -221,19 +229,21 @@ export const PUT = async (req: Request) => {
                     { status: 400 }
                 );
             }
+        } catch (error) {
+            return Response.json(
+                {
+                    message: "invalid product id",
+                    success: false,
+                },
+                { status: 400 }
+            );
         }
 
         const sale = await Sale.findByIdAndUpdate(
             id,
             {
-                product: isProductExist ? isProductExist._id : isExist.product,
-                name: isProductExist?.name
-                    ? isProductExist?.name
-                    : isExist.name,
-                client: isClientExist ? isClientExist._id : isExist.client,
-                qty: qty ? Number(qty) : isExist.qty,
-                rate: rate ? Number(rate) : isExist.rate,
-                payment: payment ? Number(payment) : isExist.payment,
+                ...data,
+                name: isProductExist.name,
             },
             { new: true }
         ).populate("client product");

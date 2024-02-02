@@ -7,7 +7,7 @@ export interface SaleI {
     name: string;
     qty: number;
     rate: number;
-    payment: number;
+    date: Date;
 }
 const SalesSchema = new Schema<SaleI>(
     {
@@ -33,9 +33,9 @@ const SalesSchema = new Schema<SaleI>(
             type: Number,
             required: true,
         },
-        payment: {
-            type: Number,
-            required: true,
+        date: {
+            type: Date,
+            default: new Date(),
         },
     },
     { timestamps: true }

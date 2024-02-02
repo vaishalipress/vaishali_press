@@ -30,9 +30,13 @@ import axios from "axios";
 import { toast } from "sonner";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
-import { Loader2, X } from "lucide-react";
+import { CalendarIcon, Loader2, PlusCircle, X } from "lucide-react";
 import { useClient, useProduct } from "@/hooks/use-fetch-data";
 import { Label } from "../ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar } from "../ui/calendar";
 
 export default function AddSales() {
     const form = useForm<z.infer<typeof salesSchema>>({
@@ -42,7 +46,7 @@ export default function AddSales() {
             client: "",
             qty: 0,
             rate: 0,
-            payment: 0,
+            date: new Date(),
         },
     });
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -71,18 +75,17 @@ export default function AddSales() {
     });
 
     return (
-        <div className="max-w-6xl w-full border px-4 py-3 rounded-md">
+        <div className="max-w-7xl w-full border px-4 py-3 rounded-md">
             {!isFormOpen ? (
-                <Input
-                    readOnly
-                    defaultValue={"ADD SALE"}
-                    onClick={() => setIsFormOpen(true)}
-                />
+                <div onClick={() => setIsFormOpen(true)} className="flex items-center gap-3 cursor-pointer">
+                    <PlusCircle className="w-6 h-6 text-orange-600" />
+                    <span className="uppercase text-orange-700 font-semibold">Add Sale</span>
+                </div>
             ) : (
                 <>
                     <div className="flex justify-between">
                         <h1 className="uppercase font-semibold mb-3">
-                            add Sales
+                            add Sale
                         </h1>
                         <Button
                             variant={"ghost"}
@@ -99,6 +102,54 @@ export default function AddSales() {
                             )}
                             className="flex flex-col gap-3"
                         >
+                            {/* Date */}
+                            <FormField
+                                control={form.control}
+                                name="date"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col gap-1">
+                                        <FormLabel>DATE</FormLabel>
+                                        <FormControl>
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-[280px] justify-start text-left font-normal",
+                                                            !field.value &&
+                                                                "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.value ? (
+                                                            format(
+                                                                field.value,
+                                                                "PPP"
+                                                            )
+                                                        ) : (
+                                                            <span>
+                                                                Pick a date
+                                                            </span>
+                                                        )}
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={field.value}
+                                                        onSelect={
+                                                            field.onChange
+                                                        }
+                                                        initialFocus
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
                             {/* Product */}
                             <FormField
                                 control={form.control}
@@ -183,7 +234,8 @@ export default function AddSales() {
                                                 <SelectContent>
                                                     <SelectGroup>
                                                         <SelectLabel>
-                                                            Clients
+                                                            Clients - market -
+                                                            block
                                                         </SelectLabel>
                                                         {isClientLoading && (
                                                             <SelectLabel className="text-center">
@@ -197,6 +249,10 @@ export default function AddSales() {
                                                                 value={c._id}
                                                             >
                                                                 {c.name.toUpperCase()}
+                                                                {c?.market &&
+                                                                    ` - ${c?.market?.toUpperCase()}`}
+                                                                {c?.block &&
+                                                                    ` - ${c.block.toUpperCase()}`}
                                                             </SelectItem>
                                                         ))}
                                                     </SelectGroup>
@@ -275,7 +331,7 @@ export default function AddSales() {
                             />
 
                             {/* Payment */}
-                            <FormField
+                            {/* <FormField
                                 control={form.control}
                                 name="payment"
                                 render={({ field }) => (
@@ -299,7 +355,7 @@ export default function AddSales() {
                                         <FormMessage />
                                     </FormItem>
                                 )}
-                            />
+                            /> */}
 
                             {/* Total */}
                             <div className="flex flex-col gap-3">

@@ -19,7 +19,7 @@ export default function SalesList() {
     const { data, isLoading } = useSale();
 
     return (
-        <div className="border max-w-6xl w-full rounded-md py-3">
+        <div className="border max-w-7xl w-full rounded-md py-3">
             <h1 className="uppercase font-semibold mb-3 px-3 text-sm md:text-base">
                 Sales
             </h1>
@@ -27,22 +27,24 @@ export default function SalesList() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[150px] uppercase">
-                                Product
-                            </TableHead>
-                            <TableHead className="uppercase min-w-[120px]">
+                            <TableHead className="uppercase min-w-[75px] lg:min-w-[120px]">
                                 Date
                             </TableHead>
                             <TableHead className="uppercase">Client</TableHead>
+                            <TableHead className="uppercase">Market</TableHead>
+                            <TableHead className="uppercase">Block</TableHead>
                             <TableHead className="uppercase">
                                 District
                             </TableHead>
-                            <TableHead className="uppercase">Block</TableHead>
+                            <TableHead className="min-w-[150px] uppercase">
+                                Product
+                            </TableHead>
                             <TableHead className="uppercase">Qty</TableHead>
                             <TableHead className="uppercase">Rate</TableHead>
-                            <TableHead className="uppercase">Payment</TableHead>
-                            <TableHead className="uppercase">Dues</TableHead>
-                            <TableHead className="text-right uppercase min-w-[130px] md:min-w-[150px]">
+                            <TableHead className="uppercase min-w-[100px] lg:min-w-[140px]">
+                                Amount
+                            </TableHead>
+                            <TableHead className="text-right uppercase min-w-[100px] md:min-w-[150px]">
                                 Actions
                             </TableHead>
                         </TableRow>
@@ -51,31 +53,37 @@ export default function SalesList() {
                         {isLoading && <LoadingCells cols={10} />}
                         {data?.map((sale) => (
                             <TableRow key={sale?._id}>
-                                <TableCell className="font-medium uppercase">
-                                    {sale?.name}
+                                <TableCell className="text-xs lg:text-sm">
+                                    {sale?.date &&
+                                        format(
+                                            new Date(sale?.date),
+                                            "dd-MM-yyyy"
+                                        )}
                                 </TableCell>
-                                <TableCell>
-                                    {format(
-                                        new Date(sale.createdAt),
-                                        "dd-MM-yyyy"
-                                    )}
-                                </TableCell>
-                                <TableCell className="uppercase">
+                                <TableCell className="uppercase text-xs lg:text-sm">
                                     {sale?.client?.name}
                                 </TableCell>
-                                <TableCell className="uppercase">
+                                <TableCell className="uppercase text-xs lg:text-sm">
+                                    {sale?.client?.market}
+                                </TableCell>
+                                <TableCell className="uppercase text-xs lg:text-sm">
+                                    {sale?.client?.block}
+                                </TableCell>
+                                <TableCell className="uppercase text-xs lg:text-sm">
                                     {sale?.client?.district}
                                 </TableCell>
-                                <TableCell className="uppercase">
-                                    {sale.client?.block}
+                                <TableCell className="font-medium uppercase text-xs lg:text-sm">
+                                    {sale?.name}
                                 </TableCell>
-                                <TableCell className="capitalize">
+                                <TableCell className="text-xs lg:text-sm">
                                     {sale?.qty}
                                 </TableCell>
-                                <TableCell>{sale?.rate}</TableCell>
-                                <TableCell>{sale?.payment}</TableCell>
-                                <TableCell>
-                                    {sale?.rate * sale?.qty - sale?.payment}
+                                <TableCell className="text-xs lg:text-sm">
+                                    {sale?.rate}
+                                </TableCell>
+                                <TableCell className="text-xs lg:text-sm">
+                                    {sale?.qty} x {sale?.rate} ={" "}
+                                    {sale?.qty * sale?.rate}
                                 </TableCell>
                                 <TableCell className="text-right">
                                     {/* EDIT BTN */}
