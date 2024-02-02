@@ -30,7 +30,18 @@ import axios from "axios";
 import { toast } from "sonner";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
-import { Loader2, Pencil, X } from "lucide-react";
+import {
+    Loader2,
+    Pencil,
+    Pentagon,
+    PlusCircle,
+    Smartphone,
+    Smile,
+    ToyBrick,
+    TriangleRight,
+    User,
+    X,
+} from "lucide-react";
 import { useMarket } from "@/hooks/use-fetch-data";
 import { useModal } from "@/hooks/use-modal-store";
 
@@ -72,19 +83,26 @@ export default function AddClientForm() {
     });
 
     return (
-        <div className="max-w-6xl w-full border px-4 py-3 rounded-md">
+        <div className="max-w-6xl w-full border px-4 py-3 rounded-md shadow-md">
             {!isFormOpen ? (
-                <Input
-                    readOnly
-                    defaultValue={"ADD CLIENT"}
+                <div
                     onClick={() => setIsFormOpen(true)}
-                />
+                    className="flex items-center gap-3 cursor-pointer"
+                >
+                    <PlusCircle className="w-6 h-6 text-orange-600" />
+                    <span className="uppercase text-orange-700 font-semibold">
+                        Add Client
+                    </span>
+                </div>
             ) : (
                 <>
                     <div className="flex justify-between">
-                        <h1 className="uppercase font-semibold mb-3">
-                            add Clients
-                        </h1>
+                        <div className="flex gap-2 items-center mb-5">
+                            <PlusCircle className="w-6 h-6 text-orange-600" />
+                            <span className="uppercase text-orange-700 font-semibold">
+                                Add Client
+                            </span>
+                        </div>
                         <Button
                             variant={"ghost"}
                             size={"icon"}
@@ -106,7 +124,10 @@ export default function AddClientForm() {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Name</FormLabel>
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <Smile className="text-orange-900 w-4 h-4" />{" "}
+                                            <span>NAME</span>
+                                        </FormLabel>
                                         <FormControl>
                                             <Input
                                                 autoFocus
@@ -125,7 +146,10 @@ export default function AddClientForm() {
                                 name="district"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>District</FormLabel>
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <ToyBrick className="text-slate-600 w-4 h-4" />{" "}
+                                            <span>DISTRICT</span>
+                                        </FormLabel>
                                         <FormControl>
                                             <Select
                                                 value={field.value}
@@ -174,7 +198,10 @@ export default function AddClientForm() {
                                 name="block"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Block</FormLabel>
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <TriangleRight className="text-indigo-600 w-4 h-4" />{" "}
+                                            <span>BLOCK</span>
+                                        </FormLabel>
                                         <FormControl>
                                             <Select
                                                 value={field.value}
@@ -234,7 +261,10 @@ export default function AddClientForm() {
                                 name="market"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Market</FormLabel>
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <Pentagon className="text-indigo-600 w-4 h-4" />{" "}
+                                            <span>MARKET</span>
+                                        </FormLabel>
                                         <div className="flex gap-3 items-center">
                                             <FormControl>
                                                 <Select
@@ -306,7 +336,10 @@ export default function AddClientForm() {
                                 name="mobile"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Mobile</FormLabel>
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <Smartphone className="text-zinc-600 w-4 h-4" />{" "}
+                                            <span>MOBILE</span>
+                                        </FormLabel>
                                         <FormControl>
                                             <Input
                                                 {...field}
@@ -326,7 +359,12 @@ export default function AddClientForm() {
                                 {isPending ? (
                                     <Loader2 className="animate-spin" />
                                 ) : (
-                                    "Submit"
+                                    <div className="flex items-center gap-2">
+                                        <User className="text-green-600 w-5 h-5" />
+                                        <span className="text-green-600 font-semibold">
+                                            ADD
+                                        </span>
+                                    </div>
                                 )}
                             </Button>
                         </form>
