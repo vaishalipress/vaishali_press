@@ -1,6 +1,5 @@
 "use client";
 import { DistrictPage } from "@/components/dashboard/district";
-import { Filter } from "../filter";
 import { useClientDashboardInfo } from "@/hooks/use-fetch-data";
 import { LoadingCells } from "../loading";
 import { Table, TableBody } from "../ui/table";
@@ -13,7 +12,6 @@ export const ClientDashboard = () => {
                 <h1 className="text-base lg:text-xl uppercase  font-semibold">
                     Clients
                 </h1>
-                <Filter />
             </div>
             {isLoading && (
                 <div>
