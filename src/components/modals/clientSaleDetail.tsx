@@ -61,18 +61,6 @@ export const ClientSalesDetailsModal = () => {
                                 {clientSalesDetail?.totalAmount}
                             </TableCell>
                         </TableRow>
-                        <TableRow>
-                            <TableHead>Payment</TableHead>
-                            <TableCell>
-                                {clientSalesDetail?.totalPayment}
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableHead>Dues</TableHead>
-                            <TableCell>
-                                {clientSalesDetail?.totalDues}
-                            </TableCell>
-                        </TableRow>
                     </TableBody>
                 </Table>
 
@@ -98,13 +86,6 @@ export const ClientSalesDetailsModal = () => {
                                 <TableHead className="uppercase">
                                     Total
                                 </TableHead>
-
-                                <TableHead className="uppercase">
-                                    Payment
-                                </TableHead>
-                                <TableHead className="uppercase">
-                                    Dues
-                                </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -122,8 +103,6 @@ export const ClientSalesDetailsModal = () => {
                                     <TableCell>{sale.qty}</TableCell>
                                     <TableCell>{sale.rate}</TableCell>
                                     <TableCell>{sale.totalAmount}</TableCell>
-                                    <TableCell>{sale.payment}</TableCell>
-                                    <TableCell>{sale.dues}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

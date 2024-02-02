@@ -31,8 +31,6 @@ export const BlockSection = ({
                 <BlockHeaderInfo
                     totalAmount={totalAmount}
                     totalClient={totalClient}
-                    totalDues={totalDues}
-                    totalPayment={totalPayment}
                     totalSale={totalSale}
                 />
             </div>
@@ -47,15 +45,11 @@ export const BlockSection = ({
 const BlockHeaderInfo = ({
     totalAmount,
     totalClient,
-    totalDues,
-    totalPayment,
     totalSale,
 }: {
     totalClient: number;
     totalSale: number;
     totalAmount: number;
-    totalDues: number;
-    totalPayment: number;
 }) => {
     return (
         <div className="grid grid-cols-2 gap-1 lg:flex lg:gap-2 flex-wrap">
@@ -81,22 +75,6 @@ const BlockHeaderInfo = ({
                 Icon={BadgeIndianRupee}
                 count={totalAmount}
                 className="text-green-600  "
-            />
-
-            {/* Payment */}
-            <Info
-                toolTip="Payment"
-                Icon={BadgePlus}
-                count={totalPayment}
-                className="text-lime-600"
-            />
-
-            {/* Dues */}
-            <Info
-                toolTip="Dues"
-                Icon={BadgeMinus}
-                count={totalDues}
-                className="text-rose-700"
             />
         </div>
     );

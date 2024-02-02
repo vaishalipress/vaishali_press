@@ -35,8 +35,6 @@ export const DistrictPage = ({
                     totalAmount={totalAmount}
                     totalBlock={totalBlock}
                     totalClient={totalClient}
-                    totalDues={totalDues}
-                    totalPayment={totalPayment}
                     totalSale={totalSale}
                 />
             </div>
@@ -62,16 +60,12 @@ const DistrictHeaderInfo = ({
     totalAmount = 0,
     totalBlock = 0,
     totalClient = 0,
-    totalDues = 0,
-    totalPayment = 0,
     totalSale = 0,
 }: {
     totalBlock: number;
     totalClient: number;
     totalSale: number;
     totalAmount: number;
-    totalDues: number;
-    totalPayment: number;
 }) => {
     return (
         <div className="grid grid-cols-2 gap-1 lg:flex lg:gap-2 flex-wrap">
@@ -105,22 +99,6 @@ const DistrictHeaderInfo = ({
                 Icon={BadgeIndianRupee}
                 count={totalAmount}
                 className="text-green-800  "
-            />
-
-            {/* Payment */}
-            <Info
-                toolTip="Payment"
-                Icon={BadgePlus}
-                count={totalPayment}
-                className="text-lime-800"
-            />
-
-            {/* Dues */}
-            <Info
-                toolTip="Dues"
-                Icon={BadgeMinus}
-                count={totalDues}
-                className="text-rose-800"
             />
         </div>
     );
