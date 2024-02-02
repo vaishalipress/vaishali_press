@@ -19,7 +19,7 @@ export default function ClientList() {
     const { data, isLoading } = useClient();
 
     return (
-        <div className="border max-w-6xl w-full rounded-md py-3 shadow-md">
+        <div className="border max-w-7xl w-full rounded-md py-3 shadow-md">
             <div className="flex items-center gap-3 mb-3 px-3">
                 <Users className="text-indigo-500 w-6 h-6" />
                 <h1 className="uppercase text-indigo-600 font-bold text-lg">

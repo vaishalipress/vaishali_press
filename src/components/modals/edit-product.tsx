@@ -9,15 +9,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
     Form,
     FormControl,
     FormField,
@@ -33,7 +24,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { productSchema } from "@/lib/schema";
-import { Loader2 } from "lucide-react";
+import { Box, Loader2, Pencil } from "lucide-react";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
 
@@ -81,7 +72,8 @@ export const EditProductModal = () => {
         <Dialog open={isModalOpen} onOpenChange={onClose}>
             <DialogContent className="w-[95vw] ">
                 <DialogHeader>
-                    <DialogTitle className="uppercase text-sm md:text-base">
+                    <DialogTitle className="flex gap-2 items-center uppercase text-sm md:text-base">
+                        <Pencil className="text-indigo-600" />
                         Edit Product
                     </DialogTitle>
                 </DialogHeader>
@@ -139,7 +131,12 @@ export const EditProductModal = () => {
                             {isPending ? (
                                 <Loader2 className="animate-spin" />
                             ) : (
-                                "Update"
+                                <div className="flex items-center gap-2">
+                                    <Box className="text-green-600 w-5 h-5" />
+                                    <span className="text-green-600 font-semibold">
+                                        UPDATE
+                                    </span>
+                                </div>
                             )}
                         </Button>
                     </form>

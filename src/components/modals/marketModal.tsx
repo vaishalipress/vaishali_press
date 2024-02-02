@@ -2,6 +2,7 @@
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -36,7 +37,16 @@ import {
 import { useEffect, useState } from "react";
 import { districtsAndBlocks } from "@/lib/contants";
 import { Button } from "../ui/button";
-import { Loader2, Pen, Trash } from "lucide-react";
+import {
+    AlignStartVertical,
+    AlignVerticalSpaceAround,
+    Home,
+    Loader2,
+    Pen,
+    ToyBrick,
+    Trash,
+    TriangleRight,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useMarket } from "@/hooks/use-fetch-data";
 import {
@@ -110,11 +120,13 @@ export const MarketModal = () => {
     }, [form, market]);
     return (
         <Dialog open={isModalOpen} onOpenChange={onClose}>
-            <DialogContent>
+            <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl text-center font-bold">
-                        Markets
+                    <DialogTitle className="flex gap-2 items-center text-xl text-center font-semibold uppercase">
+                        <AlignStartVertical className="text-indigo-600" />{" "}
+                        <span>Markets</span>
                     </DialogTitle>
+                    <DialogDescription>Add or Delete market</DialogDescription>
                 </DialogHeader>
                 <div className="flex flex-col gap-3">
                     <Form {...form}>
@@ -130,7 +142,10 @@ export const MarketModal = () => {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Name</FormLabel>
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <AlignVerticalSpaceAround className="text-orange-900 w-4 h-4" />{" "}
+                                            <span>NAME</span>
+                                        </FormLabel>
                                         <FormControl>
                                             <Input
                                                 autoFocus
@@ -149,7 +164,10 @@ export const MarketModal = () => {
                                 name="district"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>District</FormLabel>
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <ToyBrick className="text-slate-600 w-4 h-4" />{" "}
+                                            <span>DISTRICT</span>
+                                        </FormLabel>
                                         <FormControl>
                                             <Select
                                                 value={field.value}
@@ -198,7 +216,10 @@ export const MarketModal = () => {
                                 name="block"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Block</FormLabel>
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <TriangleRight className="text-indigo-600 w-4 h-4" />{" "}
+                                            <span>BLOCK</span>
+                                        </FormLabel>
                                         <FormControl>
                                             <Select
                                                 value={field.value}
@@ -260,7 +281,12 @@ export const MarketModal = () => {
                                 {isPending ? (
                                     <Loader2 className="animate-spin" />
                                 ) : (
-                                    "Submit"
+                                    <div className="flex items-center gap-2">
+                                        <AlignStartVertical className="text-green-600 w-5 h-5" />
+                                        <span className="text-green-600 font-semibold">
+                                            ADD
+                                        </span>
+                                    </div>
                                 )}
                             </Button>
                         </form>
@@ -268,7 +294,15 @@ export const MarketModal = () => {
 
                     {markets && (
                         <div>
-                            <h3 className="uppercase font-semibold">Markets</h3>
+                            <div className="flex gap-2 items-center">
+                                <AlignStartVertical className="text-indigo-600 w-5 h-6" />
+                                <h3 className="uppercase font-semibold">
+                                    Market List
+                                </h3>
+                            </div>
+                            <DialogDescription>
+                                Select District and Block to get markets
+                            </DialogDescription>
                             <Table>
                                 <TableHeader>
                                     <TableRow>
@@ -307,12 +341,6 @@ export const MarketModal = () => {
                         </div>
                     )}
                 </div>
-                <DialogFooter>
-                    <p className="text-left text-sm capitalize text-zinc-400">
-                        {" "}
-                        Select District and Block to show markets.
-                    </p>
-                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

@@ -83,7 +83,7 @@ export default function AddClientForm() {
     });
 
     return (
-        <div className="max-w-6xl w-full border px-4 py-3 rounded-md shadow-md">
+        <div className="max-w-7xl w-full border px-4 py-3 rounded-md shadow-md">
             {!isFormOpen ? (
                 <div
                     onClick={() => setIsFormOpen(true)}

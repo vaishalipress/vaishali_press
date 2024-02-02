@@ -34,7 +34,17 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { salesSchema } from "@/lib/schema";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import {
+    BadgeIndianRupee,
+    Box,
+    CalendarIcon,
+    IndianRupee,
+    Loader2,
+    Package,
+    PackagePlus,
+    Pencil,
+    User,
+} from "lucide-react";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
 import { Label } from "../ui/label";
@@ -99,8 +109,8 @@ export const EditSaleModal = () => {
             <DialogContent className="w-[95vw] ">
                 {/* <DialogContent> */}
                 <DialogHeader>
-                    <DialogTitle className="uppercase text-sm md:text-base">
-                        Edit Sale
+                    <DialogTitle className="flex gap-2 items-center uppercase text-sm md:text-base">
+                    <Pencil className="text-indigo-600"/>   Edit Sale
                     </DialogTitle>
                 </DialogHeader>
 
@@ -109,12 +119,16 @@ export const EditSaleModal = () => {
                         onSubmit={form.handleSubmit((value) => mutate(value))}
                         className="flex flex-col gap-3"
                     >
+                        {/* Date */}
                         <FormField
                             control={form.control}
                             name="date"
                             render={({ field }) => (
                                 <FormItem className="flex flex-col gap-1">
-                                    <FormLabel>Date</FormLabel>
+                                    <FormLabel className="flex gap-2 items-center">
+                                        <CalendarIcon className="text-slate-600 w-5 h-5" />
+                                        DATE
+                                    </FormLabel>
                                     <FormControl>
                                         <Popover>
                                             <PopoverTrigger asChild>
@@ -126,7 +140,7 @@ export const EditSaleModal = () => {
                                                             "text-muted-foreground"
                                                     )}
                                                 >
-                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    <CalendarIcon className="mr-5 h-5 w-4" />
                                                     {field.value ? (
                                                         format(
                                                             field.value,
@@ -158,8 +172,9 @@ export const EditSaleModal = () => {
                             name="product"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="uppercase">
-                                        Product
+                                    <FormLabel className="flex gap-2 items-center">
+                                        <Box className="text-teal-600 w-5 h-5" />{" "}
+                                        <span>PRODUCT</span>
                                     </FormLabel>
                                     <FormControl>
                                         <Select
@@ -217,16 +232,16 @@ export const EditSaleModal = () => {
                             name="client"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="uppercase">
-                                        Client
+                                    <FormLabel className="flex gap-2 items-center">
+                                        <User className="text-rose-600 w-5 h-5" />{" "}
+                                        <span>CLIENT</span>
                                     </FormLabel>
+
                                     <FormControl>
                                         <Select
                                             value={field.value}
                                             defaultValue={field.value}
-                                            onValueChange={(e: string) => {
-                                                field.onChange(e);
-                                            }}
+                                            onValueChange={field.onChange}
                                         >
                                             <SelectTrigger>
                                                 <SelectValue
@@ -238,7 +253,7 @@ export const EditSaleModal = () => {
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>
-                                                        Client - Market - Block
+                                                        Clients - market - block
                                                     </SelectLabel>
                                                     {isClientLoading && (
                                                         <SelectLabel className="text-center">
@@ -273,8 +288,9 @@ export const EditSaleModal = () => {
                             name="qty"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="uppercase">
-                                        qty
+                                    <FormLabel className="flex gap-2 items-center">
+                                        <Package className="text-lime-600 w-5 h-5" />{" "}
+                                        <span>QTY</span>
                                     </FormLabel>
                                     <FormControl>
                                         <Input
@@ -304,9 +320,10 @@ export const EditSaleModal = () => {
                             name="rate"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="uppercase">
-                                        Rate
-                                    </FormLabel>
+                                    <Label className="flex gap-2 items-center">
+                                        <BadgeIndianRupee className="w-5 h-5 text-indigo-600" />{" "}
+                                        <span>RATE</span>
+                                    </Label>
                                     <FormControl>
                                         <Input
                                             {...field}
@@ -331,9 +348,13 @@ export const EditSaleModal = () => {
 
                         {/* Total */}
                         <div className="flex flex-col gap-3">
-                            <Label className="uppercase">Total</Label>
+                            <Label className="flex gap-1 items-center">
+                                <IndianRupee className="text-zinc-700 w-5 h-5" />{" "}
+                                <span>TOTAL</span>
+                            </Label>
                             <Input readOnly value={total} />
                         </div>
+
                         <Button
                             type="submit"
                             variant={"secondary"}
@@ -342,7 +363,12 @@ export const EditSaleModal = () => {
                             {isPending ? (
                                 <Loader2 className="animate-spin" />
                             ) : (
-                                "Update"
+                                <div className="flex items-center gap-2">
+                                    <PackagePlus className="text-green-600 w-5 h-5" />
+                                    <span className="text-green-600 font-semibold">
+                                        UPDATE
+                                    </span>
+                                </div>
                             )}
                         </Button>
                     </form>

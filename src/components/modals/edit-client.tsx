@@ -35,7 +35,16 @@ import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { clientSchema } from "@/lib/schema";
 import { districtsAndBlocks } from "@/lib/contants";
-import { Loader2, Pencil } from "lucide-react";
+import {
+    Loader2,
+    Pencil,
+    Pentagon,
+    Smartphone,
+    Smile,
+    ToyBrick,
+    TriangleRight,
+    User,
+} from "lucide-react";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
 import { useMarket } from "@/hooks/use-fetch-data";
@@ -98,24 +107,32 @@ export const EditClientModal = () => {
             <DialogContent className="w-[95vw] ">
                 {/* <DialogContent> */}
                 <DialogHeader>
-                    <DialogTitle className="uppercase text-sm md:text-base">
-                        Edit Client
+                    <DialogTitle className="flex gap-2 items-center uppercase text-sm md:text-base">
+                        <Pencil className="text-indigo-600"/> Edit Client
                     </DialogTitle>
                 </DialogHeader>
 
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit((value) => mutate(value))}
-                        className="flex flex-col gap-3"
+                        className="flex flex-col gap-4"
                     >
+                        {/* Name */}
                         <FormField
                             control={form.control}
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Name</FormLabel>
+                                    <FormLabel className="flex gap-2 items-center">
+                                        <Smile className="text-orange-900 w-4 h-4" />{" "}
+                                        <span>NAME</span>
+                                    </FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Name" {...field} />
+                                        <Input
+                                            autoFocus
+                                            placeholder="Name"
+                                            {...field}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -128,7 +145,10 @@ export const EditClientModal = () => {
                             name="district"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>District</FormLabel>
+                                    <FormLabel className="flex gap-2 items-center">
+                                        <ToyBrick className="text-slate-600 w-4 h-4" />{" "}
+                                        <span>DISTRICT</span>
+                                    </FormLabel>
                                     <FormControl>
                                         <Select
                                             value={field.value}
@@ -177,7 +197,10 @@ export const EditClientModal = () => {
                             name="block"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Block</FormLabel>
+                                    <FormLabel className="flex gap-2 items-center">
+                                        <TriangleRight className="text-indigo-600 w-4 h-4" />{" "}
+                                        <span>BLOCK</span>
+                                    </FormLabel>
                                     <FormControl>
                                         <Select
                                             value={field.value}
@@ -233,7 +256,10 @@ export const EditClientModal = () => {
                             name="market"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Market</FormLabel>
+                                    <FormLabel className="flex gap-2 items-center">
+                                        <Pentagon className="text-indigo-600 w-4 h-4" />{" "}
+                                        <span>MARKET</span>
+                                    </FormLabel>
                                     <div className="flex gap-3 items-center">
                                         <FormControl>
                                             <Select
@@ -303,7 +329,10 @@ export const EditClientModal = () => {
                             name="mobile"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Mobile</FormLabel>
+                                    <FormLabel className="flex gap-2 items-center">
+                                        <Smartphone className="text-zinc-600 w-4 h-4" />{" "}
+                                        <span>MOBILE</span>
+                                    </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
@@ -323,7 +352,12 @@ export const EditClientModal = () => {
                             {isPending ? (
                                 <Loader2 className="animate-spin" />
                             ) : (
-                                "Submit"
+                                <div className="flex items-center gap-1">
+                                    <User className="text-green-600 w-5 h-5" />
+                                    <span className="text-green-600 font-semibold">
+                                        UPDATE
+                                    </span>
+                                </div>
                             )}
                         </Button>
                     </form>
