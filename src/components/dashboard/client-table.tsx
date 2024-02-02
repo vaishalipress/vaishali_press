@@ -17,10 +17,11 @@ export const Clients = ({ clients }: { clients: clientType[] }) => {
             <TableHeader>
                 <TableRow>
                     <TableHead className="w-[150px] uppercase">name</TableHead>
+                    <TableHead className="w-[150px] uppercase">
+                        Market
+                    </TableHead>
                     <TableHead className="uppercase">Sales</TableHead>
                     <TableHead className="uppercase">Amount</TableHead>
-                    <TableHead className="uppercase">Payment</TableHead>
-                    <TableHead className="uppercase">Dues</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -38,13 +39,14 @@ export const Clients = ({ clients }: { clients: clientType[] }) => {
                             {client?.name}
                         </TableCell>
                         <TableCell className="capitalize">
+                            {client?.market ? client.market : "NA"}
+                        </TableCell>
+                        <TableCell className="capitalize">
                             {client?.totalSale}
                         </TableCell>
                         <TableCell className="capitalize">
                             {client?.totalAmount}
                         </TableCell>
-                        <TableCell>{client?.totalPayment}</TableCell>
-                        <TableCell>{client?.totalDues}</TableCell>
                     </TableRow>
                 ))}
             </TableBody>

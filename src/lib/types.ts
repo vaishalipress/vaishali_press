@@ -27,11 +27,9 @@ interface saleType {
     name: string;
     qty: number;
     rate: number;
-    payment: number;
     createdAt: string;
     updatedAt: string;
     totalAmount: number;
-    dues: number;
 }
 
 export interface clientType {
@@ -39,14 +37,14 @@ export interface clientType {
     name: string;
     district: string;
     block: string;
+    market: string;
     mobile: string;
     createdAt: string;
     updatedAt: string;
     sales: saleType[];
     totalSale: number;
     totalAmount: number;
-    totalDues: number;
-    totalPayment: number;
+    date: string;
 }
 
 export interface blockType {
@@ -54,8 +52,6 @@ export interface blockType {
     totalClient: number;
     totalSale: number;
     totalAmount: number;
-    totalDues: number;
-    totalPayment: number;
     clients: clientType[];
 }
 
@@ -66,8 +62,6 @@ export interface districtType {
     totalClient: number;
     totalSale: number;
     totalAmount: number;
-    totalDues: number;
-    totalPayment: number;
     blocks: blockType[];
 }
 

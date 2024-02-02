@@ -14,8 +14,6 @@ export const BlockSection = ({
     block,
     totalAmount,
     totalClient,
-    totalDues,
-    totalPayment,
     totalSale,
     clients,
 }: blockType) => {

@@ -16,8 +16,6 @@ export const DistrictPage = ({
     totalAmount,
     totalBlock,
     totalClient,
-    totalDues,
-    totalPayment,
     totalSale,
     blocks,
 }: districtType) => {
@@ -45,8 +43,6 @@ export const DistrictPage = ({
                         block={block.block}
                         totalAmount={block.totalAmount}
                         totalClient={block.totalClient}
-                        totalDues={block.totalDues}
-                        totalPayment={block.totalPayment}
                         totalSale={block.totalSale}
                         clients={block.clients}
                     />
