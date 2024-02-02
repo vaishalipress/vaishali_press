@@ -34,8 +34,6 @@ import {
     BadgeIndianRupee,
     Box,
     CalendarIcon,
-    Coins,
-    HandIcon,
     IndianRupee,
     Loader2,
     Package,
@@ -102,7 +100,7 @@ export default function AddSales() {
             ) : (
                 <>
                     <div className="flex justify-between">
-                        <div className="flex gap-2 items-center mb-5">
+                        <div className="flex gap-3 items-center mb-5">
                             <PlusCircle className="w-6 h-6 text-orange-600" />
                             <span className="uppercase text-orange-700 font-semibold">
                                 Add Sale
@@ -377,8 +375,10 @@ export default function AddSales() {
                                     <Loader2 className="animate-spin" />
                                 ) : (
                                     <div className="flex items-center gap-2">
-                                        <PackagePlus className="text-green-600 w-5 h-5"/>
-                                        <span className="text-green-600 font-semibold">ADD</span>
+                                        <PackagePlus className="text-green-600 w-5 h-5" />
+                                        <span className="text-green-600 font-semibold">
+                                            ADD
+                                        </span>
                                     </div>
                                 )}
                             </Button>

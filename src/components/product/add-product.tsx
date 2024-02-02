@@ -12,15 +12,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -29,7 +21,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
-import { Loader2, X } from "lucide-react";
+import { Box, IndianRupee, Loader2, PlusCircle, X } from "lucide-react";
 
 export default function AddProduct() {
     const form = useForm<z.infer<typeof productSchema>>({
@@ -61,19 +53,26 @@ export default function AddProduct() {
     });
 
     return (
-        <div className="max-w-3xl w-full border px-4 py-3 rounded-md">
+        <div className="max-w-3xl w-full border px-4 py-3 rounded-md shadow-md">
             {!isFormOpen ? (
-                <Input
-                    readOnly
-                    defaultValue={"ADD PRODUCT"}
+                <div
                     onClick={() => setIsFormOpen(true)}
-                />
+                    className="flex items-center gap-3 cursor-pointer"
+                >
+                    <PlusCircle className="w-6 h-6 text-orange-600" />
+                    <span className="uppercase text-orange-700 font-semibold">
+                        Add Product
+                    </span>
+                </div>
             ) : (
                 <>
                     <div className="flex justify-between">
-                        <h1 className="uppercase font-semibold mb-3">
-                            add Product
-                        </h1>
+                        <div className="flex gap-3 items-center mb-5">
+                            <PlusCircle className="w-6 h-6 text-orange-600" />
+                            <span className="uppercase text-orange-700 font-semibold">
+                                Add PRODUCT
+                            </span>
+                        </div>
                         <Button
                             variant={"ghost"}
                             size={"icon"}
@@ -94,8 +93,9 @@ export default function AddProduct() {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="uppercase">
-                                            Name
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <Box className="text-orange-900 w-4 h-4" />{" "}
+                                            <span>NAME</span>
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -115,8 +115,9 @@ export default function AddProduct() {
                                 name="price"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="uppercase">
-                                            Price
+                                        <FormLabel className="flex gap-1 items-center">
+                                            <IndianRupee className="text-indigo-600 w-4 h-4" />{" "}
+                                            <span>PRICE</span>
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -144,7 +145,12 @@ export default function AddProduct() {
                                 {isPending ? (
                                     <Loader2 className="animate-spin" />
                                 ) : (
-                                    "Submit"
+                                    <div className="flex items-center gap-2">
+                                        <Box className="text-green-600 w-5 h-5" />
+                                        <span className="text-green-600 font-semibold">
+                                            ADD
+                                        </span>
+                                    </div>
                                 )}
                             </Button>
                         </form>

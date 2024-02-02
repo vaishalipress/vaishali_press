@@ -97,7 +97,7 @@ export default function AddClientForm() {
             ) : (
                 <>
                     <div className="flex justify-between">
-                        <div className="flex gap-2 items-center mb-5">
+                        <div className="flex gap-3 items-center mb-5">
                             <PlusCircle className="w-6 h-6 text-orange-600" />
                             <span className="uppercase text-orange-700 font-semibold">
                                 Add Client

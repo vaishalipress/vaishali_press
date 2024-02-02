@@ -8,7 +8,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "../ui/button";
-import { Boxes, Pen, Trash } from "lucide-react";
+import { BaggageClaim, Boxes, Pen, Trash } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { LoadingCells } from "../loading";
 import { format } from "date-fns";
@@ -21,7 +21,7 @@ export default function SalesList() {
     return (
         <div className="border max-w-7xl w-full rounded-md py-3 shadow-md">
             <div className="flex items-center gap-3 mb-3 px-3">
-                <Boxes className="text-indigo-500 w-6 h-6"/>
+                <BaggageClaim className="text-indigo-500 w-6 h-6" />
                 <h1 className="uppercase text-indigo-600 font-bold text-lg">
                     Sales
                 </h1>
