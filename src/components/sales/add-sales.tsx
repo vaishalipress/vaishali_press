@@ -30,7 +30,20 @@ import axios from "axios";
 import { toast } from "sonner";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
-import { CalendarIcon, Loader2, PlusCircle, X } from "lucide-react";
+import {
+    BadgeIndianRupee,
+    Box,
+    CalendarIcon,
+    Coins,
+    HandIcon,
+    IndianRupee,
+    Loader2,
+    Package,
+    PackagePlus,
+    PlusCircle,
+    User,
+    X,
+} from "lucide-react";
 import { useClient, useProduct } from "@/hooks/use-fetch-data";
 import { Label } from "../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -75,24 +88,32 @@ export default function AddSales() {
     });
 
     return (
-        <div className="max-w-7xl w-full border px-4 py-3 rounded-md">
+        <div className="max-w-7xl w-full border px-4 py-3 rounded-md shadow-md">
             {!isFormOpen ? (
-                <div onClick={() => setIsFormOpen(true)} className="flex items-center gap-3 cursor-pointer">
+                <div
+                    onClick={() => setIsFormOpen(true)}
+                    className="flex items-center gap-3 cursor-pointer"
+                >
                     <PlusCircle className="w-6 h-6 text-orange-600" />
-                    <span className="uppercase text-orange-700 font-semibold">Add Sale</span>
+                    <span className="uppercase text-orange-700 font-semibold">
+                        Add Sale
+                    </span>
                 </div>
             ) : (
                 <>
                     <div className="flex justify-between">
-                        <h1 className="uppercase font-semibold mb-3">
-                            add Sale
-                        </h1>
+                        <div className="flex gap-2 items-center mb-5">
+                            <PlusCircle className="w-6 h-6 text-orange-600" />
+                            <span className="uppercase text-orange-700 font-semibold">
+                                Add Sale
+                            </span>
+                        </div>
                         <Button
                             variant={"ghost"}
                             size={"icon"}
                             onClick={() => setIsFormOpen(false)}
                         >
-                            <X className="w-4 h-4" />
+                            <X className="w-5 h-5" />
                         </Button>
                     </div>
                     <Form {...form}>
@@ -108,7 +129,10 @@ export default function AddSales() {
                                 name="date"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col gap-1">
-                                        <FormLabel>DATE</FormLabel>
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <CalendarIcon className="text-slate-600 w-5 h-5" />
+                                            DATE
+                                        </FormLabel>
                                         <FormControl>
                                             <Popover>
                                                 <PopoverTrigger asChild>
@@ -120,7 +144,7 @@ export default function AddSales() {
                                                                 "text-muted-foreground"
                                                         )}
                                                     >
-                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        <CalendarIcon className="mr-5 h-5 w-4" />
                                                         {field.value ? (
                                                             format(
                                                                 field.value,
@@ -156,8 +180,9 @@ export default function AddSales() {
                                 name="product"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="uppercase">
-                                            Product
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <Box className="text-teal-600 w-5 h-5" />{" "}
+                                            <span>PRODUCT</span>
                                         </FormLabel>
                                         <FormControl>
                                             <Select
@@ -215,9 +240,11 @@ export default function AddSales() {
                                 name="client"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="uppercase">
-                                            Client
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <User className="text-rose-600 w-5 h-5" />{" "}
+                                            <span>CLIENT</span>
                                         </FormLabel>
+
                                         <FormControl>
                                             <Select
                                                 value={field.value}
@@ -270,8 +297,9 @@ export default function AddSales() {
                                 name="qty"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="uppercase">
-                                            qty
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <Package className="text-lime-600 w-5 h-5" />{" "}
+                                            <span>QTY</span>
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -303,9 +331,10 @@ export default function AddSales() {
                                 name="rate"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="uppercase">
-                                            Rate
-                                        </FormLabel>
+                                        <Label className="flex gap-2 items-center">
+                                            <BadgeIndianRupee className="w-5 h-5 text-indigo-600" />{" "}
+                                            <span>RATE</span>
+                                        </Label>
                                         <FormControl>
                                             <Input
                                                 {...field}
@@ -330,36 +359,12 @@ export default function AddSales() {
                                 )}
                             />
 
-                            {/* Payment */}
-                            {/* <FormField
-                                control={form.control}
-                                name="payment"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="uppercase">
-                                            Payment
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                type="number"
-                                                onChange={(e) =>
-                                                    field.onChange(
-                                                        Number(e.target.value)
-                                                    )
-                                                }
-                                                min={0}
-                                                placeholder="Payment"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            /> */}
-
                             {/* Total */}
                             <div className="flex flex-col gap-3">
-                                <Label className="uppercase">Total</Label>
+                                <Label className="flex gap-2 items-center">
+                                    <IndianRupee className="text-zinc-700 w-5 h-5" />{" "}
+                                    <span>TOTAL</span>
+                                </Label>
                                 <Input readOnly value={total} />
                             </div>
 
@@ -371,7 +376,10 @@ export default function AddSales() {
                                 {isPending ? (
                                     <Loader2 className="animate-spin" />
                                 ) : (
-                                    "Submit"
+                                    <div className="flex items-center gap-2">
+                                        <PackagePlus className="text-green-600 w-5 h-5"/>
+                                        <span className="text-green-600 font-semibold">ADD</span>
+                                    </div>
                                 )}
                             </Button>
                         </form>
