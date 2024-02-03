@@ -8,6 +8,7 @@ import {
 } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { DateRange } from "react-day-picker";
 
 export const useClient = () => {
     return useQuery<ClientTypeExtented[]>({
@@ -29,11 +30,15 @@ export const useProduct = () => {
     });
 };
 
-export const useSale = () => {
+export const useSale = (date: DateRange | undefined) => {
     return useQuery<SalesTypeExtended[]>({
-        queryKey: ["sales-list"],
+        queryKey: ["sales-list", date?.from?.getDate(), date?.to?.getDate()],
         queryFn: async () => {
-            const { data } = await axios.get("/api/sale");
+            const { data } = await axios.get(
+                `/api/sale?${date?.from && `from=${date.from}`}&${
+                    date?.to && `to=${date.to}`
+                }`
+            );
             return data?.sales;
         },
     });
@@ -63,8 +68,6 @@ export const useMarket = (district: string, block: string) => {
     return useQuery<MarketType[] | null>({
         queryKey: ["markets", district, block],
         queryFn: async () => {
-            console.log("from market", district, block);
-
             const { data } = await axios.get(
                 `/api/market?district=${district}&block=${block}`
             );
