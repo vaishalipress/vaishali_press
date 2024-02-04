@@ -1,9 +1,5 @@
 "use client";
 
-import { salesSchema } from "@/lib/schema";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Form,
     FormControl,
@@ -21,15 +17,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { districtsAndBlocks } from "@/lib/contants";
-import { useEffect, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
-import { toast } from "sonner";
-import { handleAxiosError } from "@/lib/error";
-import { useCustumQuery } from "@/hooks/use-queries";
 import {
     BadgeIndianRupee,
     Box,
@@ -42,12 +38,19 @@ import {
     User,
     X,
 } from "lucide-react";
+import { toast } from "sonner";
+import { salesSchema } from "@/lib/schema";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { handleAxiosError } from "@/lib/error";
+import { useCustumQuery } from "@/hooks/use-queries";
 import { useClient, useProduct } from "@/hooks/use-fetch-data";
-import { Label } from "../ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Calendar } from "../ui/calendar";
 
 export default function AddSales() {
     const form = useForm<z.infer<typeof salesSchema>>({
@@ -76,7 +79,17 @@ export default function AddSales() {
         onSuccess(data) {
             toast("✅ " + (data?.message as string).toUpperCase());
             if (data.success) {
-                addData(["sales-list"], data.sale);
+                // All
+                addData(
+                    ["sales-list", undefined, new Date().getDate()],
+                    data.sale
+                );
+                // Today
+                addData(
+                    ["sales-list", new Date().getDate(), new Date().getDate()],
+                    data.sale
+                );
+
                 form.reset();
                 setTotal(0);
             }
@@ -119,7 +132,7 @@ export default function AddSales() {
                             onSubmit={form.handleSubmit((value) =>
                                 mutate(value)
                             )}
-                            className="flex flex-col gap-3"
+                            className="flex flex-col gap-5"
                         >
                             {/* Date */}
                             <FormField
@@ -166,6 +179,63 @@ export default function AddSales() {
                                                     />
                                                 </PopoverContent>
                                             </Popover>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Client */}
+                            <FormField
+                                control={form.control}
+                                name="client"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <User className="text-rose-600 w-5 h-5" />{" "}
+                                            <span>CLIENT</span>
+                                        </FormLabel>
+
+                                        <FormControl>
+                                            <Select
+                                                value={field.value}
+                                                defaultValue={field.value}
+                                                onValueChange={field.onChange}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue
+                                                        placeholder={
+                                                            "SELECT CLIENT"
+                                                        }
+                                                    />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel className="uppercase">
+                                                            Clients - market -
+                                                            district
+                                                        </SelectLabel>
+                                                        {isClientLoading && (
+                                                            <SelectLabel className="text-center">
+                                                                <Loader2 className="animate-spin" />
+                                                            </SelectLabel>
+                                                        )}
+
+                                                        {clients?.map((c) => (
+                                                            <SelectItem
+                                                                key={c.name}
+                                                                value={c._id}
+                                                            >
+                                                                {c.name.toUpperCase()}
+                                                                {c?.market &&
+                                                                    ` - ${c?.market?.toUpperCase()}`}
+                                                                {c?.district &&
+                                                                    ` - ${c.district.toUpperCase()}`}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -222,62 +292,6 @@ export default function AddSales() {
                                                                 value={p._id}
                                                             >
                                                                 {p.name.toUpperCase()}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectGroup>
-                                                </SelectContent>
-                                            </Select>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            {/* Client */}
-                            <FormField
-                                control={form.control}
-                                name="client"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="flex gap-2 items-center">
-                                            <User className="text-rose-600 w-5 h-5" />{" "}
-                                            <span>CLIENT</span>
-                                        </FormLabel>
-
-                                        <FormControl>
-                                            <Select
-                                                value={field.value}
-                                                defaultValue={field.value}
-                                                onValueChange={field.onChange}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue
-                                                        placeholder={
-                                                            "SELECT CLIENT"
-                                                        }
-                                                    />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectGroup>
-                                                        <SelectLabel>
-                                                            Clients - market -
-                                                            block
-                                                        </SelectLabel>
-                                                        {isClientLoading && (
-                                                            <SelectLabel className="text-center">
-                                                                <Loader2 className="animate-spin" />
-                                                            </SelectLabel>
-                                                        )}
-
-                                                        {clients?.map((c) => (
-                                                            <SelectItem
-                                                                key={c.name}
-                                                                value={c._id}
-                                                            >
-                                                                {c.name.toUpperCase()}
-                                                                {c?.market &&
-                                                                    ` - ${c?.market?.toUpperCase()}`}
-                                                                {c?.block &&
-                                                                    ` - ${c.block.toUpperCase()}`}
                                                             </SelectItem>
                                                         ))}
                                                     </SelectGroup>

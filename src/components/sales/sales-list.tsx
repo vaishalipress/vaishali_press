@@ -7,25 +7,19 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Button } from "../ui/button";
-import { BaggageClaim, CalendarIcon, Pen, Trash } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BaggageClaim, Pen, Trash } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
-import { LoadingCells } from "../loading";
+import { LoadingCells } from "@/components/loading";
 import { format } from "date-fns";
 import { useSale } from "@/hooks/use-fetch-data";
-import { Badge } from "../ui/badge";
-import { useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Calendar } from "../ui/calendar";
-import { DateRange } from "react-day-picker";
-import { cn } from "@/lib/utils";
-import { FilterSale } from "./filter-sales";
+import { FilterSale } from "@/components/sales/filter-sales";
 import { useFilter } from "@/hooks/useFilter";
 
 export default function SalesList() {
     const { onOpen } = useModal();
     const { date, setDate, setType, toggleType, type } = useFilter();
-    const { data, isLoading } = useSale(date);
+    const { data, isLoading } = useSale(date); //fetch data
 
     return (
         <div className="max-w-7xl w-full flex flex-col gap-3">
@@ -55,9 +49,6 @@ export default function SalesList() {
                                 </TableHead>
                                 <TableHead className="uppercase">
                                     Market
-                                </TableHead>
-                                <TableHead className="uppercase">
-                                    Block
                                 </TableHead>
                                 <TableHead className="uppercase">
                                     District
@@ -95,9 +86,6 @@ export default function SalesList() {
                                         {sale?.client?.market
                                             ? sale?.client?.market
                                             : "NA"}
-                                    </TableCell>
-                                    <TableCell className="uppercase text-xs lg:text-sm">
-                                        {sale?.client?.block}
                                     </TableCell>
                                     <TableCell className="uppercase text-xs lg:text-sm">
                                         {sale?.client?.district}
