@@ -132,13 +132,32 @@ export const GET = async (req: Request) => {
 
         const { searchParams } = new URL(req.url);
 
-        let from =
-            !!searchParams.get("from") && new Date(searchParams.get("from")!);
-        let to = !!searchParams.get("to") && new Date(searchParams.get("to")!);
+        let from: Date | undefined = !!searchParams.get("from")
+            ? new Date(searchParams.get("from")!)
+            : undefined;
+        let to: Date | undefined = !!searchParams.get("to")
+            ? new Date(searchParams?.get("to")!)
+            : new Date();
 
-        const sales = await Sale.find()
+        const sales = await Sale.find({
+            $and: [
+                from
+                    ? {
+                          date: {
+                              $gte: from,
+                          },
+                      }
+                    : {},
+
+                {
+                    date: {
+                        $lte: to,
+                    },
+                },
+            ],
+        })
             .populate("client product")
-            .sort({ createdAt: -1 });
+            .sort({ date: -1 });
 
         if (!sales) {
             return Response.json("something went wrong while fetching sales", {

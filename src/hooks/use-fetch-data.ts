@@ -6,6 +6,7 @@ import {
     SalesTypeExtended,
     districtType,
 } from "@/lib/types";
+import { getDayMax, getDayMin } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { DateRange } from "react-day-picker";
@@ -36,8 +37,8 @@ export const useSale = (date: DateRange | undefined) => {
         queryFn: async () => {
             const { data } = await axios.get(
                 `/api/sale?${
-                    date?.from && `from=${date.from?.toLocaleDateString()}`
-                }&${date?.to && `to=${date.to.toLocaleDateString()}`}`
+                    date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
+                }&${date?.to && `to=${getDayMax(date.to).toUTCString()}`}`
             );
             return data?.sales;
         },
