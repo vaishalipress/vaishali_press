@@ -35,9 +35,9 @@ export const useSale = (date: DateRange | undefined) => {
         queryKey: ["sales-list", date?.from?.getDate(), date?.to?.getDate()],
         queryFn: async () => {
             const { data } = await axios.get(
-                `/api/sale?${date?.from && `from=${date.from}`}&${
-                    date?.to && `to=${date.to}`
-                }`
+                `/api/sale?${
+                    date?.from && `from=${date.from?.toLocaleDateString()}`
+                }&${date?.to && `to=${date.to.toLocaleDateString()}`}`
             );
             return data?.sales;
         },

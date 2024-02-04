@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const GET = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return Response.json(
                 { message: "Unauthorized" },
                 {

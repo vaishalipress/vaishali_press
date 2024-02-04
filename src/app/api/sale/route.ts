@@ -15,7 +15,7 @@ CONNECT_TO_DB();
 export const POST = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return Response.json(
                 { message: "Unauthorized" },
                 {
@@ -121,7 +121,7 @@ export const POST = async (req: Request) => {
 export const GET = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return Response.json(
                 { message: "Unauthorized" },
                 {
@@ -129,14 +129,23 @@ export const GET = async (req: Request) => {
                 }
             );
         }
+
+        const { searchParams } = new URL(req.url);
+
+        let from =
+            !!searchParams.get("from") && new Date(searchParams.get("from")!);
+        let to = !!searchParams.get("to") && new Date(searchParams.get("to")!);
+
         const sales = await Sale.find()
             .populate("client product")
             .sort({ createdAt: -1 });
+
         if (!sales) {
             return Response.json("something went wrong while fetching sales", {
                 status: 500,
             });
         }
+
         return Response.json(
             { sales, message: "sales fetched", success: true },
             { status: 200 }
@@ -153,7 +162,7 @@ export const GET = async (req: Request) => {
 export const PUT = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return Response.json(
                 { message: "Unauthorized" },
                 {
@@ -270,7 +279,7 @@ export const PUT = async (req: Request) => {
 export const DELETE = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return Response.json(
                 { message: "Unauthorized" },
                 {

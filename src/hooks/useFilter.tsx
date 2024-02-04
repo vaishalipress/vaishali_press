@@ -5,7 +5,7 @@ export const useFilter = () => {
     const [type, setType] = useState("all");
     const [date, setDate] = useState<DateRange | undefined>({
         from: undefined,
-        to: undefined,
+        to: new Date(),
     });
 
     const toggleType = (type: "all" | "today" | "yesterday" | "none") => {
