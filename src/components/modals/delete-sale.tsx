@@ -15,11 +15,13 @@ import { useModal } from "@/hooks/use-modal-store";
 import { useMutation } from "@tanstack/react-query";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
+import { useFilter } from "@/hooks/useFilter";
 
 export const DeleteSaleModal = () => {
     const { isOpen, onClose, type, data } = useModal();
     const isModalOpen = isOpen && type === "deleteSale";
     const { sale } = data;
+    const { date } = useFilter();
     const { removeData } = useCustumQuery();
 
     const { mutate, isPending } = useMutation({
@@ -29,7 +31,10 @@ export const DeleteSaleModal = () => {
         },
         onSuccess(data) {
             toast("😝 " + data?.message.toUpperCase());
-            removeData(["sales-list"], data?.sale?._id);
+            removeData(
+                ["sales-list", date?.from?.getDate(), date?.to?.getDate()],
+                data?.sale?._id
+            );
         },
         onError: handleAxiosError,
         onSettled: onClose,

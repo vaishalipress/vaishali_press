@@ -90,6 +90,8 @@ export default function AddSales() {
                     data.sale
                 );
             }
+        },
+        onSettled: () => {
             form.reset();
             setTotal(0);
         },

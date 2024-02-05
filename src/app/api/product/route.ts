@@ -22,7 +22,7 @@ export const POST = async (req: Request) => {
         const data: z.infer<typeof productSchema> = await req.json();
         const { success } = productSchema.safeParse({
             ...data,
-            price: Number(data.price),
+            price: data.price,
         });
 
         if (!success) {
@@ -32,7 +32,7 @@ export const POST = async (req: Request) => {
             );
         }
         const isExist = await Product.findOne({
-            name,
+            name: data.name,
         });
 
         if (isExist) {
@@ -44,7 +44,7 @@ export const POST = async (req: Request) => {
 
         const product = await Product.create({
             name: data.name.toLowerCase(),
-            price: Number(data.price),
+            price: data.price,
         });
 
         if (!product) {
@@ -123,7 +123,7 @@ export const PUT = async (req: Request) => {
         const data: z.infer<typeof productSchema> = await req.json();
         const { success } = productSchema.safeParse({
             ...data,
-            price: Number(data.price),
+            price: data.price,
         });
 
         if (!success) {
@@ -145,7 +145,7 @@ export const PUT = async (req: Request) => {
             id,
             {
                 name: data.name.toLowerCase(),
-                price: Number(data.price),
+                price: data.price,
             },
             { new: true }
         );
