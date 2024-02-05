@@ -120,11 +120,15 @@ export const PUT = async (req: Request) => {
             );
         }
 
-        const { name, price } = await req.json();
+        const data: z.infer<typeof productSchema> = await req.json();
+        const { success } = productSchema.safeParse({
+            ...data,
+            price: Number(data.price),
+        });
 
-        if (!(name || price)) {
+        if (!success) {
             return NextResponse.json(
-                { message: "name or price required.", success: false },
+                { message: "all fields are required.", success: false },
                 { status: 400 }
             );
         }
@@ -140,8 +144,8 @@ export const PUT = async (req: Request) => {
         const product = await Product.findByIdAndUpdate(
             id,
             {
-                name: name ? name : isExist.name,
-                price: price ? Number(price) : isExist.price,
+                name: data.name.toLowerCase(),
+                price: Number(data.price),
             },
             { new: true }
         );
