@@ -18,8 +18,9 @@ import { useFilter } from "@/hooks/useFilter";
 
 export default function SalesList() {
     const { onOpen } = useModal();
-    const { date, setDate, toggleType, type } = useFilter();
-    const { data, isLoading } = useSale(date); //fetch data
+    const { date, setDate, toggleType, type, product, user, market, district } =
+        useFilter();
+    const { data, isLoading } = useSale(date, user, product, district, market); //fetch data
 
     return (
         <div className="max-w-7xl w-full flex flex-col gap-3">
@@ -68,7 +69,7 @@ export default function SalesList() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {isLoading && <LoadingCells cols={10} />}
+                            {isLoading && <LoadingCells cols={9} />}
                             {data?.map((sale) => (
                                 <TableRow key={sale?._id}>
                                     <TableCell className="text-xs lg:text-sm">

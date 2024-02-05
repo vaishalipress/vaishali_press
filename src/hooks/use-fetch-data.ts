@@ -31,9 +31,23 @@ export const useProduct = () => {
     });
 };
 
-export const useSale = (date: DateRange | undefined) => {
+export const useSale = (
+    date: DateRange | undefined,
+    user: string | undefined,
+    product: string | undefined,
+    district: string | undefined,
+    market: string | undefined
+) => {
     return useQuery<SalesTypeExtended[]>({
-        queryKey: ["sales-list", date?.from?.getDate(), date?.to?.getDate()],
+        queryKey: [
+            "sales-list",
+            date?.from?.getDate(),
+            date?.to?.getDate(),
+            user,
+            product,
+            district,
+            market,
+        ],
         queryFn: async () => {
             const { data } = await axios.get(
                 `/api/sale?${

@@ -73,7 +73,7 @@ export const EditSaleModal = () => {
     const [total, setTotal] = useState(0);
     const { data: clients, isLoading: isClientLoading } = useClient();
     const { data: products, isLoading: isProductLoading } = useProduct();
-    const { date } = useFilter();
+    const { date, product, user, market, district } = useFilter();
     useEffect(() => {
         if (sale) {
             form.setValue("product", sale?.product?._id);
@@ -99,7 +99,15 @@ export const EditSaleModal = () => {
         onSuccess(data) {
             toast("✅ " + (data?.message as string).toUpperCase());
             updateData(
-                ["sales-list", date?.from?.getDate(), date?.to?.getDate()],
+                [
+                    "sales-list",
+                    date?.from?.getDate(),
+                    date?.to?.getDate(),
+                    user,
+                    product,
+                    district,
+                    market,
+                ],
                 data?.sale
             );
             form.reset();

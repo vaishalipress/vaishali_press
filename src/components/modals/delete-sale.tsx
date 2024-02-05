@@ -21,7 +21,7 @@ export const DeleteSaleModal = () => {
     const { isOpen, onClose, type, data } = useModal();
     const isModalOpen = isOpen && type === "deleteSale";
     const { sale } = data;
-    const { date } = useFilter();
+    const { date, user, product, market, district } = useFilter();
     const { removeData } = useCustumQuery();
 
     const { mutate, isPending } = useMutation({
@@ -32,7 +32,15 @@ export const DeleteSaleModal = () => {
         onSuccess(data) {
             toast("😝 " + data?.message.toUpperCase());
             removeData(
-                ["sales-list", date?.from?.getDate(), date?.to?.getDate()],
+                [
+                    "sales-list",
+                    date?.from?.getDate(),
+                    date?.to?.getDate(),
+                    user,
+                    product,
+                    district,
+                    market,
+                ],
                 data?.sale?._id
             );
         },

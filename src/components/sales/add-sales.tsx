@@ -81,12 +81,28 @@ export default function AddSales() {
             if (data.success) {
                 // All
                 addData(
-                    ["sales-list", undefined, new Date().getDate()],
+                    [
+                        "sales-list",
+                        undefined,
+                        new Date().getDate(),
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                    ],
                     data.sale
                 );
                 // Today
                 addData(
-                    ["sales-list", new Date().getDate(), new Date().getDate()],
+                    [
+                        "sales-list",
+                        new Date().getDate(),
+                        new Date().getDate(),
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                    ],
                     data.sale
                 );
             }
