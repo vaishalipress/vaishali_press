@@ -53,6 +53,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
+import { useFilter } from "@/hooks/useFilter";
 
 export const EditSaleModal = () => {
     const { isOpen, onClose, type, data } = useModal();
@@ -72,7 +73,7 @@ export const EditSaleModal = () => {
     const [total, setTotal] = useState(0);
     const { data: clients, isLoading: isClientLoading } = useClient();
     const { data: products, isLoading: isProductLoading } = useProduct();
-
+    const { date } = useFilter();
     useEffect(() => {
         if (sale) {
             form.setValue("product", sale?.product?._id);
@@ -97,7 +98,10 @@ export const EditSaleModal = () => {
 
         onSuccess(data) {
             toast("✅ " + (data?.message as string).toUpperCase());
-            updateData(["sales-list"], data?.sale);
+            updateData(
+                ["sales-list", date?.from?.getDate(), date?.to?.getDate()],
+                data?.sale
+            );
             form.reset();
             onClose();
         },
@@ -110,7 +114,7 @@ export const EditSaleModal = () => {
                 {/* <DialogContent> */}
                 <DialogHeader>
                     <DialogTitle className="flex gap-2 items-center uppercase text-sm md:text-base">
-                    <Pencil className="text-indigo-600"/>   Edit Sale
+                        <Pencil className="text-indigo-600" /> Edit Sale
                     </DialogTitle>
                 </DialogHeader>
 
@@ -269,8 +273,8 @@ export const EditSaleModal = () => {
                                                             {c.name.toUpperCase()}
                                                             {c?.market &&
                                                                 ` - ${c?.market?.toUpperCase()}`}
-                                                            {c?.block &&
-                                                                ` - ${c.block.toUpperCase()}`}
+                                                            {c?.district &&
+                                                                ` - ${c.district.toUpperCase()}`}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectGroup>

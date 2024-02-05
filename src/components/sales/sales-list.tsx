@@ -18,7 +18,7 @@ import { useFilter } from "@/hooks/useFilter";
 
 export default function SalesList() {
     const { onOpen } = useModal();
-    const { date, setDate, setType, toggleType, type } = useFilter();
+    const { date, setDate, toggleType, type } = useFilter();
     const { data, isLoading } = useSale(date); //fetch data
 
     return (
@@ -26,7 +26,6 @@ export default function SalesList() {
             <FilterSale
                 date={date}
                 setDate={setDate}
-                setType={setType}
                 toggleType={toggleType}
                 type={type}
             />

@@ -7,8 +7,8 @@ export const useCustumQuery = () => {
 
     const updateData = (key: QueryKey, data: queryType) => {
         queryClient.setQueryData(key, (old: queryType[]) => {
-            const allData = old.map((client) =>
-                client._id === data._id
+            const allData = old?.map((client) =>
+                client?._id === data?._id
                     ? {
                           ...data,
                       }
@@ -20,7 +20,7 @@ export const useCustumQuery = () => {
 
     const removeData = (key: QueryKey, id: string) => {
         queryClient.setQueryData(key, (old: queryType[]) => {
-            const allData = old.filter((data) => data._id !== id);
+            const allData = old?.filter((data) => data?._id !== id);
             return allData;
         });
     };

@@ -65,14 +65,14 @@ export const useProductInfo = () => {
     });
 };
 
-export const useMarket = (district: string, block: string) => {
+export const useMarket = (district: string) => {
     return useQuery<MarketType[] | null>({
-        queryKey: ["markets", district, block],
+        queryKey: ["markets", district],
         queryFn: async () => {
+            if (!district) return [];
             const { data } = await axios.get(
-                `/api/market?district=${district}&block=${block}`
+                `/api/market?district=${district}`
             );
-            console.log(data);
             return data?.markets;
         },
     });

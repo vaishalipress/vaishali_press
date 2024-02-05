@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { districtsAndBlocks } from "@/lib/contants";
+import { DISTRICTS } from "@/lib/contants";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -38,7 +38,6 @@ import {
     Smartphone,
     Smile,
     ToyBrick,
-    TriangleRight,
     User,
     X,
 } from "lucide-react";
@@ -51,7 +50,6 @@ export default function AddClientForm() {
         defaultValues: {
             name: "",
             district: "",
-            block: "",
             mobile: "",
             market: "",
         },
@@ -59,12 +57,8 @@ export default function AddClientForm() {
     const { onOpen } = useModal();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [district, setDistrict] = useState("");
-    const [block, setBlock] = useState("");
     const { addData } = useCustumQuery();
-    const { data: markets, isLoading: isMarketLoading } = useMarket(
-        district,
-        block
-    );
+    const { data: markets, isLoading: isMarketLoading } = useMarket(district);
     const { mutate, isPending } = useMutation({
         mutationFn: async (values: z.infer<typeof clientSchema>) => {
             const { data } = await axios.post(`/api/client`, values);
@@ -155,7 +149,7 @@ export default function AddClientForm() {
                                                 value={field.value}
                                                 defaultValue={field.value}
                                                 onValueChange={(e: string) => {
-                                                    form.setValue("block", "");
+                                                    form.setValue("market", "");
                                                     setDistrict(e);
                                                     field.onChange(e);
                                                 }}
@@ -173,79 +167,14 @@ export default function AddClientForm() {
                                                             Districts
                                                         </SelectLabel>
 
-                                                        {districtsAndBlocks.map(
-                                                            (d) => (
-                                                                <SelectItem
-                                                                    key={d.name}
-                                                                    value={d.name.toLowerCase()}
-                                                                >
-                                                                    {d.name.toUpperCase()}
-                                                                </SelectItem>
-                                                            )
-                                                        )}
-                                                    </SelectGroup>
-                                                </SelectContent>
-                                            </Select>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Block */}
-                            <FormField
-                                control={form.control}
-                                name="block"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="flex gap-2 items-center">
-                                            <TriangleRight className="text-indigo-600 w-4 h-4" />{" "}
-                                            <span>BLOCK</span>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Select
-                                                value={field.value}
-                                                onValueChange={(e: string) => {
-                                                    field.onChange(e);
-                                                    setBlock(e);
-                                                }}
-                                                defaultValue={field.value}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue
-                                                        placeholder={
-                                                            "Select block"
-                                                        }
-                                                    />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectGroup>
-                                                        <SelectLabel>
-                                                            Blocks
-                                                        </SelectLabel>
-                                                        {districtsAndBlocks.map(
-                                                            (d) => {
-                                                                if (
-                                                                    d.name.toLowerCase() ===
-                                                                    district
-                                                                ) {
-                                                                    return d.block.map(
-                                                                        (
-                                                                            block
-                                                                        ) => (
-                                                                            <SelectItem
-                                                                                key={
-                                                                                    block
-                                                                                }
-                                                                                value={block.toLowerCase()}
-                                                                            >
-                                                                                {block.toUpperCase()}
-                                                                            </SelectItem>
-                                                                        )
-                                                                    );
-                                                                }
-                                                            }
-                                                        )}
+                                                        {DISTRICTS.map((d) => (
+                                                            <SelectItem
+                                                                key={d}
+                                                                value={d.toLowerCase()}
+                                                            >
+                                                                {d.toUpperCase()}
+                                                            </SelectItem>
+                                                        ))}
                                                     </SelectGroup>
                                                 </SelectContent>
                                             </Select>
@@ -317,7 +246,6 @@ export default function AddClientForm() {
                                                     onOpen("market", {
                                                         market: {
                                                             district,
-                                                            block,
                                                         },
                                                     })
                                                 }

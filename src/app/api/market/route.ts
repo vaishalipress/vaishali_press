@@ -1,28 +1,23 @@
 import CONNECT_TO_DB from "@/lib/connectToDb";
-import { districtsAndBlocks } from "@/lib/contants";
+import { DISTRICTS, districtsAndBlocks } from "@/lib/contants";
+import { isAuth } from "@/lib/isAuth";
 import { marketSchema } from "@/lib/schema";
 import Market from "@/models/market";
 import { z } from "zod";
 
 CONNECT_TO_DB();
 
-const isDistrictAndBlockValid = (district: string, block: string) => {
-    block = block.charAt(0).toUpperCase() + block.substring(1);
-
-    let isValid = false;
-    for (let i = 0; i < districtsAndBlocks.length; i++) {
-        if (isValid) break;
-        if (i === districtsAndBlocks.length - 1) break;
-        if (districtsAndBlocks[i].name.toLowerCase() === district) {
-            if (districtsAndBlocks[i].block.includes(block)) {
-                isValid = true;
-            }
-        }
-    }
-    return isValid;
-};
 export const POST = async (request: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isauth) {
+            return Response.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const data: z.infer<typeof marketSchema> = await request.json();
         const { success } = marketSchema.safeParse(data);
 
@@ -36,14 +31,10 @@ export const POST = async (request: Request) => {
             );
         }
 
-        const isValidDistrictAndBlock = isDistrictAndBlockValid(
-            data.district,
-            data.block
-        );
-        if (!isValidDistrictAndBlock) {
+        if (!DISTRICTS.includes(data.district.toLowerCase())) {
             return Response.json(
                 {
-                    message: "Invalid district or block",
+                    message: "Invalid district",
                     success: false,
                 },
                 { status: 401 }
@@ -53,6 +44,7 @@ export const POST = async (request: Request) => {
         const isExist = await Market.findOne({
             name: data.name.toLowerCase(),
         });
+
         if (isExist) {
             return Response.json(
                 { message: "Market already exists", success: false },
@@ -61,8 +53,8 @@ export const POST = async (request: Request) => {
         }
 
         const market = await Market.create({
-            ...data,
             name: data.name.toLowerCase(),
+            district: data.district.toLowerCase(),
         });
 
         if (!market) {
@@ -95,11 +87,19 @@ export const POST = async (request: Request) => {
 
 export const GET = async (request: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isauth) {
+            return Response.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const { searchParams } = new URL(request.url);
         const district = searchParams.get("district");
-        const block = searchParams.get("block");
 
-        if (!district || !block) {
+        if (!district) {
             return Response.json(
                 {
                     message: "district and block are required.",
@@ -111,7 +111,7 @@ export const GET = async (request: Request) => {
             );
         }
 
-        const markets = await Market.find({ district, block });
+        const markets = await Market.find({ district });
 
         if (!markets) {
             return Response.json(
@@ -143,6 +143,15 @@ export const GET = async (request: Request) => {
 
 export const DELETE = async (request: Request) => {
     try {
+        const isauth = await isAuth();
+        if (!isauth) {
+            return Response.json(
+                { message: "Unauthorized" },
+                {
+                    status: 401,
+                }
+            );
+        }
         const { searchParams } = new URL(request.url);
         const id = searchParams.get("id");
         if (!id) {

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import CONNECT_TO_DB from "@/lib/connectToDb";
 import Product from "@/models/product";
 import { isAuth } from "@/lib/isAuth";
+import { productSchema } from "@/lib/schema";
+import { z } from "zod";
 CONNECT_TO_DB();
 /**
  * REGISTER Product
@@ -9,7 +11,7 @@ CONNECT_TO_DB();
 export const POST = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return Response.json(
                 { message: "Unauthorized" },
                 {
@@ -17,9 +19,13 @@ export const POST = async (req: Request) => {
                 }
             );
         }
-        const { name, price } = await req.json();
+        const data: z.infer<typeof productSchema> = await req.json();
+        const { success } = productSchema.safeParse({
+            ...data,
+            price: Number(data.price),
+        });
 
-        if (!name || !price) {
+        if (!success) {
             return NextResponse.json(
                 { message: "all fields are required.", success: false },
                 { status: 400 }
@@ -37,8 +43,8 @@ export const POST = async (req: Request) => {
         }
 
         const product = await Product.create({
-            name,
-            price: Number(price),
+            name: data.name.toLowerCase(),
+            price: Number(data.price),
         });
 
         if (!product) {
@@ -64,7 +70,7 @@ export const POST = async (req: Request) => {
 export const GET = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return Response.json(
                 { message: "Unauthorized" },
                 {
@@ -96,7 +102,7 @@ export const GET = async (req: Request) => {
 export const PUT = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return Response.json(
                 { message: "Unauthorized" },
                 {
@@ -158,7 +164,7 @@ export const PUT = async (req: Request) => {
 export const DELETE = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return Response.json(
                 { message: "Unauthorized" },
                 {

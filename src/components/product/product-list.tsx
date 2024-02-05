@@ -47,7 +47,7 @@ export default function ProductList() {
                         {data?.map((product) => (
                             <TableRow key={product?._id}>
                                 <TableCell className="font-medium capitalize">
-                                    {product.name}
+                                    {product.name.toLocaleUpperCase()}
                                 </TableCell>
                                 <TableCell className="capitalize">
                                     {product.price}

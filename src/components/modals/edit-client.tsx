@@ -26,6 +26,15 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import {
+    Loader2,
+    Pencil,
+    Pentagon,
+    Smartphone,
+    Smile,
+    ToyBrick,
+    User,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,17 +43,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { clientSchema } from "@/lib/schema";
-import { districtsAndBlocks } from "@/lib/contants";
-import {
-    Loader2,
-    Pencil,
-    Pentagon,
-    Smartphone,
-    Smile,
-    ToyBrick,
-    TriangleRight,
-    User,
-} from "lucide-react";
+import { DISTRICTS } from "@/lib/contants";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
 import { useMarket } from "@/hooks/use-fetch-data";
@@ -59,32 +58,28 @@ export const EditClientModal = () => {
         defaultValues: {
             name: "",
             district: "",
-            block: "",
             mobile: "",
             market: "",
         },
     });
     const [district, setDistrict] = useState("");
-    const [block, setBlock] = useState("");
+
     useEffect(() => {
         if (client) {
             form.setValue("name", client?.name);
             form.setValue("district", client?.district);
             setDistrict(client?.district);
-            form.setValue("block", client?.block);
-            setBlock(client?.block);
+
             form.setValue("market", client?.market || "");
             form.setValue("mobile", client?.mobile || "");
         }
     }, [form, client]);
 
-    const { data: markets, isLoading: isMarketLoading } = useMarket(
-        district,
-        block
-    );
-    const { updateData } = useCustumQuery();
+    const { data: markets, isLoading: isMarketLoading } = useMarket(district);
 
+    const { updateData } = useCustumQuery(); // update in existing data
     const { mutate, isPending } = useMutation({
+        // update client details
         mutationFn: async (values: z.infer<typeof clientSchema>) => {
             const { data } = await axios.put(
                 `/api/client?id=${client?._id}`,
@@ -108,7 +103,7 @@ export const EditClientModal = () => {
                 {/* <DialogContent> */}
                 <DialogHeader>
                     <DialogTitle className="flex gap-2 items-center uppercase text-sm md:text-base">
-                        <Pencil className="text-indigo-600"/> Edit Client
+                        <Pencil className="text-indigo-600" /> Edit Client
                     </DialogTitle>
                 </DialogHeader>
 
@@ -154,7 +149,7 @@ export const EditClientModal = () => {
                                             value={field.value}
                                             defaultValue={field.value}
                                             onValueChange={(e: string) => {
-                                                form.setValue("block", "");
+                                                form.setValue("market", "");
                                                 setDistrict(e);
                                                 field.onChange(e);
                                             }}
@@ -172,75 +167,14 @@ export const EditClientModal = () => {
                                                         Districts
                                                     </SelectLabel>
 
-                                                    {districtsAndBlocks.map(
-                                                        (d) => (
-                                                            <SelectItem
-                                                                key={d.name}
-                                                                value={d.name.toLowerCase()}
-                                                            >
-                                                                {d.name.toUpperCase()}
-                                                            </SelectItem>
-                                                        )
-                                                    )}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Block */}
-                        <FormField
-                            control={form.control}
-                            name="block"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="flex gap-2 items-center">
-                                        <TriangleRight className="text-indigo-600 w-4 h-4" />{" "}
-                                        <span>BLOCK</span>
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Select
-                                            value={field.value}
-                                            onValueChange={(e: string) => {
-                                                field.onChange(e);
-                                                setBlock(e);
-                                            }}
-                                            defaultValue={field.value}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue
-                                                    placeholder={"Select block"}
-                                                />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectLabel>
-                                                        Blocks
-                                                    </SelectLabel>
-                                                    {districtsAndBlocks.map(
-                                                        (d) => {
-                                                            if (
-                                                                d.name.toLowerCase() ===
-                                                                district
-                                                            ) {
-                                                                return d.block.map(
-                                                                    (block) => (
-                                                                        <SelectItem
-                                                                            key={
-                                                                                block
-                                                                            }
-                                                                            value={block.toLowerCase()}
-                                                                        >
-                                                                            {block.toUpperCase()}
-                                                                        </SelectItem>
-                                                                    )
-                                                                );
-                                                            }
-                                                        }
-                                                    )}
+                                                    {DISTRICTS.map((d) => (
+                                                        <SelectItem
+                                                            key={d}
+                                                            value={d.toLowerCase()}
+                                                        >
+                                                            {d.toUpperCase()}
+                                                        </SelectItem>
+                                                    ))}
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
@@ -310,7 +244,6 @@ export const EditClientModal = () => {
                                                 onOpen("market", {
                                                     market: {
                                                         district,
-                                                        block,
                                                     },
                                                 })
                                             }

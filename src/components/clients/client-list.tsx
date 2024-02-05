@@ -34,7 +34,6 @@ export default function ClientList() {
                                 name
                             </TableHead>
                             <TableHead className="uppercase">Market</TableHead>
-                            <TableHead className="uppercase">Block</TableHead>
                             <TableHead className="uppercase">
                                 District
                             </TableHead>
@@ -59,9 +58,7 @@ export default function ClientList() {
                                 <TableCell className="capitalize">
                                     {client?.market ? client?.market : "NA"}
                                 </TableCell>
-                                <TableCell className="capitalize">
-                                    {client?.block}
-                                </TableCell>
+
                                 <TableCell className="capitalize">
                                     {client?.district}
                                 </TableCell>

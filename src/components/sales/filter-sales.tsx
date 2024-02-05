@@ -6,18 +6,17 @@ import { Button } from "../ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
+import { filterType } from "@/hooks/useFilter";
 
 export const FilterSale = ({
     toggleType,
     type,
     date,
     setDate,
-    setType,
 }: {
     date: DateRange | undefined;
-    type: string;
-    toggleType: (value: "all" | "today" | "yesterday" | "none") => void;
-    setType: (value: string) => void;
+    type: filterType;
+    toggleType: (value: filterType) => void;
     setDate: (value: DateRange | undefined) => void;
 }) => {
     return (
@@ -83,7 +82,7 @@ export const FilterSale = ({
                         selected={date}
                         onSelect={(val) => {
                             setDate(val);
-                            setType("none");
+                            toggleType("none");
                         }}
                         numberOfMonths={1}
                     />

@@ -4,8 +4,7 @@ import mongoose_aggregate_paginate_v2 from "mongoose-aggregate-paginate-v2";
 export interface ClientI {
     name: string;
     district: string;
-    block: string;
-    market?: string;
+    market: string;
     mobile?: string;
 }
 
@@ -19,10 +18,7 @@ const clientSchema = new Schema<ClientI>(
             type: String,
             required: true,
         },
-        block: {
-            type: String,
-            required: true,
-        },
+
         market: {
             type: String,
         },

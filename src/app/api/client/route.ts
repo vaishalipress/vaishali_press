@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import CONNECT_TO_DB from "@/lib/connectToDb";
 import { isAuth } from "@/lib/isAuth";
 import { clientSchema } from "@/lib/schema";
+import Sale from "@/models/sale";
 
 CONNECT_TO_DB();
 
@@ -13,7 +14,7 @@ CONNECT_TO_DB();
 export const POST = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return NextResponse.json(
                 { message: "Unauthorized" },
                 {
@@ -60,7 +61,7 @@ export const POST = async (req: Request) => {
 export const GET = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return NextResponse.json(
                 { message: "Unauthorized" },
                 {
@@ -97,7 +98,7 @@ export const GET = async (req: Request) => {
 export const DELETE = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return NextResponse.json(
                 { message: "Unauthorized" },
                 {
@@ -116,6 +117,11 @@ export const DELETE = async (req: Request) => {
         }
 
         const client = await Client.findByIdAndDelete(id);
+
+        // delete all sales
+        await Sale.deleteMany({
+            client: id,
+        });
 
         if (!client) {
             return NextResponse.json(
@@ -137,7 +143,7 @@ export const DELETE = async (req: Request) => {
 export const PUT = async (req: Request) => {
     try {
         const isauth = await isAuth();
-        if (!isAuth) {
+        if (!isauth) {
             return NextResponse.json(
                 { message: "Unauthorized" },
                 {

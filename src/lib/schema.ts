@@ -12,9 +12,6 @@ export const clientSchema = z.object({
         .string({ required_error: "Select a district" })
         .min(3, { message: "Select a valid district" }),
 
-    block: z
-        .string({ required_error: "Select a block" })
-        .min(3, { message: "Select a valid block" }),
     market: z
         .string({ required_error: "Select a market" })
         .min(3, { message: "Select a valid market" }),
@@ -33,10 +30,6 @@ export const marketSchema = z.object({
     district: z
         .string({ required_error: "Select a district" })
         .min(3, { message: "Select a valid district" }),
-
-    block: z
-        .string({ required_error: "Select a block" })
-        .min(3, { message: "Select a valid block" }),
 });
 
 export const productSchema = z.object({

@@ -89,10 +89,9 @@ export default function AddSales() {
                     ["sales-list", new Date().getDate(), new Date().getDate()],
                     data.sale
                 );
-
-                form.reset();
-                setTotal(0);
             }
+            form.reset();
+            setTotal(0);
         },
 
         onError: handleAxiosError,

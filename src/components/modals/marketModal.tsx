@@ -35,7 +35,7 @@ import {
     SelectValue,
 } from "../ui/select";
 import { useEffect, useState } from "react";
-import { districtsAndBlocks } from "@/lib/contants";
+import { DISTRICTS, districtsAndBlocks } from "@/lib/contants";
 import { Button } from "../ui/button";
 import {
     AlignStartVertical,
@@ -56,7 +56,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "../ui/table";
+} from "@/components/ui/table";
 
 export const MarketModal = () => {
     const { isOpen, onClose, type, data } = useModal();
@@ -67,14 +67,13 @@ export const MarketModal = () => {
         defaultValues: {
             name: "",
             district: "",
-            block: "",
         },
     });
-    const [district, setDistrict] = useState("");
-    const [block, setBlock] = useState("");
 
     const { addData, removeData } = useCustumQuery();
-    const { data: markets } = useMarket(district, block);
+    const [district, setDistrict] = useState("");
+    const { data: markets } = useMarket(district);
+
     // CREATE MARKET
     const { mutate, isPending } = useMutation({
         mutationFn: async (values: z.infer<typeof marketSchema>) => {
@@ -85,7 +84,7 @@ export const MarketModal = () => {
         onSuccess(data) {
             toast("✅ " + (data?.message as string).toUpperCase());
             if (data.success) {
-                addData(["markets", district, block], data.market);
+                addData(["markets", form.getValues("district")], data.market);
                 form.setValue("name", "");
             }
         },
@@ -103,7 +102,10 @@ export const MarketModal = () => {
             onSuccess(data) {
                 toast("✅ " + (data?.message as string).toUpperCase());
                 if (data.success) {
-                    removeData(["markets", district, block], data.market._id);
+                    removeData(
+                        ["markets", form.getValues("district")],
+                        data.market._id
+                    );
                 }
             },
 
@@ -113,11 +115,10 @@ export const MarketModal = () => {
     useEffect(() => {
         if (market) {
             form.setValue("district", market?.district || "");
-            form.setValue("block", market?.block || "");
             setDistrict(market?.district || "");
-            setBlock(market?.block || "");
         }
     }, [form, market]);
+
     return (
         <Dialog open={isModalOpen} onOpenChange={onClose}>
             <DialogContent className="max-h-[90vh] overflow-y-auto">
@@ -126,7 +127,7 @@ export const MarketModal = () => {
                         <AlignStartVertical className="text-indigo-600" />{" "}
                         <span>Markets</span>
                     </DialogTitle>
-                    <DialogDescription>Add or Delete market</DialogDescription>
+                    {/* <DialogDescription>Add or Delete market</DialogDescription> */}
                 </DialogHeader>
                 <div className="flex flex-col gap-3">
                     <Form {...form}>
@@ -173,9 +174,8 @@ export const MarketModal = () => {
                                                 value={field.value}
                                                 defaultValue={field.value}
                                                 onValueChange={(e: string) => {
-                                                    form.setValue("block", "");
-                                                    setDistrict(e);
                                                     field.onChange(e);
+                                                    setDistrict(e);
                                                 }}
                                             >
                                                 <SelectTrigger>
@@ -191,79 +191,14 @@ export const MarketModal = () => {
                                                             Districts
                                                         </SelectLabel>
 
-                                                        {districtsAndBlocks.map(
-                                                            (d) => (
-                                                                <SelectItem
-                                                                    key={d.name}
-                                                                    value={d.name.toLowerCase()}
-                                                                >
-                                                                    {d.name.toUpperCase()}
-                                                                </SelectItem>
-                                                            )
-                                                        )}
-                                                    </SelectGroup>
-                                                </SelectContent>
-                                            </Select>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Block */}
-                            <FormField
-                                control={form.control}
-                                name="block"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="flex gap-2 items-center">
-                                            <TriangleRight className="text-indigo-600 w-4 h-4" />{" "}
-                                            <span>BLOCK</span>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Select
-                                                value={field.value}
-                                                onValueChange={(e: string) => {
-                                                    field.onChange(e);
-                                                    setBlock(e);
-                                                }}
-                                                defaultValue={field.value}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue
-                                                        placeholder={
-                                                            "Select block"
-                                                        }
-                                                    />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectGroup>
-                                                        <SelectLabel>
-                                                            Blocks
-                                                        </SelectLabel>
-                                                        {districtsAndBlocks.map(
-                                                            (d) => {
-                                                                if (
-                                                                    d.name.toLowerCase() ===
-                                                                    district
-                                                                ) {
-                                                                    return d.block.map(
-                                                                        (
-                                                                            block
-                                                                        ) => (
-                                                                            <SelectItem
-                                                                                key={
-                                                                                    block
-                                                                                }
-                                                                                value={block.toLowerCase()}
-                                                                            >
-                                                                                {block.toUpperCase()}
-                                                                            </SelectItem>
-                                                                        )
-                                                                    );
-                                                                }
-                                                            }
-                                                        )}
+                                                        {DISTRICTS.map((d) => (
+                                                            <SelectItem
+                                                                key={d}
+                                                                value={d.toLowerCase()}
+                                                            >
+                                                                {d.toUpperCase()}
+                                                            </SelectItem>
+                                                        ))}
                                                     </SelectGroup>
                                                 </SelectContent>
                                             </Select>
@@ -292,7 +227,7 @@ export const MarketModal = () => {
                         </form>
                     </Form>
 
-                    {markets && (
+                    {markets?.[0] && (
                         <div>
                             <div className="flex gap-2 items-center">
                                 <AlignStartVertical className="text-indigo-600 w-5 h-6" />
@@ -300,9 +235,7 @@ export const MarketModal = () => {
                                     Market List
                                 </h3>
                             </div>
-                            <DialogDescription>
-                                Select District and Block to get markets
-                            </DialogDescription>
+
                             <Table>
                                 <TableHeader>
                                     <TableRow>

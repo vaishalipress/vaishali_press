@@ -23,7 +23,6 @@ interface ModalData {
     clientSalesDetail?: clientType;
     market?: {
         district?: string;
-        block?: string;
     };
 }
 

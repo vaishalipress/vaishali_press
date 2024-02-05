@@ -1,40 +1,47 @@
-import { useState } from "react";
 import { DateRange } from "react-day-picker";
+import { create } from "zustand";
 
-export const useFilter = () => {
-    const [type, setType] = useState("all");
-    const [date, setDate] = useState<DateRange | undefined>({
-        from: undefined,
-        to: new Date(),
-    });
-
-    const toggleType = (type: "all" | "today" | "yesterday" | "none") => {
-        setType(type);
+export type filterType = "all" | "today" | "yesterday" | "none";
+interface StoreType {
+    type: filterType;
+    toggleType: (type: filterType) => void;
+    date: DateRange | undefined;
+    setDate: (date: DateRange | undefined) => void;
+}
+export const useFilter = create<StoreType>((set) => ({
+    type: "all",
+    date: { to: new Date(), from: undefined },
+    setDate: (date) => set({ date }),
+    toggleType: (type: filterType) => {
+        set({
+            type,
+        });
         switch (type) {
             case "all":
-                setDate({
-                    from: undefined,
-                    to: new Date(),
+                set({
+                    date: { from: undefined, to: new Date() },
                 });
                 break;
 
             case "today":
-                setDate({
-                    from: new Date(),
-                    to: new Date(),
+                set({
+                    date: {
+                        from: new Date(),
+                        to: new Date(),
+                    },
                 });
                 break;
             case "yesterday":
                 let currentDate = new Date();
                 let yesterday = new Date(currentDate);
                 yesterday.setDate(yesterday.getDate() - 1);
-                setDate({
-                    from: yesterday,
-                    to: yesterday,
+                set({
+                    date: {
+                        from: yesterday,
+                        to: yesterday,
+                    },
                 });
                 break;
         }
-    };
-
-    return { date, setDate, setType, toggleType, type };
-};
+    },
+}));
