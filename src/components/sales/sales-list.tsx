@@ -8,13 +8,16 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { BaggageClaim, Pen, Trash } from "lucide-react";
+import { BaggageClaim, Download, Pen, Trash } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { LoadingCells } from "@/components/loading";
 import { format } from "date-fns";
 import { useSale } from "@/hooks/use-fetch-data";
 import { FilterSale } from "@/components/sales/filter-sales";
 import { useFilter } from "@/hooks/useFilter";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
+import { toast } from "sonner";
 
 export default function SalesList() {
     const { onOpen } = useModal();
@@ -38,6 +41,19 @@ export default function SalesList() {
         market
     ); //fetch data
 
+    const downloadHandler = () => {
+        if (isLoading) {
+            toast("Please wait.");
+            return;
+        }
+        const doc = new jsPDF({ orientation: "landscape" });
+        autoTable(doc, {
+            html: "#sales",
+        });
+        doc.save("sales.pdf");
+        doc.autoPrint();
+    };
+
     return (
         <div className="max-w-7xl w-full flex flex-col gap-3">
             <FilterSale
@@ -58,10 +74,16 @@ export default function SalesList() {
                             Sales
                         </h1>
                     </div>
-                    <Button variant={"secondary"} size={"sm"}>PRINT</Button>
+                    <Button
+                        variant={"ghost"}
+                        size={"icon"}
+                        onClick={downloadHandler}
+                    >
+                        <Download className="w-5 h-5" />
+                    </Button>
                 </div>
                 <div>
-                    <Table>
+                    <Table id="sales">
                         <TableHeader>
                             <TableRow>
                                 <TableHead className="uppercase min-w-[75px] lg:min-w-[120px]">
@@ -105,19 +127,19 @@ export default function SalesList() {
                                                 "dd-MM-yyyy"
                                             )}
                                     </TableCell>
-                                    <TableCell className="uppercase text-xs lg:text-sm">
-                                        {sale?.client?.name}
+                                    <TableCell className="text-xs lg:text-sm">
+                                        {sale?.client?.name.toUpperCase()}
                                     </TableCell>
-                                    <TableCell className="uppercase text-xs lg:text-sm">
+                                    <TableCell className="text-xs lg:text-sm">
                                         {sale?.client?.market
-                                            ? sale?.client?.market
+                                            ? sale?.client?.market.toUpperCase()
                                             : "NA"}
                                     </TableCell>
-                                    <TableCell className="uppercase text-xs lg:text-sm">
-                                        {sale?.client?.district}
+                                    <TableCell className="text-xs lg:text-sm">
+                                        {sale?.client?.district.toUpperCase()}
                                     </TableCell>
-                                    <TableCell className="font-medium uppercase text-xs lg:text-sm">
-                                        {sale?.name}
+                                    <TableCell className="font-medium text-xs lg:text-sm">
+                                        {sale?.name.toUpperCase()}
                                     </TableCell>
                                     <TableCell className="text-xs lg:text-sm">
                                         {sale?.qty}
