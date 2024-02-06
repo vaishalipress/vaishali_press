@@ -83,15 +83,18 @@ export default function SalesList() {
                                 <TableHead className="uppercase min-w-[100px] lg:min-w-[140px]">
                                     Amount
                                 </TableHead>
-                                <TableHead className="text-right uppercase min-w-[100px] md:min-w-[150px]">
-                                    Actions
-                                </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {isLoading && <LoadingCells cols={9} />}
+                            {isLoading && <LoadingCells cols={8} />}
                             {data?.map((sale) => (
-                                <TableRow key={sale?._id}>
+                                <TableRow
+                                    key={sale?._id}
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                        onOpen("editSale", { sale });
+                                    }}
+                                >
                                     <TableCell className="text-xs lg:text-sm">
                                         {sale?.date &&
                                             format(
@@ -122,28 +125,6 @@ export default function SalesList() {
                                     <TableCell className="text-xs lg:text-sm">
                                         {sale?.qty} x {sale?.rate} ={" "}
                                         {sale?.qty * sale?.rate}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        {/* EDIT BTN */}
-                                        <Button
-                                            variant={"outline"}
-                                            className="px-2 py-0"
-                                            onClick={() => {
-                                                onOpen("editSale", { sale });
-                                            }}
-                                        >
-                                            <Pen className="w-3 h-3 md:w-4 md:h-4" />
-                                        </Button>
-                                        {/* DELETE BTN */}
-                                        <Button
-                                            variant={"outline"}
-                                            className="ml-2 px-2 py-0"
-                                            onClick={() => {
-                                                onOpen("deleteSale", { sale });
-                                            }}
-                                        >
-                                            <Trash className="w-3 h-3 md:w-4 md:h-4" />
-                                        </Button>
                                     </TableCell>
                                 </TableRow>
                             ))}

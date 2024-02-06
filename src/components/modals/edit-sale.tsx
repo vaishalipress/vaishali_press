@@ -43,6 +43,7 @@ import {
     Package,
     PackagePlus,
     Pencil,
+    Trash,
     User,
 } from "lucide-react";
 import { handleAxiosError } from "@/lib/error";
@@ -56,7 +57,7 @@ import { Calendar } from "../ui/calendar";
 import { useFilter } from "@/hooks/useFilter";
 
 export const EditSaleModal = () => {
-    const { isOpen, onClose, type, data } = useModal();
+    const { isOpen, onClose, type, data, onOpen } = useModal();
     const isModalOpen = isOpen && type === "editSale";
     const { sale } = data;
 
@@ -73,7 +74,7 @@ export const EditSaleModal = () => {
     const [total, setTotal] = useState(0);
     const { data: clients, isLoading: isClientLoading } = useClient();
     const { data: products, isLoading: isProductLoading } = useProduct();
-    const { date, product, user, market, district } = useFilter();
+    const { date, product, client, market, district } = useFilter();
     useEffect(() => {
         if (sale) {
             form.setValue("product", sale?.product?._id);
@@ -103,7 +104,7 @@ export const EditSaleModal = () => {
                     "sales-list",
                     date?.from?.getDate(),
                     date?.to?.getDate(),
-                    user,
+                    client,
                     product,
                     district,
                     market,
@@ -125,7 +126,6 @@ export const EditSaleModal = () => {
                         <Pencil className="text-indigo-600" /> Edit Sale
                     </DialogTitle>
                 </DialogHeader>
-
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit((value) => mutate(value))}
@@ -382,6 +382,17 @@ export const EditSaleModal = () => {
                                     </span>
                                 </div>
                             )}
+                        </Button>
+                        <Button
+                            type="button"
+                            variant={"destructive"}
+                            className="px-2 py-0 flex items-center gap-2"
+                            onClick={() => {
+                                onOpen("deleteSale", { sale });
+                            }}
+                        >
+                            <Trash className="w-3 h-3 md:w-4 md:h-4" />
+                            <span>DELETE</span>
                         </Button>
                     </form>
                 </Form>
