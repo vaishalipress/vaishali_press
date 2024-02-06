@@ -55,6 +55,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import { useFilter } from "@/hooks/useFilter";
+import { useSearchParams } from "next/navigation";
 
 export const EditSaleModal = () => {
     const { isOpen, onClose, type, data, onOpen } = useModal();
@@ -86,8 +87,10 @@ export const EditSaleModal = () => {
         }
     }, [form, sale]);
 
-    const { updateData } = useCustumQuery();
-
+    const { updateSale } = useCustumQuery();
+    const params = useSearchParams();
+    const page = Number(params.get("page")) || 1;
+    const view = params.get("view") || "200";
     const { mutate, isPending } = useMutation({
         mutationFn: async (values: z.infer<typeof salesSchema>) => {
             const { data } = await axios.put(
@@ -99,7 +102,7 @@ export const EditSaleModal = () => {
 
         onSuccess(data) {
             toast("✅ " + (data?.message as string).toUpperCase());
-            updateData(
+            updateSale(
                 [
                     "sales-list",
                     date?.from?.getDate(),
@@ -108,6 +111,8 @@ export const EditSaleModal = () => {
                     product,
                     district,
                     market,
+                    page,
+                    view,
                 ],
                 data?.sale
             );

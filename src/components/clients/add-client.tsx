@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { DISTRICTS } from "@/lib/contants";
+import { DISTRICTS } from "@/lib/constants";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";

@@ -1,5 +1,5 @@
 import CONNECT_TO_DB from "@/lib/connectToDb";
-import { DISTRICTS, districtsAndBlocks } from "@/lib/contants";
+import { DISTRICTS, districtsAndBlocks } from "@/lib/constants";
 import { isAuth } from "@/lib/isAuth";
 import { marketSchema } from "@/lib/schema";
 import Market from "@/models/market";

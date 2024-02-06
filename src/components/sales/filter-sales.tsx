@@ -1,3 +1,4 @@
+"use client";
 import { Badge } from "../ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
@@ -17,6 +18,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "../ui/select";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export const FilterSale = ({
     toggleType,
@@ -39,6 +41,20 @@ export const FilterSale = ({
 }) => {
     const { data: clients, isLoading: isClientLoading } = useClient();
     const { data: products, isLoading: isProductLoading } = useProduct();
+
+    const { replace } = useRouter();
+    const path = usePathname();
+
+    const searchParams = useSearchParams();
+    const params = new URLSearchParams(searchParams);
+    const view = params.get("view") || "200";
+
+    const onChangeView = (value: string) => {
+        params.set("view", value);
+        params.set("page", "1");
+        replace(`${path}?${params}`);
+    };
+    
     return (
         <div className="flex gap-2 overflow-x-auto px-1">
             <Badge
@@ -164,6 +180,27 @@ export const FilterSale = ({
                                 {p.name.toUpperCase()}
                             </SelectItem>
                         ))}
+                    </SelectGroup>
+                </SelectContent>
+            </Select>
+
+            {/* VIEW  */}
+            <Select
+                value={view}
+                defaultValue={view}
+                onValueChange={onChangeView}
+            >
+                <SelectTrigger className="w-32">
+                    <SelectValue placeholder={"View"} />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectGroup>
+                        <SelectLabel>Limit</SelectLabel>
+                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="100">100</SelectItem>
+                        <SelectItem value="150">150</SelectItem>
+                        <SelectItem value="200">200</SelectItem>
+                        <SelectItem value="300">300</SelectItem>
                     </SelectGroup>
                 </SelectContent>
             </Select>

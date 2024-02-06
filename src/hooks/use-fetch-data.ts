@@ -9,6 +9,7 @@ import {
 import { getDayMax, getDayMin } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useState } from "react";
 import { DateRange } from "react-day-picker";
 
 export const useClient = () => {
@@ -36,9 +37,11 @@ export const useSale = (
     client: string | undefined,
     product: string | undefined,
     district: string | undefined,
-    market: string | undefined
+    market: string | undefined,
+    page: number,
+    view: string
 ) => {
-    return useQuery<SalesTypeExtended[]>({
+    return useQuery<{ total: number; sales: SalesTypeExtended[] }>({
         queryKey: [
             "sales-list",
             date?.from?.getDate(),
@@ -47,6 +50,8 @@ export const useSale = (
             product,
             district,
             market,
+            page,
+            view,
         ],
         queryFn: async () => {
             const { data } = await axios.get(
@@ -54,9 +59,9 @@ export const useSale = (
                     date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
                 }&${
                     date?.to && `to=${getDayMax(date.to).toUTCString()}`
-                }&client=${client}&product=${product}`
+                }&client=${client}&product=${product}&page=${page}&view=${view}`
             );
-            return data?.sales;
+            return data;
         },
     });
 };

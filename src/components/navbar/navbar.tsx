@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import MobileNavBar from "./mobile";
-import { navigation } from "@/lib/contants";
+import { navigation } from "@/lib/constants";
 import { IsAuth } from "./isAuth";
 
 export const Navbar = () => {

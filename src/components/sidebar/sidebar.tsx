@@ -2,7 +2,7 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SidebarItem } from "@/components/sidebar/sidebar-item";
 import { ModeToggle } from "@/components/mode-toggle";
-import { DashboardLinks } from "@/lib/contants";
+import { DashboardLinks } from "@/lib/constants";
 import { SideBarLogo } from "@/components/sidebar/sidebar-logo";
 import { Logout } from "../logout";
 

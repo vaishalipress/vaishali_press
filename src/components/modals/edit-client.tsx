@@ -43,7 +43,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { clientSchema } from "@/lib/schema";
-import { DISTRICTS } from "@/lib/contants";
+import { DISTRICTS } from "@/lib/constants";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
 import { useMarket } from "@/hooks/use-fetch-data";

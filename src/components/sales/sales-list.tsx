@@ -8,18 +8,21 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { BaggageClaim, Download, Pen, Trash } from "lucide-react";
+import { BaggageClaim, Download } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { LoadingCells } from "@/components/loading";
 import { format } from "date-fns";
 import { useSale } from "@/hooks/use-fetch-data";
 import { FilterSale } from "@/components/sales/filter-sales";
 import { useFilter } from "@/hooks/useFilter";
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
-import { toast } from "sonner";
+import Pagination from "../pagination/pagination";
+import { useSearchParams } from "next/navigation";
+import { downloadToPDF } from "@/lib/utils";
 
 export default function SalesList() {
+    const params = useSearchParams();
+    const page = Number(params.get("page")) || 1;
+    const view = params.get("view") || "200";
     const { onOpen } = useModal();
     const {
         date,
@@ -38,21 +41,10 @@ export default function SalesList() {
         client,
         product,
         district,
-        market
+        market,
+        page,
+        view
     ); //fetch data
-
-    const downloadHandler = () => {
-        if (isLoading) {
-            toast("Please wait.");
-            return;
-        }
-        const doc = new jsPDF({ orientation: "landscape" });
-        autoTable(doc, {
-            html: "#sales",
-        });
-        doc.save("sales.pdf");
-        doc.autoPrint();
-    };
 
     return (
         <div className="max-w-7xl w-full flex flex-col gap-3">
@@ -73,11 +65,20 @@ export default function SalesList() {
                         <h1 className="uppercase text-indigo-600 font-bold text-lg">
                             Sales
                         </h1>
+                        <span className="uppercase text-indigo-600 font-bold text-lg">
+                            {data?.total}
+                        </span>
                     </div>
                     <Button
                         variant={"ghost"}
                         size={"icon"}
-                        onClick={downloadHandler}
+                        onClick={() =>
+                            downloadToPDF(
+                                isLoading,
+                                "#sales",
+                                `sales-${client}-${product}.pdf`
+                            )
+                        }
                     >
                         <Download className="w-5 h-5" />
                     </Button>
@@ -112,7 +113,7 @@ export default function SalesList() {
                         </TableHeader>
                         <TableBody>
                             {isLoading && <LoadingCells cols={8} />}
-                            {data?.map((sale) => (
+                            {data?.sales?.map((sale) => (
                                 <TableRow
                                     key={sale?._id}
                                     className="cursor-pointer"
@@ -155,6 +156,13 @@ export default function SalesList() {
                             ))}
                         </TableBody>
                     </Table>
+
+                    {data && data?.total > Number(view) && (
+                        <Pagination
+                            isLoading={isLoading}
+                            total={data?.total || 0}
+                        />
+                    )}
                 </div>
             </div>
         </div>

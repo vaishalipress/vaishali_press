@@ -1,7 +1,6 @@
 import {
     BaggageClaim,
     Box,
-    FormInput,
     LayoutDashboard,
     Album,
     BookUser,
@@ -44,11 +43,6 @@ export const DashboardLinks = [
         link: "/dashboard/sales",
         name: "Sales",
         Icon: <BaggageClaim className="text-gray-700 dark:text-yellow-500" />,
-    },
-    {
-        link: "/dashboard/password",
-        name: "Password",
-        Icon: <FormInput className="text-neutral-600 dark:text-green-600" />,
     },
 ];
 

@@ -141,8 +141,34 @@ export const GET = async (req: Request) => {
 
         const client = searchParams.get("client") || "all";
         const product = searchParams.get("product") || "all";
+        const page = Number(searchParams.get("page")) || 1;
+        const per_page = Number(searchParams.get("view")) || 200;
 
         const sales = await Sale.find({
+            $and: [
+                from
+                    ? {
+                          date: {
+                              $gte: from,
+                          },
+                      }
+                    : {},
+
+                {
+                    date: {
+                        $lte: to,
+                    },
+                },
+                client !== "all" ? { client } : {},
+                product !== "all" ? { product } : {},
+            ],
+        })
+            .populate("client product")
+            .sort({ date: -1 })
+            .limit(per_page)
+            .skip(per_page * (page - 1));
+
+        const total = await Sale.countDocuments({
             $and: [
                 from
                     ? {
@@ -160,9 +186,7 @@ export const GET = async (req: Request) => {
                 client !== "all" ? { client: client } : {},
                 product !== "all" ? { product: product } : {},
             ],
-        })
-            .populate("client product")
-            .sort({ date: -1 });
+        });
 
         if (!sales) {
             return Response.json("something went wrong while fetching sales", {
@@ -171,7 +195,7 @@ export const GET = async (req: Request) => {
         }
 
         return Response.json(
-            { sales, message: "sales fetched", success: true },
+            { sales, total, message: "sales fetched", success: true },
             { status: 200 }
         );
     } catch (error) {

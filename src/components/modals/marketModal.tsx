@@ -35,7 +35,7 @@ import {
     SelectValue,
 } from "../ui/select";
 import { useEffect, useState } from "react";
-import { DISTRICTS, districtsAndBlocks } from "@/lib/contants";
+import { DISTRICTS, districtsAndBlocks } from "@/lib/constants";
 import { Button } from "../ui/button";
 import {
     AlignStartVertical,
