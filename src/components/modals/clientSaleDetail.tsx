@@ -1,6 +1,6 @@
 "use client";
 import { useModal } from "@/hooks/use-modal-store";
-import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import {
     Table,
     TableBody,
@@ -8,7 +8,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "../ui/table";
+} from "@/components/ui/table";
 import { format } from "date-fns";
 
 export const ClientSalesDetailsModal = () => {
@@ -40,9 +40,9 @@ export const ClientSalesDetailsModal = () => {
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableHead>Block</TableHead>
+                            <TableHead>Market</TableHead>
                             <TableCell className="uppercase">
-                                {clientSalesDetail?.block}
+                                {clientSalesDetail?.market}
                             </TableCell>
                         </TableRow>
                         <TableRow>
