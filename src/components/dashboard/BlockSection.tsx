@@ -1,22 +1,20 @@
 import { Info } from "@/components/infoWithTooltip";
 import {
     BadgeIndianRupee,
-    BadgeMinus,
-    BadgePlus,
     BaggageClaim,
     User,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Clients } from "@/components/dashboard/client-table";
-import { blockType } from "@/lib/types";
+import { MarketTypeInDashboard } from "@/lib/types";
 
-export const BlockSection = ({
-    block,
+export const MarketSection = ({
+    market,
     totalAmount,
     totalClient,
     totalSale,
     clients,
-}: blockType) => {
+}: MarketTypeInDashboard) => {
     return (
         <div className="w-full border rounded-md px-3 py-2">
             <div className="flex w-full gap-3 justify-between py-3">
@@ -24,9 +22,9 @@ export const BlockSection = ({
                     variant={"outline"}
                     className="h-8 text-sm font-medium uppercase"
                 >
-                    {block}
+                    {market}
                 </Badge>
-                <BlockHeaderInfo
+                <MarketHeaderInfo
                     totalAmount={totalAmount}
                     totalClient={totalClient}
                     totalSale={totalSale}
@@ -40,7 +38,7 @@ export const BlockSection = ({
     );
 };
 
-const BlockHeaderInfo = ({
+const MarketHeaderInfo = ({
     totalAmount,
     totalClient,
     totalSale,

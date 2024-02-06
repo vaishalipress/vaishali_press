@@ -47,12 +47,6 @@ export const GET = async (req: Request) => {
                                 totalAmount: {
                                     $multiply: ["$qty", "$rate"],
                                 },
-                                dues: {
-                                    $subtract: [
-                                        { $multiply: ["$qty", "$rate"] },
-                                        "$payment",
-                                    ],
-                                },
                             },
                         },
                     ],
@@ -66,19 +60,13 @@ export const GET = async (req: Request) => {
                     totalAmount: {
                         $sum: "$sales.totalAmount",
                     },
-                    totalDues: {
-                        $sum: "$sales.dues",
-                    },
-                    totalPayment: {
-                        $sum: "$sales.payment",
-                    },
                 },
             },
             {
                 $group: {
                     _id: {
                         district: "$district",
-                        block: "$block",
+                        market: "$market",
                     },
                     clients: {
                         $push: "$$ROOT",
@@ -91,12 +79,12 @@ export const GET = async (req: Request) => {
                     district: {
                         $addToSet: "$_id.district",
                     },
-                    totalBlock: {
+                    totalMarket: {
                         $count: {},
                     },
-                    blocks: {
+                    markets: {
                         $push: {
-                            block: "$_id.block",
+                            market: "$_id.market",
                             totalClient: {
                                 $size: "$clients",
                             },
@@ -106,12 +94,7 @@ export const GET = async (req: Request) => {
                             totalAmount: {
                                 $sum: "$clients.totalAmount",
                             },
-                            totalDues: {
-                                $sum: "$clients.totalDues",
-                            },
-                            totalPayment: {
-                                $sum: "$clients.totalPayment",
-                            },
+
                             clients: "$clients",
                         },
                     },
@@ -123,20 +106,14 @@ export const GET = async (req: Request) => {
                         $first: "$district",
                     },
                     totalClient: {
-                        $sum: "$blocks.totalClient",
+                        $sum: "$markets.totalClient",
                     },
 
                     totalSale: {
-                        $sum: "$blocks.totalSale",
+                        $sum: "$markets.totalSale",
                     },
                     totalAmount: {
-                        $sum: "$blocks.totalAmount",
-                    },
-                    totalDues: {
-                        $sum: "$blocks.totalDues",
-                    },
-                    totalPayment: {
-                        $sum: "$blocks.totalPayment",
+                        $sum: "$markets.totalAmount",
                     },
                 },
             },

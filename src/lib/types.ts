@@ -36,7 +36,6 @@ export interface clientType {
     _id: string;
     name: string;
     district: string;
-    block: string;
     market: string;
     mobile: string;
     createdAt: string;
@@ -47,8 +46,8 @@ export interface clientType {
     date: string;
 }
 
-export interface blockType {
-    block: string;
+export interface MarketTypeInDashboard {
+    market: string;
     totalClient: number;
     totalSale: number;
     totalAmount: number;
@@ -58,11 +57,11 @@ export interface blockType {
 export interface districtType {
     _id: string;
     district: string;
-    totalBlock: number;
+    totalMarket: number;
     totalClient: number;
     totalSale: number;
     totalAmount: number;
-    blocks: blockType[];
+    markets: MarketTypeInDashboard[];
 }
 
 export interface ProductInfo {
@@ -70,7 +69,7 @@ export interface ProductInfo {
     totalQtySold: number;
     avgPrice: number;
 }
-export interface ProductBlockWiseData {
+export interface ProductMarketWiseData {
     name: string;
     totalQtySold: number;
     products: ProductInfo[];
@@ -79,12 +78,11 @@ export interface ProductData {
     _id: string;
     district: string;
     totalQtySold: number;
-    blocks: ProductBlockWiseData[];
+    markets: ProductMarketWiseData[];
 }
 
 export interface MarketType {
     _id: string;
     name: string;
     district: string;
-    block: string;
 }

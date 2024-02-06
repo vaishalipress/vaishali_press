@@ -11,7 +11,7 @@ import {
 import { Badge } from "../ui/badge";
 import { Info } from "../infoWithTooltip";
 import { Box } from "lucide-react";
-import { ProductBlockWiseData, ProductData } from "@/lib/types";
+import { ProductMarketWiseData, ProductData } from "@/lib/types";
 import { LoadingCells } from "../loading";
 
 export const ProductDashboard = () => {
@@ -50,24 +50,24 @@ const District = ({ dist }: { dist: ProductData }) => {
                 />
             </div>
             <div className="flex gap-3 flex-wrap">
-                {dist.blocks.map((block) => (
-                    <Block block={block} key={block.name} />
+                {dist.markets.map((market) => (
+                    <Market market={market} key={market.name} />
                 ))}
             </div>
         </div>
     );
 };
 
-const Block = ({ block }: { block: ProductBlockWiseData }) => {
+const Market = ({ market }: { market: ProductMarketWiseData }) => {
     return (
         <div className="px-2 py-3 border rounded-lg flex flex-col gap-2">
             <div className="flex justify-between items-center">
                 <Badge variant={"outline"} className="w-fit text-sm uppercase">
-                    {block.name}
+                    {market.name}
                 </Badge>
                 <Info
                     Icon={Box}
-                    count={block.totalQtySold}
+                    count={market.totalQtySold}
                     toolTip="Sold"
                     className="text-zinc-600"
                 />
@@ -85,7 +85,7 @@ const Block = ({ block }: { block: ProductBlockWiseData }) => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {block.products.map((product) => (
+                    {market.products.map((product) => (
                         <TableRow key={product.name}>
                             <TableCell className="uppercase">
                                 {product.name}

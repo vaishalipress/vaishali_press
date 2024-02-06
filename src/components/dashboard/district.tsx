@@ -8,16 +8,16 @@ import {
 } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Info } from "../infoWithTooltip";
-import { BlockSection } from "./BlockSection";
+import { MarketSection } from "./BlockSection";
 import { districtType } from "@/lib/types";
 
 export const DistrictPage = ({
     district,
     totalAmount,
-    totalBlock,
     totalClient,
     totalSale,
-    blocks,
+    markets,
+    totalMarket,
 }: districtType) => {
     return (
         <div className="w-full max-w-5xl border rounded-md px-3 py-3 flex flex-col gap-3">
@@ -31,20 +31,20 @@ export const DistrictPage = ({
                 </Badge>
                 <DistrictHeaderInfo
                     totalAmount={totalAmount}
-                    totalBlock={totalBlock}
+                    totalMarket={totalMarket}
                     totalClient={totalClient}
                     totalSale={totalSale}
                 />
             </div>
             <>
-                {blocks?.map((block) => (
-                    <BlockSection
-                        key={block.block}
-                        block={block.block}
-                        totalAmount={block.totalAmount}
-                        totalClient={block.totalClient}
-                        totalSale={block.totalSale}
-                        clients={block.clients}
+                {markets?.map((market) => (
+                    <MarketSection
+                        key={market.market}
+                        market={market.market}
+                        totalAmount={market.totalAmount}
+                        totalClient={market.totalClient}
+                        totalSale={market.totalSale}
+                        clients={market.clients}
                     />
                 ))}
             </>
@@ -54,11 +54,11 @@ export const DistrictPage = ({
 
 const DistrictHeaderInfo = ({
     totalAmount = 0,
-    totalBlock = 0,
+    totalMarket = 0,
     totalClient = 0,
     totalSale = 0,
 }: {
-    totalBlock: number;
+    totalMarket: number;
     totalClient: number;
     totalSale: number;
     totalAmount: number;
@@ -67,9 +67,9 @@ const DistrictHeaderInfo = ({
         <div className="grid grid-cols-2 gap-1 lg:flex lg:gap-2 flex-wrap">
             {/* Block */}
             <Info
-                toolTip="Block"
+                toolTip="market"
                 Icon={Cuboid}
-                count={totalBlock}
+                count={totalMarket}
                 className="text-indigo-600"
             />
 

@@ -34,7 +34,7 @@ export const GET = async (req: Request) => {
                 $group: {
                     _id: {
                         district: "$client.district",
-                        block: "$client.block",
+                        market: "$client.market",
                         product: "$name",
                     },
 
@@ -52,7 +52,7 @@ export const GET = async (req: Request) => {
                 $group: {
                     _id: {
                         district: "$_id.district",
-                        block: "$_id.block",
+                        market: "$_id.market",
                     },
                     totalQtySold: {
                         $sum: "$totalQtySold",
@@ -81,10 +81,10 @@ export const GET = async (req: Request) => {
                         $sum: "$totalQtySold",
                     },
 
-                    blocks: {
+                    markets: {
                         $push: {
                             name: {
-                                $first: "$_id.block",
+                                $first: "$_id.market",
                             },
                             totalQtySold: "$totalQtySold",
                             products: "$productStats",
