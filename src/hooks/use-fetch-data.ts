@@ -33,7 +33,7 @@ export const useProduct = () => {
 
 export const useSale = (
     date: DateRange | undefined,
-    user: string | undefined,
+    client: string | undefined,
     product: string | undefined,
     district: string | undefined,
     market: string | undefined
@@ -43,7 +43,7 @@ export const useSale = (
             "sales-list",
             date?.from?.getDate(),
             date?.to?.getDate(),
-            user,
+            client,
             product,
             district,
             market,
@@ -52,7 +52,9 @@ export const useSale = (
             const { data } = await axios.get(
                 `/api/sale?${
                     date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
-                }&${date?.to && `to=${getDayMax(date.to).toUTCString()}`}`
+                }&${
+                    date?.to && `to=${getDayMax(date.to).toUTCString()}`
+                }&client=${client}&product=${product}`
             );
             return data?.sales;
         },

@@ -139,6 +139,9 @@ export const GET = async (req: Request) => {
             ? new Date(searchParams?.get("to")!)
             : new Date();
 
+        const client = searchParams.get("client") || "all";
+        const product = searchParams.get("product") || "all";
+
         const sales = await Sale.find({
             $and: [
                 from
@@ -154,6 +157,8 @@ export const GET = async (req: Request) => {
                         $lte: to,
                     },
                 },
+                client !== "all" ? { client: client } : {},
+                product !== "all" ? { product: product } : {},
             ],
         })
             .populate("client product")

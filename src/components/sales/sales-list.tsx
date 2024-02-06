@@ -18,9 +18,25 @@ import { useFilter } from "@/hooks/useFilter";
 
 export default function SalesList() {
     const { onOpen } = useModal();
-    const { date, setDate, toggleType, type, product, user, market, district } =
-        useFilter();
-    const { data, isLoading } = useSale(date, user, product, district, market); //fetch data
+    const {
+        date,
+        setDate,
+        toggleType,
+        type,
+        product,
+        client,
+        market,
+        district,
+        setClient,
+        setProduct,
+    } = useFilter();
+    const { data, isLoading } = useSale(
+        date,
+        client,
+        product,
+        district,
+        market
+    ); //fetch data
 
     return (
         <div className="max-w-7xl w-full flex flex-col gap-3">
@@ -29,6 +45,10 @@ export default function SalesList() {
                 setDate={setDate}
                 toggleType={toggleType}
                 type={type}
+                client={client}
+                product={product}
+                setClient={setClient}
+                setProduct={setProduct}
             />
             <div className="border w-full rounded-md py-3 shadow-md">
                 <div className="flex items-center gap-3 mb-3 px-3">

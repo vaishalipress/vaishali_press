@@ -7,8 +7,8 @@ interface StoreType {
     toggleType: (type: filterType) => void;
     date: DateRange | undefined;
     setDate: (date: DateRange | undefined) => void;
-    user: string | undefined;
-    setUser: (user: string) => void;
+    client: string | undefined;
+    setClient: (user: string) => void;
     product: string | undefined;
     setProduct: (product: string) => void;
     market: string | undefined;
@@ -19,13 +19,13 @@ interface StoreType {
 export const useFilter = create<StoreType>((set) => ({
     type: "all",
     date: { to: new Date(), from: undefined },
-    user: undefined,
-    product: undefined,
+    client: "all",
+    product: "all",
     market: undefined,
     district: undefined,
     setDate: (date) => set({ date }),
     setProduct: (product: string) => set({ product }),
-    setUser: (user: string) => set({ user }),
+    setClient: (client: string) => set({ client }),
     toggleType: (type: filterType) => {
         set({
             type,
