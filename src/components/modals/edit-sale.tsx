@@ -54,8 +54,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
-import { useFilter } from "@/hooks/useFilter";
-import { useSearchParams } from "next/navigation";
+import { useSaleFilter } from "@/hooks/useSaleFilter";
 
 export const EditSaleModal = () => {
     const { isOpen, onClose, type, data, onOpen } = useModal();
@@ -75,7 +74,8 @@ export const EditSaleModal = () => {
     const [total, setTotal] = useState(0);
     const { data: clients, isLoading: isClientLoading } = useClient();
     const { data: products, isLoading: isProductLoading } = useProduct();
-    const { date, product, client, market, district } = useFilter();
+    const { date, product, client, market, district, page, view } =
+        useSaleFilter();
     useEffect(() => {
         if (sale) {
             form.setValue("product", sale?.product?._id);
@@ -88,9 +88,6 @@ export const EditSaleModal = () => {
     }, [form, sale]);
 
     const { updateSale } = useCustumQuery();
-    const params = useSearchParams();
-    const page = Number(params.get("page")) || 1;
-    const view = params.get("view") || "200";
     const { mutate, isPending } = useMutation({
         mutationFn: async (values: z.infer<typeof salesSchema>) => {
             const { data } = await axios.put(

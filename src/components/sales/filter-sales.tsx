@@ -20,9 +20,8 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { filterType } from "@/hooks/useFilter";
+import { filterType } from "@/hooks/useSaleFilter";
 import { useClient, useProduct } from "@/hooks/use-fetch-data";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export const FilterSale = ({
     toggleType,
@@ -33,7 +32,13 @@ export const FilterSale = ({
     product,
     setClient,
     setProduct,
+    setPage,
+    setView,
+    view,
+    page,
 }: {
+    page: number;
+    view: number;
     client: string | undefined;
     product: string | undefined;
     setClient: (value: string) => void;
@@ -42,21 +47,18 @@ export const FilterSale = ({
     type: filterType;
     toggleType: (value: filterType) => void;
     setDate: (value: DateRange | undefined) => void;
+    setPage: (page: number) => void;
+    setView: (view: number) => void;
 }) => {
     const { data: clients, isLoading: isClientLoading } = useClient();
     const { data: products, isLoading: isProductLoading } = useProduct();
 
-    const { replace } = useRouter();
-    const path = usePathname();
-
-    const searchParams = useSearchParams();
-    const params = new URLSearchParams(searchParams);
-    const view = params.get("view") || "200";
-
     const onChangeView = (value: string) => {
-        params.set("view", value);
-        params.set("page", "1");
-        replace(`${path}?${params}`);
+        setView(Number(value));
+        setPage(1);
+        // params.set("view", value);
+        // params.set("page", "1");
+        // replace(`${path}?${params}`);
     };
 
     return (
@@ -190,8 +192,8 @@ export const FilterSale = ({
 
             {/* VIEW  */}
             <Select
-                value={view}
-                defaultValue={view}
+                value={`${view}`}
+                defaultValue={`${view}`}
                 onValueChange={onChangeView}
             >
                 <SelectTrigger className="w-32">

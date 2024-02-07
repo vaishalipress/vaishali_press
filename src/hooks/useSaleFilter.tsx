@@ -3,6 +3,10 @@ import { create } from "zustand";
 
 export type filterType = "all" | "today" | "yesterday" | "none";
 interface StoreType {
+    page: number;
+    view: number;
+    setPage: (page: number) => void;
+    setView: (page: number) => void;
     type: filterType;
     toggleType: (type: filterType) => void;
     date: DateRange | undefined;
@@ -16,7 +20,11 @@ interface StoreType {
     setMarket: (market: string) => void;
     setDistrict: (district: string) => void;
 }
-export const useFilter = create<StoreType>((set) => ({
+export const useSaleFilter = create<StoreType>((set) => ({
+    page: 1,
+    view: 200,
+    setPage: (page: number) => set({ page }),
+    setView: (view: number) => set({ view }),
     type: "all",
     date: { to: new Date(), from: undefined },
     client: "all",

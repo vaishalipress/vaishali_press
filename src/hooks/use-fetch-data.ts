@@ -41,7 +41,7 @@ export const useSale = (
     district: string | undefined,
     market: string | undefined,
     page: number,
-    view: string
+    view: number
 ) => {
     return useQuery<{ total: number; sales: SalesTypeExtended[] }>({
         queryKey: [

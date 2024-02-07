@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { useSaleFilter } from "@/hooks/useSaleFilter";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { FC } from "react";
 
 interface prop {
@@ -10,21 +10,13 @@ interface prop {
 }
 
 const Pagination: FC<prop> = ({ total, isLoading }) => {
-    const { replace } = useRouter();
-    const path = usePathname();
-    const searchParams = useSearchParams();
-    const params = new URLSearchParams(searchParams);
-    const view = params.get("view") || "200";
-    const page = Number(searchParams.get("page")) || 1;
+    const { view, page, setPage } = useSaleFilter();
 
     const hasPrev = Number(view) * (page - 1) > 0;
     const hasNext = Number(view) * (page - 1) + Number(view) < total;
 
     const pageHandler = (type: "prev" | "next") => {
-        type === "prev"
-            ? params.set("page", `${page - 1}`)
-            : params.set("page", `${page + 1}`);
-        replace(`${path}?${params}`);
+        type === "prev" ? setPage(page - 1) : setPage(page + 1);
     };
 
     return (

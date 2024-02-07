@@ -11,7 +11,7 @@ import { cn, downloadToPDF } from "@/lib/utils";
 import { CalendarIcon, Download } from "lucide-react";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { filterType } from "@/hooks/useFilter";
+import { filterType } from "@/hooks/useSaleFilter";
 
 export const Filter = ({
     toggleType,

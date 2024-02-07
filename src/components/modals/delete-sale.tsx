@@ -15,18 +15,17 @@ import { useModal } from "@/hooks/use-modal-store";
 import { useMutation } from "@tanstack/react-query";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
-import { useFilter } from "@/hooks/useFilter";
+import { useSaleFilter } from "@/hooks/useSaleFilter";
 import { useSearchParams } from "next/navigation";
 
 export const DeleteSaleModal = () => {
     const { isOpen, onClose, type, data } = useModal();
     const isModalOpen = isOpen && type === "deleteSale";
     const { sale } = data;
-    const { date, client, product, market, district } = useFilter();
+    const { date, client, product, market, district, page, view } =
+        useSaleFilter();
     const { removeSale } = useCustumQuery();
-    const params = useSearchParams();
-    const page = Number(params.get("page")) || 1;
-    const view = params.get("view") || "200";
+
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {
             const { data } = await axios.delete(`/api/sale?id=${sale?._id}`);

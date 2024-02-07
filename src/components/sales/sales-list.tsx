@@ -14,18 +14,12 @@ import { LoadingCells } from "@/components/loading";
 import { format } from "date-fns";
 import { useSale } from "@/hooks/use-fetch-data";
 import { FilterSale } from "@/components/sales/filter-sales";
-import { useFilter } from "@/hooks/useFilter";
+import { useSaleFilter } from "@/hooks/useSaleFilter";
 import Pagination from "../pagination/pagination";
 import { downloadToPDF } from "@/lib/utils";
 import { Suspense } from "react";
 
-export default function SalesList({
-    page,
-    view,
-}: {
-    page: number;
-    view: string;
-}) {
+export default function SalesList() {
     const { onOpen } = useModal();
     const {
         date,
@@ -38,7 +32,11 @@ export default function SalesList({
         district,
         setClient,
         setProduct,
-    } = useFilter();
+        page,
+        view,
+        setPage,
+        setView,
+    } = useSaleFilter();
     const { data, isLoading } = useSale(
         date,
         client,
@@ -61,6 +59,10 @@ export default function SalesList({
                     product={product}
                     setClient={setClient}
                     setProduct={setProduct}
+                    setPage={setPage}
+                    setView={setView}
+                    page={page}
+                    view={view}
                 />
             </Suspense>
             <div className="border w-full rounded-md py-3 shadow-md">
