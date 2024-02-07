@@ -12,6 +12,7 @@ export type ProductTypeExtended = ProductI & {
     updatedAt: string;
     _id: string;
 };
+
 export type SalesTypeExtended = SaleI & {
     client: ClientTypeExtented;
     product: ProductTypeExtended;
@@ -85,4 +86,20 @@ export interface MarketType {
     _id: string;
     name: string;
     district: string;
+}
+
+export interface ProductStats {
+    _id: string;
+    name: string;
+    price: number;
+    sales: number;
+    amount: number;
+}
+export interface clientStats {
+    _id: string;
+    name: string;
+    district: string;
+    market: string;
+    sales: number;
+    amount: number;
 }

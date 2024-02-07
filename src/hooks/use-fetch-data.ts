@@ -2,8 +2,10 @@ import {
     ClientTypeExtented,
     MarketType,
     ProductData,
+    ProductStats,
     ProductTypeExtended,
     SalesTypeExtended,
+    clientStats,
     districtType,
 } from "@/lib/types";
 import { getDayMax, getDayMin } from "@/lib/utils";
@@ -95,6 +97,33 @@ export const useMarket = (district: string) => {
                 `/api/market?district=${district}`
             );
             return data?.markets;
+        },
+    });
+};
+
+export const useProductStats = (date: DateRange | undefined) => {
+    return useQuery<ProductStats[]>({
+        queryKey: ["productStats", date?.from?.getDate(), date?.to?.getDate()],
+        queryFn: async () => {
+            const { data } = await axios.get(
+                `/api/product/stats?${
+                    date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
+                }&${date?.to && `to=${getDayMax(date.to).toUTCString()}`}`
+            );
+            return data;
+        },
+    });
+};
+export const useClientStats = (date: DateRange | undefined) => {
+    return useQuery<clientStats[]>({
+        queryKey: ["clientStats", date?.from?.getDate(), date?.to?.getDate()],
+        queryFn: async () => {
+            const { data } = await axios.get(
+                `/api/client/stats?${
+                    date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
+                }&${date?.to && `to=${getDayMax(date.to).toUTCString()}`}`
+            );
+            return data;
         },
     });
 };

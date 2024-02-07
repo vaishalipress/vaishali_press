@@ -44,6 +44,11 @@ export const DashboardLinks = [
         name: "Sales",
         Icon: <BaggageClaim className="text-gray-700 dark:text-yellow-500" />,
     },
+    {
+        link: "/dashboard/productStats",
+        name: "productStats",
+        Icon: <Boxes className="text-gray-700 dark:text-yellow-500" />,
+    },
 ];
 
 export const districtsAndBlocks = [

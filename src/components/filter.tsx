@@ -1,64 +1,118 @@
 "use client";
-import * as React from "react";
-
+import { Badge } from "@/components/ui/badge";
 import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from "./ui/select";
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { cn, downloadToPDF } from "@/lib/utils";
+import { CalendarIcon, Download } from "lucide-react";
+import { format } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { filterType } from "@/hooks/useFilter";
 
-const filters = [
-    {
-        value: "all",
-        label: "All",
-    },
-    {
-        value: "yesterday",
-        label: "Yesterday",
-    },
-    {
-        value: "week",
-        label: "One Week",
-    },
-    {
-        value: "month",
-        label: "One Month",
-    },
-    {
-        value: "custom",
-        label: "Custom",
-    },
-];
-
-export function Filter() {
-    const [value, setValue] = React.useState(filters[0].value);
-
+export const Filter = ({
+    toggleType,
+    type,
+    date,
+    setDate,
+    isLoading,
+    html,
+    downloadName,
+}: {
+    html: string;
+    downloadName: string;
+    isLoading: boolean;
+    date: DateRange | undefined;
+    type: filterType;
+    toggleType: (value: filterType) => void;
+    setDate: (value: DateRange | undefined) => void;
+}) => {
     return (
-        <div className="max-w-[150px] w-full">
-            <Select
-                value={value}
-                defaultValue={value}
-                onValueChange={(val) => setValue(val)}
+        <div className="flex gap-2 justify-start overflow-x-auto">
+            <Badge
+                onClick={() => toggleType("all")}
+                variant={"secondary"}
+                className={`text-sm cursor-pointer hover:bg-indigo-300 ${
+                    type === "all" && "bg-indigo-300"
+                }`}
             >
-                <SelectTrigger>
-                    <SelectValue placeholder={"SELECT FILTER"} />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectGroup>
-                        <SelectLabel>Filters</SelectLabel>
+                All
+            </Badge>
+            <Badge
+                onClick={() => toggleType("today")}
+                variant={"secondary"}
+                className={`text-sm cursor-pointer hover:bg-indigo-300 ${
+                    type === "today" && "bg-indigo-300"
+                }`}
+            >
+                Today
+            </Badge>
+            <Badge
+                onClick={() => toggleType("yesterday")}
+                variant={"secondary"}
+                className={`text-sm cursor-pointer hover:bg-indigo-300 ${
+                    type === "yesterday" && "bg-indigo-300"
+                }`}
+            >
+                Yesterday
+            </Badge>
 
-                        {filters?.map((f) => (
-                            <SelectItem key={f.value} value={f.value}>
-                                {f.label}
-                            </SelectItem>
-                        ))}
-                    </SelectGroup>
-                </SelectContent>
-            </Select>
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button
+                        id="date"
+                        variant={"outline"}
+                        className={cn(
+                            "w-[300px] justify-start text-left font-normal",
+                            !date && "text-muted-foreground"
+                        )}
+                    >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date?.from ? (
+                            date.to ? (
+                                <>
+                                    {format(date.from, "LLL dd, y")} -{" "}
+                                    {format(date.to, "LLL dd, y")}
+                                </>
+                            ) : (
+                                format(date.from, "LLL dd, y")
+                            )
+                        ) : (
+                            <span>Pick a date</span>
+                        )}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                        initialFocus
+                        mode="range"
+                        defaultMonth={date?.from}
+                        selected={date}
+                        onSelect={(val) => {
+                            setDate(val);
+                            toggleType("none");
+                        }}
+                        numberOfMonths={1}
+                    />
+                </PopoverContent>
+            </Popover>
+
+            <Button
+                variant={"ghost"}
+                size={"icon"}
+                onClick={() =>
+                    downloadToPDF(
+                        isLoading,
+                        html,
+                        `${downloadName}-${date?.from?.toDateString()}-${date?.to?.toDateString()}.pdf`
+                    )
+                }
+            >
+                <Download className="w-5 h-5" />
+            </Button>
         </div>
     );
-}
+};

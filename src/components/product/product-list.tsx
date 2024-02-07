@@ -55,7 +55,7 @@ export default function ProductList() {
 
                                 <TableCell>
                                     {format(
-                                        new Date(product.createdAt),
+                                        new Date(product?.createdAt),
                                         "dd-MM-yyyy"
                                     )}
                                 </TableCell>
