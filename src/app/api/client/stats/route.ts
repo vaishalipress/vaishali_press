@@ -2,6 +2,8 @@ import CONNECT_TO_DB from "@/lib/connectToDb";
 import Client from "@/models/client";
 
 CONNECT_TO_DB();
+export const dynamic = "force-dynamic";
+
 export const GET = async (request: Request) => {
     try {
         const { searchParams } = new URL(request.url);
@@ -65,7 +67,7 @@ export const GET = async (request: Request) => {
             status: 200,
         });
     } catch (error) {
-        console.log("PRODUCT STATS ", error);
+        console.log("CLIENT STATS ", error);
         return Response.json("Internal Error", { status: 500 });
     }
 };

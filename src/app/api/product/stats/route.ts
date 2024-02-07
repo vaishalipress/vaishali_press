@@ -2,6 +2,7 @@ import CONNECT_TO_DB from "@/lib/connectToDb";
 import Product from "@/models/product";
 
 CONNECT_TO_DB();
+export const dynamic = "force-dynamic";
 export const GET = async (request: Request) => {
     try {
         const { searchParams } = new URL(request.url);
