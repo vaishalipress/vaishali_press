@@ -28,7 +28,7 @@ const Pagination: FC<prop> = ({ total, isLoading }) => {
     };
 
     return (
-        <div className="flex justify-around">
+        <div className="flex items-center justify-around mt-2">
             <Button
                 variant={"outline"}
                 disabled={!hasPrev || isLoading}
@@ -36,6 +36,7 @@ const Pagination: FC<prop> = ({ total, isLoading }) => {
             >
                 <ArrowLeft />
             </Button>
+            <span className="text-base">{page}</span>
             <Button
                 variant={"outline"}
                 disabled={!hasNext || isLoading}

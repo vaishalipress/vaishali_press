@@ -16,13 +16,16 @@ import { useSale } from "@/hooks/use-fetch-data";
 import { FilterSale } from "@/components/sales/filter-sales";
 import { useFilter } from "@/hooks/useFilter";
 import Pagination from "../pagination/pagination";
-import { useSearchParams } from "next/navigation";
 import { downloadToPDF } from "@/lib/utils";
+import { Suspense } from "react";
 
-export default function SalesList() {
-    const params = useSearchParams();
-    const page = Number(params.get("page")) || 1;
-    const view = params.get("view") || "200";
+export default function SalesList({
+    page,
+    view,
+}: {
+    page: number;
+    view: string;
+}) {
     const { onOpen } = useModal();
     const {
         date,
@@ -48,16 +51,18 @@ export default function SalesList() {
 
     return (
         <div className="max-w-7xl w-full flex flex-col gap-3">
-            <FilterSale
-                date={date}
-                setDate={setDate}
-                toggleType={toggleType}
-                type={type}
-                client={client}
-                product={product}
-                setClient={setClient}
-                setProduct={setProduct}
-            />
+            <Suspense>
+                <FilterSale
+                    date={date}
+                    setDate={setDate}
+                    toggleType={toggleType}
+                    type={type}
+                    client={client}
+                    product={product}
+                    setClient={setClient}
+                    setProduct={setProduct}
+                />
+            </Suspense>
             <div className="border w-full rounded-md py-3 shadow-md">
                 <div className="flex justify-between gap-3 mb-3 px-3">
                     <div className="flex items-center gap-3">
@@ -157,12 +162,14 @@ export default function SalesList() {
                         </TableBody>
                     </Table>
 
-                    {data && data?.total > Number(view) && (
-                        <Pagination
-                            isLoading={isLoading}
-                            total={data?.total || 0}
-                        />
-                    )}
+                    <Suspense>
+                        {data && data?.total > Number(view) && (
+                            <Pagination
+                                isLoading={isLoading}
+                                total={data?.total || 0}
+                            />
+                        )}
+                    </Suspense>
                 </div>
             </div>
         </div>

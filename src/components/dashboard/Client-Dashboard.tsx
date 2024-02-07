@@ -6,7 +6,6 @@ import { Table, TableBody } from "../ui/table";
 
 export const ClientDashboard = () => {
     const { data, isLoading } = useClientDashboardInfo();
-    console.log(data);
     return (
         <div>
             <div className="flex justify-between mb-3 items-center">

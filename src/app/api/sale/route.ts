@@ -143,7 +143,6 @@ export const GET = async (req: Request) => {
         const product = searchParams.get("product") || "all";
         const page = Number(searchParams.get("page")) || 1;
         const per_page = Number(searchParams.get("view")) || 200;
-
         const sales = await Sale.find({
             $and: [
                 from

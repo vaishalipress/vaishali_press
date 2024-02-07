@@ -1,14 +1,10 @@
 "use client";
-import { Badge } from "../ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Calendar } from "../ui/calendar";
-import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
-import { CalendarIcon, Loader2 } from "lucide-react";
-import { format } from "date-fns";
-import { DateRange } from "react-day-picker";
-import { filterType } from "@/hooks/useFilter";
-import { useClient, useProduct } from "@/hooks/use-fetch-data";
+import { Badge } from "@/components/ui/badge";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 import {
     Select,
     SelectContent,
@@ -17,7 +13,15 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { CalendarIcon, Loader2 } from "lucide-react";
+import { format } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { filterType } from "@/hooks/useFilter";
+import { useClient, useProduct } from "@/hooks/use-fetch-data";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export const FilterSale = ({
@@ -54,7 +58,7 @@ export const FilterSale = ({
         params.set("page", "1");
         replace(`${path}?${params}`);
     };
-    
+
     return (
         <div className="flex gap-2 overflow-x-auto px-1">
             <Badge
@@ -196,6 +200,9 @@ export const FilterSale = ({
                 <SelectContent>
                     <SelectGroup>
                         <SelectLabel>Limit</SelectLabel>
+                        {process.env.NODE_ENV === "development" && (
+                            <SelectItem value="1">1</SelectItem>
+                        )}
                         <SelectItem value="50">50</SelectItem>
                         <SelectItem value="100">100</SelectItem>
                         <SelectItem value="150">150</SelectItem>

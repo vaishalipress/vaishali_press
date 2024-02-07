@@ -51,9 +51,14 @@ import { useCustumQuery } from "@/hooks/use-queries";
 import { useClient, useProduct } from "@/hooks/use-fetch-data";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { useSearchParams } from "next/navigation";
 
-export default function AddSales() {
+export default function AddSales({
+    page,
+    view,
+}: {
+    page: number;
+    view: string;
+}) {
     const form = useForm<z.infer<typeof salesSchema>>({
         resolver: zodResolver(salesSchema),
         defaultValues: {
@@ -65,9 +70,6 @@ export default function AddSales() {
         },
     });
     const [isFormOpen, setIsFormOpen] = useState(false);
-    const params = useSearchParams();
-    const page = Number(params.get("page")) || 1;
-    const view = params.get("view") || "200";
     const { addSale } = useCustumQuery();
     const [total, setTotal] = useState(0);
     const { data: clients, isLoading: isClientLoading } = useClient();
