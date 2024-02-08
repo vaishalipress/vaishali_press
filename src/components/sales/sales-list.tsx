@@ -8,7 +8,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { BaggageClaim, Download } from "lucide-react";
+import { BaggageClaim, Download, IndianRupee } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { LoadingCells } from "@/components/loading";
 import { format } from "date-fns";
@@ -113,7 +113,7 @@ export default function SalesList() {
                                 <TableHead className="uppercase">
                                     Rate
                                 </TableHead>
-                                <TableHead className="uppercase min-w-[100px] lg:min-w-[140px]">
+                                <TableHead className="uppercase min-w-[200px] lg:min-w-[140px]">
                                     Amount
                                 </TableHead>
                             </TableRow>
@@ -152,12 +152,25 @@ export default function SalesList() {
                                     <TableCell className="text-xs lg:text-sm">
                                         {sale?.qty}
                                     </TableCell>
-                                    <TableCell className="text-xs lg:text-sm">
-                                        {sale?.rate}
+                                    <TableCell>
+                                        <div className="flex items-center text-xs lg:text-sm">
+                                            <IndianRupee className="w-3 h-3 text-black/60" />
+                                            {sale?.rate}
+                                        </div>
                                     </TableCell>
                                     <TableCell className="text-xs lg:text-sm">
-                                        {sale?.qty} x {sale?.rate} ={" "}
-                                        {sale?.qty * sale?.rate}
+                                        <div className="capitalize flex items-center">
+                                            <p className="flex items-center">
+                                                {sale?.qty} x
+                                                <IndianRupee className="ml-1 w-3 h-3 text-black/60" />
+                                                {sale?.rate}
+                                            </p>
+                                            <span className="mx-1">=</span>
+                                            <IndianRupee className="w-3 h-3 text-black/60" />
+                                            <span>
+                                                {sale?.qty * sale?.rate}
+                                            </span>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))}

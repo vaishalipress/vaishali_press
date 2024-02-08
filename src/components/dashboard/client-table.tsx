@@ -8,6 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { IndianRupee } from "lucide-react";
 
 export const Clients = ({ clients }: { clients: clientType[] }) => {
     return (
@@ -34,8 +35,11 @@ export const Clients = ({ clients }: { clients: clientType[] }) => {
                         <TableCell className="capitalize">
                             {client?.sales}
                         </TableCell>
-                        <TableCell className="capitalize">
-                            {client?.totalAmount}
+                        <TableCell>
+                            <div className="capitalize flex items-center">
+                                <IndianRupee className="w-3 h-3" />
+                                {client?.totalAmount}
+                            </div>
                         </TableCell>
                     </TableRow>
                 ))}

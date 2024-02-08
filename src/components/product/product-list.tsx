@@ -8,7 +8,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "../ui/button";
-import { Boxes, Pen, Trash } from "lucide-react";
+import { Boxes, IndianRupee, Pen, Trash } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { LoadingCells } from "../loading";
 import { format } from "date-fns";
@@ -49,8 +49,11 @@ export default function ProductList() {
                                 <TableCell className="font-medium capitalize">
                                     {product.name.toLocaleUpperCase()}
                                 </TableCell>
-                                <TableCell className="capitalize">
-                                    {product.price}
+                                <TableCell>
+                                    <div className="capitalize flex items-center">
+                                        <IndianRupee className="w-3 h-3" />
+                                        {product.price}
+                                    </div>
                                 </TableCell>
 
                                 <TableCell>
@@ -59,6 +62,7 @@ export default function ProductList() {
                                         "dd-MM-yyyy"
                                     )}
                                 </TableCell>
+
                                 <TableCell className="text-right">
                                     {/* EDIT BTN */}
                                     <Button

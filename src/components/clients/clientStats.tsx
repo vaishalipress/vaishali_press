@@ -7,7 +7,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { BoomBox, UserSearch } from "lucide-react";
+import { BoomBox, IndianRupee, UserSearch } from "lucide-react";
 import { LoadingCells } from "@/components/loading";
 import { useClientStats } from "@/hooks/use-fetch-data";
 import { Filter } from "@/components/filter";
@@ -68,8 +68,11 @@ export default function ClientStats() {
                                     <TableCell className="text-xs lg:text-sm uppercase">
                                         {product?.district}
                                     </TableCell>
-                                    <TableCell className="text-xs lg:text-sm uppercase">
-                                        {product?.amount}
+                                    <TableCell>
+                                        <div className="capitalize flex items-center text-xs lg:text-sm">
+                                            <IndianRupee className="w-3 h-3" />
+                                            {product?.amount}
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))}

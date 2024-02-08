@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ProductMarketWiseData, ProductData } from "@/lib/types";
 import { LoadingCells } from "@/components/loading";
+import { IndianRupee } from "lucide-react";
 
 export const ProductDashboard = () => {
     const { data, isLoading } = useProductInfo();
@@ -77,7 +78,10 @@ const Market = ({ market }: { market: ProductMarketWiseData }) => {
                                 {product?.name}
                             </TableCell>
                             <TableCell className="text-xs">
-                                {product?.avgPrice}
+                                <div className="capitalize flex items-center">
+                                    <IndianRupee className="w-3 h-3" />
+                                    {product?.avgPrice}
+                                </div>
                             </TableCell>
                             <TableCell className="text-xs">
                                 {product?.totalQtySold}

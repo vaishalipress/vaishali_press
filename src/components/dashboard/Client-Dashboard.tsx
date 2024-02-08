@@ -1,5 +1,11 @@
 "use client";
-import { BadgeIndianRupee, BaggageClaim, Cuboid, User } from "lucide-react";
+import {
+    BadgeIndianRupee,
+    BaggageClaim,
+    Cuboid,
+    IndianRupee,
+    User,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Info } from "@/components/infoWithTooltip";
 import { districtType } from "@/lib/types";
@@ -162,30 +168,27 @@ const MarketHeaderInfo = ({
     totalAmount: number;
 }) => {
     return (
-        <div className="flex gap-1 items-center lg:gap-2 flex-wrap">
+        <div className="flex gap-2 items-center lg:gap-4 flex-wrap">
             {/* Client */}
-            <Info
-                toolTip="Clients"
-                Icon={User}
-                count={totalClient}
-                className="text-orange-600"
-            />
+            <div className="flex gap-2 flex-row items-center text-xs uppercase">
+                <span>Client</span>
+                <span className="font-medium">{totalClient}</span>
+            </div>
 
             {/* Sales */}
-            <Info
-                toolTip="sales"
-                Icon={BaggageClaim}
-                count={totalSale}
-                className="text-amber-600 "
-            />
+            <div className="flex flex-row gap-2 items-center text-xs uppercase">
+                <span>sale</span>
+                <span className="font-medium">{totalSale}</span>
+            </div>
 
             {/* Amount */}
-            <Info
-                toolTip="Amount"
-                Icon={BadgeIndianRupee}
-                count={totalAmount}
-                className="text-green-600  "
-            />
+            <div className="flex flex-row gap-2 items-center text-xs uppercase">
+                <span>Amount</span>
+                <span className="font-medium flex items-center">
+                    <IndianRupee className="w-3 h-3"/>
+                    {totalAmount}
+                </span>
+            </div>
         </div>
     );
 };
