@@ -95,7 +95,7 @@ const DistrictHeaderInfo = ({
     totalAmount: number;
 }) => {
     return (
-        <div className="grid grid-cols-2 gap-1 lg:flex lg:gap-2 flex-wrap">
+        <div className="grid grid-cols-2 gap-1 md:flex md:gap-2 flex-wrap">
             {/* Block */}
             <Info
                 toolTip="market"
@@ -168,7 +168,7 @@ const MarketHeaderInfo = ({
     totalAmount: number;
 }) => {
     return (
-        <div className="flex gap-2 items-center lg:gap-4 flex-wrap">
+        <div className="w-fit flex gap-2 items-center sm:gap-4 flex-wrap">
             {/* Client */}
             <div className="flex gap-2 flex-row items-center text-xs uppercase">
                 <span>Client</span>
