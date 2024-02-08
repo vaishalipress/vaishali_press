@@ -41,8 +41,7 @@ export interface clientType {
     mobile: string;
     createdAt: string;
     updatedAt: string;
-    sales: saleType[];
-    totalSale: number;
+    sales: number;
     totalAmount: number;
     date: string;
 }

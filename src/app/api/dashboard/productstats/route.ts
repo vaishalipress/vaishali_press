@@ -54,9 +54,9 @@ export const GET = async (req: Request) => {
                         district: "$_id.district",
                         market: "$_id.market",
                     },
-                    totalQtySold: {
-                        $sum: "$totalQtySold",
-                    },
+                    // totalQtySold: {
+                    //     $sum: "$totalQtySold",
+                    // },
                     totalProduct: {
                         $count: {},
                     },
@@ -77,16 +77,16 @@ export const GET = async (req: Request) => {
                     district: {
                         $first: "$_id.district",
                     },
-                    totalQtySold: {
-                        $sum: "$totalQtySold",
-                    },
+                    // totalQtySold: {
+                    //     $sum: "$totalQtySold",
+                    // },
 
                     markets: {
                         $push: {
                             name: {
                                 $first: "$_id.market",
                             },
-                            totalQtySold: "$totalQtySold",
+                            // totalQtySold: "$totalQtySold",
                             products: "$productStats",
                         },
                     },

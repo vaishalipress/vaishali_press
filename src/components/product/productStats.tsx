@@ -38,7 +38,7 @@ export default function ProductStats() {
                         isLoading={isLoading}
                     />
                 </div>
-                <div className="max-h-[500px] overflow-y-auto">
+                <div className="max-h-[500px] overflow-y-auto no-scrollbar">
                     <Table id="products">
                         <TableHeader>
                             <TableRow>

@@ -8,10 +8,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { useModal } from "@/hooks/use-modal-store";
 
 export const Clients = ({ clients }: { clients: clientType[] }) => {
-    const { onOpen } = useModal();
     return (
         <Table>
             <TableHeader>
@@ -26,15 +24,7 @@ export const Clients = ({ clients }: { clients: clientType[] }) => {
             </TableHeader>
             <TableBody>
                 {clients?.map((client) => (
-                    <TableRow
-                        key={client?._id}
-                        onClick={() =>
-                            onOpen("userSaleDetails", {
-                                clientSalesDetail: client,
-                            })
-                        }
-                        className="cursor-pointer"
-                    >
+                    <TableRow key={client?._id}>
                         <TableCell className="font-medium capitalize">
                             {client?.name}
                         </TableCell>
@@ -42,7 +32,7 @@ export const Clients = ({ clients }: { clients: clientType[] }) => {
                             {client?.market ? client.market : "NA"}
                         </TableCell>
                         <TableCell className="capitalize">
-                            {client?.totalSale}
+                            {client?.sales}
                         </TableCell>
                         <TableCell className="capitalize">
                             {client?.totalAmount}

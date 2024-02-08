@@ -7,12 +7,10 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "../ui/table";
-import { Badge } from "../ui/badge";
-import { Info } from "../infoWithTooltip";
-import { Box } from "lucide-react";
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { ProductMarketWiseData, ProductData } from "@/lib/types";
-import { LoadingCells } from "../loading";
+import { LoadingCells } from "@/components/loading";
 
 export const ProductDashboard = () => {
     const { data, isLoading } = useProductInfo();
@@ -42,12 +40,6 @@ const District = ({ dist }: { dist: ProductData }) => {
                 >
                     {dist.district}
                 </Badge>
-                <Info
-                    Icon={Box}
-                    count={dist.totalQtySold}
-                    toolTip="Sold"
-                    className="text-indigo-600"
-                />
             </div>
             <div className="flex gap-3 flex-wrap">
                 {dist.markets.map((market) => (
@@ -62,19 +54,13 @@ const Market = ({ market }: { market: ProductMarketWiseData }) => {
     return (
         <div className="px-2 py-3 border rounded-lg flex flex-col gap-2">
             <div className="flex justify-between items-center">
-                <Badge variant={"outline"} className="w-fit text-sm uppercase">
-                    {market.name}
-                </Badge>
-                <Info
-                    Icon={Box}
-                    count={market.totalQtySold}
-                    toolTip="Sold"
-                    className="text-zinc-600"
-                />
+                <span className="font-medium capitalize text-sm px-3">
+                    {market?.name}
+                </span>
             </div>
             <Table>
                 <TableHeader>
-                    <TableRow>
+                    <TableRow className="text-xs">
                         <TableHead className="uppercase w-32">
                             Product
                         </TableHead>
@@ -86,12 +72,16 @@ const Market = ({ market }: { market: ProductMarketWiseData }) => {
                 </TableHeader>
                 <TableBody>
                     {market.products.map((product) => (
-                        <TableRow key={product.name}>
-                            <TableCell className="uppercase">
-                                {product.name}
+                        <TableRow key={product?.name}>
+                            <TableCell className="uppercase text-xs">
+                                {product?.name}
                             </TableCell>
-                            <TableCell>{product.avgPrice}</TableCell>
-                            <TableCell>{product.totalQtySold}</TableCell>
+                            <TableCell className="text-xs">
+                                {product?.avgPrice}
+                            </TableCell>
+                            <TableCell className="text-xs">
+                                {product?.totalQtySold}
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

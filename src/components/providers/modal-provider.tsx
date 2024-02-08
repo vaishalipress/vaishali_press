@@ -1,4 +1,3 @@
-import { ClientSalesDetailsModal } from "@/components/modals/clientSaleDetail";
 import { DeleteClientModal } from "@/components/modals/delete-client";
 import { DeletProductModal } from "@/components/modals/delete-product";
 import { DeleteSaleModal } from "@/components/modals/delete-sale";
@@ -16,7 +15,6 @@ const ModalProvider = () => {
             <DeletProductModal />
             <EditSaleModal />
             <DeleteSaleModal />
-            <ClientSalesDetailsModal />
             <MarketModal />
         </>
     );

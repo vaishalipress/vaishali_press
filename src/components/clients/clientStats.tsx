@@ -37,7 +37,7 @@ export default function ClientStats() {
                         isLoading={isLoading}
                     />
                 </div>
-                <div className="max-h-[500px] overflow-y-auto">
+                <div className="max-h-[500px] overflow-y-auto no-scrollbar">
                     <Table id="clientStats">
                         <TableHeader>
                             <TableRow>

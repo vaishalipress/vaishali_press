@@ -54,11 +54,11 @@ export const GET = async (req: Request) => {
             },
             {
                 $addFields: {
-                    totalSale: {
-                        $size: "$sales",
-                    },
                     totalAmount: {
                         $sum: "$sales.totalAmount",
+                    },
+                    sales: {
+                        $size: "$sales",
                     },
                 },
             },
@@ -89,12 +89,11 @@ export const GET = async (req: Request) => {
                                 $size: "$clients",
                             },
                             totalSale: {
-                                $sum: "$clients.totalSale",
+                                $sum: "$clients.sales",
                             },
                             totalAmount: {
                                 $sum: "$clients.totalAmount",
                             },
-
                             clients: "$clients",
                         },
                     },
@@ -108,7 +107,6 @@ export const GET = async (req: Request) => {
                     totalClient: {
                         $sum: "$markets.totalClient",
                     },
-
                     totalSale: {
                         $sum: "$markets.totalSale",
                     },
