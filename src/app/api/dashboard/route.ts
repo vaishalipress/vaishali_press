@@ -115,6 +115,21 @@ export const GET = async (req: Request) => {
                     },
                 },
             },
+            {
+                $project: {
+                    district: 1,
+                    totalClient: 1,
+                    totalSale: 1,
+                    totalAmount: 1,
+                    totalMarket: 1,
+                    markets: {
+                        $sortArray: {
+                            input: "$markets",
+                            sortBy: { totalAmount: -1 },
+                        },
+                    },
+                },
+            },
         ]).sort({
             totalAmount: -1,
         });

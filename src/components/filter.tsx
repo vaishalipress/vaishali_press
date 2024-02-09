@@ -35,8 +35,8 @@ export const Filter = ({
             <Badge
                 onClick={() => toggleType("all")}
                 variant={"secondary"}
-                className={`text-sm cursor-pointer hover:bg-indigo-300 ${
-                    type === "all" && "bg-indigo-300"
+                className={`text-sm cursor-pointer hover:bg-slate-400 ${
+                    type === "all" && "bg-slate-400 text-white"
                 }`}
             >
                 All
@@ -44,8 +44,8 @@ export const Filter = ({
             <Badge
                 onClick={() => toggleType("today")}
                 variant={"secondary"}
-                className={`text-sm cursor-pointer hover:bg-indigo-300 ${
-                    type === "today" && "bg-indigo-300"
+                className={`text-sm cursor-pointer hover:bg-slate-400 ${
+                    type === "today" && "bg-slate-400 text-white"
                 }`}
             >
                 Today
@@ -53,8 +53,8 @@ export const Filter = ({
             <Badge
                 onClick={() => toggleType("yesterday")}
                 variant={"secondary"}
-                className={`text-sm cursor-pointer hover:bg-indigo-300 ${
-                    type === "yesterday" && "bg-indigo-300"
+                className={`text-sm cursor-pointer hover:bg-slate-400 ${
+                    type === "yesterday" && "bg-slate-400 text-white"
                 }`}
             >
                 Yesterday

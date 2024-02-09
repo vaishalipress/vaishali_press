@@ -12,6 +12,7 @@ import { LoadingCells } from "@/components/loading";
 import { useProductStats } from "@/hooks/use-fetch-data";
 import { Filter } from "@/components/filter";
 import { useFilterDate } from "@/hooks/useFilterDate";
+import { Donut } from "../charts/donutChart";
 
 export default function ProductStats() {
     const { date, setDate, toggleType, type } = useFilterDate();
@@ -66,6 +67,8 @@ export default function ProductStats() {
                     </Table>
                 </div>
             </div>
+
+            <Donut data={data} />
         </div>
     );
 }

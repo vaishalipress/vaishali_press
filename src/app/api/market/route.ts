@@ -43,6 +43,7 @@ export const POST = async (request: Request) => {
 
         const isExist = await Market.findOne({
             name: data.name.toLowerCase(),
+            district: data.district.toLowerCase(),
         });
 
         if (isExist) {

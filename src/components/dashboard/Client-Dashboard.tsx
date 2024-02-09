@@ -33,7 +33,8 @@ export const ClientDashboard = () => {
                     </Table>
                 </div>
             )}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-3"> */}
+            <div className="w-full flex flex-wrap gap-2">
                 {data?.map((district) => (
                     <DistrictPage key={district._id} {...district} />
                 ))}
@@ -51,7 +52,7 @@ export const DistrictPage = ({
     totalMarket,
 }: districtType) => {
     return (
-        <div className="w-full max-w-5xl border rounded-md px-3 py-3 flex flex-col gap-3">
+        <div className="w-fit h-fit border rounded-md px-3 py-3 flex flex-col gap-3">
             {/* District sction */}
             <div className="flex gap-3 justify-between w-full py-2">
                 <Badge
@@ -67,7 +68,7 @@ export const DistrictPage = ({
                     totalSale={totalSale}
                 />
             </div>
-            <>
+            <div className="flex gap-2 flex-wrap">
                 {markets?.map((market) => (
                     <MarketSection
                         key={market.market}
@@ -78,7 +79,7 @@ export const DistrictPage = ({
                         clients={market.clients}
                     />
                 ))}
-            </>
+            </div>
         </div>
     );
 };
@@ -139,7 +140,7 @@ export const MarketSection = ({
     clients,
 }: MarketTypeInDashboard) => {
     return (
-        <div className="w-full border rounded-md px-3 py-2">
+        <div className="w-fit border rounded-md px-3 py-2">
             <div className="flex w-full gap-3 justify-between items-center py-3 overflow-x-auto">
                 <span className="font-medium capitalize text-sm px-3">
                     {market}
