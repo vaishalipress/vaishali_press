@@ -48,6 +48,7 @@ export const authOptions: AuthOptions = {
                     if (!user || !isPasswordCorrect) {
                         throw new Error("Wrong credentials");
                     }
+
                     return {
                         id: user?._id,
                         email: user?.email,
@@ -67,8 +68,13 @@ export const authOptions: AuthOptions = {
         maxAge: 3600 * 5, // 1 hour
     },
     callbacks: {
-        async signIn({ user, account, profile, credentials, email }) {
-            if (user.email === process.env.ADMIN_EMAIL) return true;
+        async signIn({ user }) {
+            const AuthorizedEmail = [
+                "vaishalipressmuz@gmail.com",
+                "aaditya1392@gmail.com",
+            ];
+            if (user?.email && AuthorizedEmail.includes(user?.email))
+                return true;
             return false;
         },
         async jwt({ token, user }) {
