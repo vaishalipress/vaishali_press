@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
@@ -12,11 +13,11 @@ const Login = () => {
     const error = params.get("error");
 
     const onSubmit = async (data: FormData) => {
-        const userId = data.get("userid");
+        const email = data.get("email");
         const password = data.get("password");
         try {
             setIsLoading(true);
-            signIn("credentials", { userId, password });
+            signIn("credentials", { email, password });
         } catch (error) {
             console.log(error);
             setIsLoading(false);
@@ -33,6 +34,7 @@ const Login = () => {
                         width={100}
                         height={100}
                     />
+
                     <h1 className="text-center">
                         <span className="text-xl text-orange-700 font-semibold">
                             Vaishali
@@ -44,20 +46,36 @@ const Login = () => {
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                    <Button
+                        variant={"secondary"}
+                        className="w-full flex gap-2 items-center"
+                        onClick={() => signIn("google")}
+                    >
+                        <Image
+                            src={"/google.svg"}
+                            height={30}
+                            width={20}
+                            alt="login with google"
+                        />
+                        <span className="text-base font-normal">
+                            Login with Google
+                        </span>
+                    </Button>
+                    <p className="text-center my-2">OR</p>
                     <form className="space-y-6" action={onSubmit}>
                         <div>
                             <label
-                                htmlFor="userid"
+                                htmlFor="email"
                                 className="block uppercase text-sm font-medium leading-6 text-gray-900 "
                             >
-                                User id
+                                Email
                             </label>
                             <div className="mt-2">
                                 <input
-                                    id="userid"
-                                    name="userid"
-                                    type="text"
-                                    autoComplete="userid"
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    autoComplete="email"
                                     required
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset bg-white focus:ring-indigo-600 sm:text-sm sm:leading-6  px-5"
                                 />

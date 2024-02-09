@@ -1,5 +1,6 @@
 import { AuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import User from "@/models/user";
 import bcrypt from "bcrypt";
 import CONNECT_TO_DB from "./connectToDb";
@@ -12,9 +13,13 @@ export const authOptions: AuthOptions = {
     },
 
     providers: [
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_SECRET!,
+        }),
         Credentials({
             credentials: {
-                userId: {
+                email: {
                     type: "text",
                 },
                 password: {
@@ -23,12 +28,12 @@ export const authOptions: AuthOptions = {
             },
             async authorize(credentials, request) {
                 try {
-                    if (!credentials?.password || !credentials?.userId) {
+                    if (!credentials?.password || !credentials?.email) {
                         throw new Error("Invalid Credentials");
                     }
 
                     const user = await User.findOne({
-                        userId: credentials?.userId,
+                        email: credentials?.email,
                     });
 
                     /**
@@ -43,11 +48,9 @@ export const authOptions: AuthOptions = {
                     if (!user || !isPasswordCorrect) {
                         throw new Error("Wrong credentials");
                     }
-
                     return {
-                        id: user._id,
-                        name: user.name,
-                        userId: user.userId,
+                        id: user?._id,
+                        email: user?.email,
                     };
                 } catch (error) {
                     throw new Error("Wrong credentials");
@@ -64,12 +67,14 @@ export const authOptions: AuthOptions = {
         maxAge: 3600 * 5, // 1 hour
     },
     callbacks: {
+        async signIn({ user, account, profile, credentials, email }) {
+            if (user.email === process.env.ADMIN_EMAIL) return true;
+            return false;
+        },
         async jwt({ token, user }) {
             if (user) {
                 // @ts-ignore
-                token.userId = user?.userId;
-                // @ts-ignore
-                token.name = user?.name;
+                token.email = user?.email;
                 // @ts-ignore
                 token.id = user?.id;
             }
@@ -77,9 +82,8 @@ export const authOptions: AuthOptions = {
         },
         async session({ session, token }) {
             if (token) {
-                session.user.userId = token?.userId;
+                session.user.email = token?.email as string;
                 session.user.id = token?.id as string;
-                session.user.name = token?.name as string;
             }
             return session;
         },
