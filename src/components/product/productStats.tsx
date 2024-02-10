@@ -68,7 +68,16 @@ export default function ProductStats() {
                 </div>
             </div>
 
-            <Donut data={data} />
+            {data?.[0] && (
+                <Donut
+                    data={[
+                        { name: data?.[0]?.name, value: data?.[0]?.sales },
+                        { name: data?.[1]?.name, value: data?.[1]?.sales },
+                        { name: data?.[2]?.name, value: data?.[2]?.sales },
+                    ]}
+                    title="Top Product"
+                />
+            )}
         </div>
     );
 }

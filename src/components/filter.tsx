@@ -31,7 +31,7 @@ export const Filter = ({
     setDate: (value: DateRange | undefined) => void;
 }) => {
     return (
-        <div className="flex gap-2 justify-start overflow-x-auto">
+        <div className="flex gap-2 justify-start overflow-x-auto no-scrollbar">
             <Badge
                 onClick={() => toggleType("all")}
                 variant={"secondary"}

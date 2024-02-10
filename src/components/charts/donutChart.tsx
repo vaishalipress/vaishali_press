@@ -1,6 +1,7 @@
 "use client";
-import { ProductStats } from "@/lib/types";
+import { ProductStats, clientStats } from "@/lib/types";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { IndianRupee } from "lucide-react";
 import { Doughnut } from "react-chartjs-2";
 
 ChartJS.register(ArcElement);
@@ -31,18 +32,30 @@ const DonutChart = ({ dataSet }: { dataSet: (number | undefined)[] }) => {
         />
     );
 };
+interface dataType {
+    name: string;
+    value: number;
+}
 
-export const Donut = ({ data }: { data: ProductStats[] | undefined }) => {
+export const Donut = ({
+    data,
+    title,
+    rupeeSymbol = false,
+}: {
+    rupeeSymbol?: boolean;
+    title: string;
+    data: dataType[] | undefined;
+}) => {
     return (
-        <div className="flex justify-between items-center shadow-lg border px-8 py-3 rounded-lg w-fit  gap-20">
+        <div className="flex justify-between items-center shadow-lg border px-8 py-3 rounded-lg w-full  gap-20">
             <div className="flex flex-col items-center gap-4">
-                <h1 className="font-semibold capitalize">Top Products</h1>
+                <h1 className="font-semibold capitalize">{title}</h1>
                 <div className="w-24 h-24 md:w-40 md:h-40">
                     <DonutChart
                         dataSet={[
-                            data?.[0]?.sales,
-                            data?.[1]?.sales,
-                            data?.[1]?.sales,
+                            data?.[0]?.value,
+                            data?.[1]?.value,
+                            data?.[2]?.value,
                         ]}
                     />
                 </div>
@@ -57,8 +70,10 @@ export const Donut = ({ data }: { data: ProductStats[] | undefined }) => {
                                 {data?.[0].name}
                             </span>
                         </div>
-                        <span className="text-sm text-zinc-400 self-start ml-5">
-                            {data?.[0].sales}
+
+                        <span className="text-sm text-zinc-400 self-start ml-5 flex items-center">
+                            {rupeeSymbol && <IndianRupee className="w-3 h-3" />}
+                            {data?.[0].value}
                         </span>
                     </div>
                 )}
@@ -71,8 +86,9 @@ export const Donut = ({ data }: { data: ProductStats[] | undefined }) => {
                                 {data?.[1].name}
                             </span>
                         </div>
-                        <span className="text-sm text-zinc-400 self-start ml-5">
-                            {data?.[1].sales}
+                        <span className="text-sm text-zinc-400 self-start ml-5 flex items-center">
+                            {rupeeSymbol && <IndianRupee className="w-3 h-3" />}
+                            {data?.[1].value}
                         </span>
                     </div>
                 )}
@@ -85,8 +101,9 @@ export const Donut = ({ data }: { data: ProductStats[] | undefined }) => {
                                 {data?.[2].name}
                             </span>
                         </div>
-                        <span className="text-sm text-zinc-400 self-start ml-5">
-                            {data?.[2].sales}
+                        <span className="text-sm text-zinc-400 self-start ml-5 flex items-center">
+                            {rupeeSymbol && <IndianRupee className="w-3 h-3" />}
+                            {data?.[2].value}
                         </span>
                     </div>
                 )}

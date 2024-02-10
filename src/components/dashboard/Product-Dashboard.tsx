@@ -36,7 +36,7 @@ const District = ({ dist }: { dist: ProductData }) => {
         <div className="border py-4 px-3 rounded-md w-fit h-fit flex flex-col gap-3 justify-between">
             <div className="flex justify-between items-center">
                 <Badge
-                    variant={"destructive"}
+                    variant={"secondary"}
                     className="w-fit text-base font-medium uppercase"
                 >
                     {dist.district}

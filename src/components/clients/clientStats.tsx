@@ -7,11 +7,12 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { BoomBox, IndianRupee, UserSearch } from "lucide-react";
+import { IndianRupee, UserSearch } from "lucide-react";
 import { LoadingCells } from "@/components/loading";
 import { useClientStats } from "@/hooks/use-fetch-data";
 import { Filter } from "@/components/filter";
 import { useFilterDate } from "@/hooks/useFilterDate";
+import { Donut } from "../charts/donutChart";
 
 export default function ClientStats() {
     const { date, setDate, toggleType, type } = useFilterDate();
@@ -57,21 +58,21 @@ export default function ClientStats() {
                         </TableHeader>
                         <TableBody>
                             {isLoading && <LoadingCells cols={2} />}
-                            {data?.map((product) => (
-                                <TableRow key={product?._id}>
+                            {data?.map((client) => (
+                                <TableRow key={client?._id}>
                                     <TableCell className="text-xs lg:text-sm uppercase">
-                                        {product.name}
+                                        {client.name}
                                     </TableCell>
                                     <TableCell className="text-xs lg:text-sm uppercase">
-                                        {product?.market}
+                                        {client?.market}
                                     </TableCell>
                                     <TableCell className="text-xs lg:text-sm uppercase">
-                                        {product?.district}
+                                        {client?.district}
                                     </TableCell>
                                     <TableCell>
                                         <div className="capitalize flex items-center text-xs lg:text-sm">
                                             <IndianRupee className="w-3 h-3" />
-                                            {product?.amount}
+                                            {client?.amount}
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -80,6 +81,17 @@ export default function ClientStats() {
                     </Table>
                 </div>
             </div>
+            {data?.[0] && (
+                <Donut
+                    rupeeSymbol
+                    data={[
+                        { name: data?.[0]?.name, value: data?.[0]?.amount },
+                        { name: data?.[1]?.name, value: data?.[1]?.amount },
+                        { name: data?.[2]?.name, value: data?.[2]?.amount },
+                    ]}
+                    title="Top Client"
+                />
+            )}
         </div>
     );
 }
