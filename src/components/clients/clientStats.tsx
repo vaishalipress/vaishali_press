@@ -57,7 +57,7 @@ export default function ClientStats() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {isLoading && <LoadingCells cols={2} />}
+                            {isLoading && <LoadingCells cols={4} />}
                             {data?.map((client) => (
                                 <TableRow key={client?._id}>
                                     <TableCell className="text-xs lg:text-sm uppercase">
@@ -81,7 +81,7 @@ export default function ClientStats() {
                     </Table>
                 </div>
             </div>
-            {data?.[0]?.amount !== 0 && (
+            {!isLoading && data?.[0]?.amount !== 0 && (
                 <Donut
                     rupeeSymbol
                     data={[

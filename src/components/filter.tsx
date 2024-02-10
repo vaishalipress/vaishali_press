@@ -102,7 +102,7 @@ export const Filter = ({
                     />
                 </PopoverContent>
             </Popover>
-            {download && (
+            {download && html && (
                 <Button
                     variant={"ghost"}
                     size={"icon"}

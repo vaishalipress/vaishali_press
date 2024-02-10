@@ -68,7 +68,7 @@ export default function ProductStats() {
                 </div>
             </div>
 
-            {data?.[0]?.sales !== 0 && (
+            {!isLoading && data?.[0]?.sales !== 0 && (
                 <Donut
                     data={[
                         { name: data?.[0]?.name!, value: data?.[0]?.sales! },
