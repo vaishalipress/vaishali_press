@@ -7,6 +7,8 @@ import {
     Boxes,
     Home,
     Users,
+    FileInput,
+    FormInput,
 } from "lucide-react";
 
 export const navigation = [
@@ -43,6 +45,11 @@ export const DashboardLinks = [
         link: "/dashboard/sales",
         name: "Sales",
         Icon: <BaggageClaim className="text-gray-700 dark:text-yellow-500" />,
+    },
+    {
+        link: "/dashboard/password",
+        name: "Password",
+        Icon: <FormInput className="text-rose-700 dark:text-rose-500" />,
     },
 ];
 

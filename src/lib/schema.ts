@@ -57,3 +57,20 @@ export const salesSchema = z.object({
         .min(0, { message: "rate must be greater than 0" }),
     date: z.date(),
 });
+
+export const changePasswordSchema = z
+    .object({
+        password: z
+            .string({ required_error: "Please enter new password" })
+            .trim()
+            .min(8, { message: "password must be atleast 8 characters" }),
+        confirmPassword: z
+            .string({ required_error: "Please enter confirm password." })
+            .min(8),
+    })
+    .refine(
+        (values) => {
+            return values.password === values.confirmPassword;
+        },
+        { message: "Password must match!", path: ["confirmPassword"] }
+    );
