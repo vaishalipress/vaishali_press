@@ -19,7 +19,7 @@ export const ProductDashboard = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
     const { data, isLoading } = useProductInfo(date);
     return (
-        <div className="mb-4 mt-6 w-full max-w-fit">
+        <div className="mb-4 mt-6 w-full">
             <div className="flex justify-between mb-3 items-center gap-2">
                 <h1 className="text-sm lg:text-xl uppercase  font-semibold">
                     Product Performance By District

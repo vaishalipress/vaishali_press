@@ -9,16 +9,15 @@ import { LoadingCells } from "@/components/loading";
 import { Table, TableBody } from "@/components/ui/table";
 import { Filter } from "../filter";
 import { useFilterDate } from "@/hooks/useFilterDate";
-import { useRef } from "react";
 
-export const ClientDashboard = () => {
+export const DistrictDashboard = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
     const { data, isLoading } = useClientDashboardInfo(date);
     return (
-        <div className="w-full max-w-fit">
+        <div className="w-full">
             <div className="flex justify-between mb-3 items-center gap-2">
                 <h1 className="text-sm lg:text-xl uppercase  font-semibold">
-                    Districts Performance
+                    District Performance
                 </h1>
 
                 <Filter
@@ -34,7 +33,7 @@ export const ClientDashboard = () => {
                 <div>
                     <Table>
                         <TableBody>
-                            <LoadingCells />
+                            <LoadingCells rows={5} />
                         </TableBody>
                     </Table>
                 </div>

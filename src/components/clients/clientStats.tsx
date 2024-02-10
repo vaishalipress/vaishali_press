@@ -57,7 +57,7 @@ export default function ClientStats() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {isLoading && <LoadingCells cols={4} />}
+                            {isLoading && <LoadingCells cols={4}  rows={5}/>}
                             {data?.map((client) => (
                                 <TableRow key={client?._id}>
                                     <TableCell className="text-xs lg:text-sm uppercase">

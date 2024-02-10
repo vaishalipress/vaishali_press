@@ -1,5 +1,5 @@
 import ClientStats from "@/components/clients/clientStats";
-import { ClientDashboard } from "@/components/dashboard/Client-Dashboard";
+import { DistrictDashboard } from "@/components/dashboard/District-Dashboard";
 import { ProductDashboard } from "@/components/dashboard/Product-Dashboard";
 import ProductStats from "@/components/product/productStats";
 
@@ -15,7 +15,7 @@ export default async function DashboardPage() {
 
                 <ProductDashboard />
 
-                <ClientDashboard />
+                <DistrictDashboard />
             </div>
         );
     } catch (error) {

@@ -52,7 +52,7 @@ export default function ProductStats() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {isLoading && <LoadingCells cols={2} />}
+                            {isLoading && <LoadingCells cols={2} rows={5} />}
                             {data?.map((product) => (
                                 <TableRow key={product?._id}>
                                     <TableCell className="text-xs lg:text-sm uppercase">
