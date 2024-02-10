@@ -17,11 +17,28 @@ export const GET = async (req: Request) => {
                 }
             );
         }
-        const searchParams = new URL(req.url).searchParams;
-        const from = searchParams.get("from");
-        const to = searchParams.get("to");
+        const { searchParams } = new URL(req.url);
+
+        let from: Date | undefined = !!searchParams.get("from")
+            ? new Date(searchParams.get("from")!)
+            : undefined;
+        let to: Date | undefined = !!searchParams.get("to")
+            ? new Date(searchParams?.get("to")!)
+            : new Date();
 
         const sales = await Sale.aggregate([
+            {
+                $match: {
+                    date: from
+                        ? {
+                              $lte: to,
+                              $gte: from,
+                          }
+                        : {
+                              $lte: to,
+                          },
+                },
+            },
             {
                 $lookup: {
                     from: "clients",

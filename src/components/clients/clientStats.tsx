@@ -23,8 +23,8 @@ export default function ClientStats() {
                 <div className="flex flex-col justify-between gap-3 mb-3 px-3">
                     <div className="flex items-center gap-3">
                         <UserSearch className="text-indigo-500 w-6 h-6" />
-                        <h1 className="uppercase text-indigo-600 font-bold text-lg">
-                            Client Stats
+                        <h1 className="uppercase text-indigo-600 font-bold text-sm lg:text-lg">
+                            Client Performance
                         </h1>
                     </div>
 
@@ -81,13 +81,13 @@ export default function ClientStats() {
                     </Table>
                 </div>
             </div>
-            {data?.[0] && (
+            {data?.[0]?.amount !== 0 && (
                 <Donut
                     rupeeSymbol
                     data={[
-                        { name: data?.[0]?.name, value: data?.[0]?.amount },
-                        { name: data?.[1]?.name, value: data?.[1]?.amount },
-                        { name: data?.[2]?.name, value: data?.[2]?.amount },
+                        { name: data?.[0]?.name!, value: data?.[0]?.amount! },
+                        { name: data?.[1]?.name!, value: data?.[1]?.amount! },
+                        { name: data?.[2]?.name!, value: data?.[2]?.amount! },
                     ]}
                     title="Top Client"
                 />

@@ -68,21 +68,37 @@ export const useSale = (
     });
 };
 
-export const useClientDashboardInfo = () => {
+export const useClientDashboardInfo = (date: DateRange | undefined) => {
     return useQuery<districtType[]>({
-        queryKey: ["clientsAndSalesInfo"],
+        queryKey: [
+            "clientsAndSalesInfo",
+            date?.from?.getDate(),
+            date?.to?.getDate(),
+        ],
         queryFn: async () => {
-            const { data } = await axios.get("/api/dashboard");
+            const { data } = await axios.get(
+                `/api/dashboard?${
+                    date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
+                }&${date?.to && `to=${getDayMax(date.to).toUTCString()}`}`
+            );
             return data;
         },
     });
 };
 
-export const useProductInfo = () => {
+export const useProductInfo = (date: DateRange | undefined) => {
     return useQuery<ProductData[]>({
-        queryKey: ["productAndSoldInfo"],
+        queryKey: [
+            "productAndSoldInfo",
+            date?.from?.getDate(),
+            date?.to?.getDate(),
+        ],
         queryFn: async () => {
-            const { data } = await axios.get("/api/dashboard/productstats");
+            const { data } = await axios.get(
+                `/api/dashboard/productstats?${
+                    date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
+                }&${date?.to && `to=${getDayMax(date.to).toUTCString()}`}`
+            );
             return data;
         },
     });

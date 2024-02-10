@@ -11,22 +11,49 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ProductMarketWiseData, ProductData } from "@/lib/types";
 import { LoadingCells } from "@/components/loading";
-import { IndianRupee } from "lucide-react";
+import { FileWarning, IndianRupee } from "lucide-react";
+import { useFilterDate } from "@/hooks/useFilterDate";
+import { Filter } from "../filter";
 
 export const ProductDashboard = () => {
-    const { data, isLoading } = useProductInfo();
+    const { date, setDate, toggleType, type } = useFilterDate();
+    const { data, isLoading } = useProductInfo(date);
     return (
-        <div className="flex flex-wrap gap-3">
-            {isLoading && (
-                <Table>
-                    <TableBody>
-                        <LoadingCells rows={4} />
-                    </TableBody>
-                </Table>
-            )}
-            {data?.map((dist) => (
-                <District dist={dist} key={dist.district} />
-            ))}
+        <div className="mb-4 mt-6 w-full max-w-fit">
+            <div className="flex justify-between mb-3 items-center gap-2">
+                <h1 className="text-sm lg:text-xl uppercase  font-semibold">
+                    Product Performance By District
+                </h1>
+
+                <Filter
+                    date={date}
+                    setDate={setDate}
+                    type={type}
+                    toggleType={toggleType}
+                    isLoading={isLoading}
+                    download={false}
+                />
+            </div>
+            <div className="flex flex-wrap gap-3">
+                {isLoading && (
+                    <Table>
+                        <TableBody>
+                            <LoadingCells rows={4} />
+                        </TableBody>
+                    </Table>
+                )}
+                {!data?.[0] && !isLoading && (
+                    <div className="flex items-center justify-center w-full">
+                        <FileWarning className="text-rose-600" />
+                        <p className="uppercase font-medium text-rose-600 text-lg">
+                            No Data
+                        </p>
+                    </div>
+                )}
+                {data?.map((dist) => (
+                    <District dist={dist} key={dist.district} />
+                ))}
+            </div>
         </div>
     );
 };

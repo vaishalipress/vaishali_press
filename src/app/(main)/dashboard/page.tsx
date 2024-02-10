@@ -12,12 +12,8 @@ export default async function DashboardPage() {
                     <ClientStats />
                 </div>
                 {/* Products */}
-                <div className="mb-3 py-3">
-                    <h1 className="text-base mb-3 lg:text-xl uppercase font-semibold">
-                        Products
-                    </h1>
-                    <ProductDashboard />
-                </div>
+
+                <ProductDashboard />
 
                 <ClientDashboard />
             </div>

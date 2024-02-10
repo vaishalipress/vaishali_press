@@ -12,6 +12,7 @@ import { CalendarIcon, Download } from "lucide-react";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { filterType } from "@/hooks/useSaleFilter";
+import { MutableRefObject } from "react";
 
 export const Filter = ({
     toggleType,
@@ -21,9 +22,11 @@ export const Filter = ({
     isLoading,
     html,
     downloadName,
+    download = true,
 }: {
-    html: string;
-    downloadName: string;
+    download?: boolean;
+    html?: string;
+    downloadName?: string;
     isLoading: boolean;
     date: DateRange | undefined;
     type: filterType;
@@ -99,20 +102,21 @@ export const Filter = ({
                     />
                 </PopoverContent>
             </Popover>
-
-            <Button
-                variant={"ghost"}
-                size={"icon"}
-                onClick={() =>
-                    downloadToPDF(
-                        isLoading,
-                        html,
-                        `${downloadName}-${date?.from?.toDateString()}-${date?.to?.toDateString()}.pdf`
-                    )
-                }
-            >
-                <Download className="w-5 h-5" />
-            </Button>
+            {download && (
+                <Button
+                    variant={"ghost"}
+                    size={"icon"}
+                    onClick={() =>
+                        downloadToPDF(
+                            isLoading,
+                            html,
+                            `${downloadName}-${date?.from?.toDateString()}-${date?.to?.toDateString()}.pdf`
+                        )
+                    }
+                >
+                    <Download className="w-5 h-5" />
+                </Button>
+            )}
         </div>
     );
 };

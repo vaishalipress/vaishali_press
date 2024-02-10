@@ -17,9 +17,14 @@ export const GET = async (req: Request) => {
                 }
             );
         }
-        const searchParams = new URL(req.url).searchParams;
-        const from = searchParams.get("from");
-        const to = searchParams.get("to");
+        const { searchParams } = new URL(req.url);
+
+        let from: Date | undefined = !!searchParams.get("from")
+            ? new Date(searchParams.get("from")!)
+            : undefined;
+        let to: Date | undefined = !!searchParams.get("to")
+            ? new Date(searchParams?.get("to")!)
+            : new Date();
 
         const sales = await Client.aggregate([
             {
@@ -31,15 +36,14 @@ export const GET = async (req: Request) => {
                     pipeline: [
                         {
                             $match: {
-                                createdAt:
-                                    from && to
-                                        ? {
-                                              $lte: new Date(to),
-                                              $gte: new Date(from),
-                                          }
-                                        : {
-                                              $lte: new Date(),
-                                          },
+                                date: from
+                                    ? {
+                                          $lte: to,
+                                          $gte: from,
+                                      }
+                                    : {
+                                          $lte: to,
+                                      },
                             },
                         },
                         {
@@ -131,7 +135,7 @@ export const GET = async (req: Request) => {
                 },
             },
         ]).sort({
-            totalAmount: -1,
+            totalMarket: -1,
         });
 
         return Response.json(sales);

@@ -24,8 +24,8 @@ export default function ProductStats() {
                 <div className="flex flex-col justify-between gap-3 mb-3 px-3">
                     <div className="flex items-center gap-3">
                         <BoomBox className="text-indigo-500 w-6 h-6" />
-                        <h1 className="uppercase text-indigo-600 font-bold text-lg">
-                            Product Stats
+                        <h1 className="uppercase text-indigo-600 font-bold text-sm lg:text-lg">
+                            Product Performance
                         </h1>
                     </div>
 
@@ -68,12 +68,12 @@ export default function ProductStats() {
                 </div>
             </div>
 
-            {data?.[0] && (
+            {data?.[0]?.sales !== 0 && (
                 <Donut
                     data={[
-                        { name: data?.[0]?.name, value: data?.[0]?.sales },
-                        { name: data?.[1]?.name, value: data?.[1]?.sales },
-                        { name: data?.[2]?.name, value: data?.[2]?.sales },
+                        { name: data?.[0]?.name!, value: data?.[0]?.sales! },
+                        { name: data?.[1]?.name!, value: data?.[1]?.sales! },
+                        { name: data?.[2]?.name!, value: data?.[2]?.sales! },
                     ]}
                     title="Top Product"
                 />
