@@ -60,10 +60,10 @@ export const MostPopularProducts = () => {
     return (
         <Link href={"/contact"}>
             <div className="flex flex-col gap-5">
-                <h1 className="ml-3 sm:ml-0 text-2xl font-semibold uppercase">
+                <h1 className="ml-3 sm:ml-0 text-2xl font-semibold uppercase text-black">
                     Most Popular
                 </h1>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-9 place-items-center">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-9 place-items-center text-black">
                     {Products?.map((product, idx) => (
                         <ProductCard key={idx} {...product} />
                     ))}

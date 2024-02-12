@@ -4,9 +4,11 @@ import Link from "next/link";
 
 export default function Contact() {
     return (
-        <div className="max-w-[1300px] m-auto flex items-center justify-center pt-16 px-5 sm:pt-28">
+        <div className="max-w-[1300px] m-auto flex items-center justify-center text-black h-[91.9vh]">
             <div>
-                <h1 className="text-4xl font-bold text-center sm:text-start">Contact us</h1>
+                <h1 className="text-4xl font-bold text-center sm:text-start">
+                    Contact us
+                </h1>
                 <div className="mt-16 sm:mt-10 flex flex-col gap-9">
                     <div className="flex flex-col gap-7">
                         <h2 className="text-3xl font-semibold mb-3 ">Phone</h2>
@@ -30,7 +32,7 @@ export default function Contact() {
                             </p>
                             <p>can email us directly here.</p>
                         </div>
-                        <Button className="max-w-[500px] py-5">
+                        <Button className="max-w-[500px] py-5 bg-black text-white">
                             <Link href={"mailto:vaishalipressmuz@gmail.com"}>
                                 Email us
                             </Link>
