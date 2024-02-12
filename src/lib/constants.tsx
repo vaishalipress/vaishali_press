@@ -15,8 +15,6 @@ export const navigation = [
     { name: "Contact", href: "/contact", Icon: BookUser },
 ];
 
-export const MAX_WIDTH = "1300px";
-
 export const DashboardLinks = [
     {
         link: "/",
