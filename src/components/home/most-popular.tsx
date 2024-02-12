@@ -1,5 +1,6 @@
 import { IndianRupee } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const Products = [
     {
@@ -54,21 +55,21 @@ const Products = [
     },
 ];
 
-interface ProductType {
-
-}
+interface ProductType {}
 export const MostPopularProducts = () => {
     return (
-        <div className="flex flex-col gap-5">
-            <h1 className="ml-3 sm:ml-0 text-2xl font-semibold uppercase">
-                Most Popular
-            </h1>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-9 place-items-center">
-                {Products?.map((product, idx) => (
-                    <ProductCard key={idx} {...product} />
-                ))}
+        <Link href={"/contact"}>
+            <div className="flex flex-col gap-5">
+                <h1 className="ml-3 sm:ml-0 text-2xl font-semibold uppercase">
+                    Most Popular
+                </h1>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-9 place-items-center">
+                    {Products?.map((product, idx) => (
+                        <ProductCard key={idx} {...product} />
+                    ))}
+                </div>
             </div>
-        </div>
+        </Link>
     );
 };
 
@@ -84,10 +85,17 @@ const ProductCard = ({
     return (
         <div className="w-fit cursor-pointer group">
             <div className="relative w-[150px] h-[150px] sm:w-[200px] sm:h-[200px] lg:w-[230px] lg:h-[230px] overflow-hidden">
-                <Image src={src} fill alt="product" className="group-hover:scale-[1.2] transition-all" />
+                <Image
+                    src={src}
+                    fill
+                    alt="product"
+                    className="group-hover:scale-[1.2] transition-all"
+                />
             </div>
             <div className="flex flex-col gap-1 mt-3">
-                <span className="text-base lg:text-lg font-semibold">{type}</span>
+                <span className="text-base lg:text-lg font-semibold">
+                    {type}
+                </span>
                 <p className="flex items-center text-sm lg:text-lg">
                     <span>100 Starting at</span>
                     <IndianRupee className="w-4 h-4 ml-2" />
