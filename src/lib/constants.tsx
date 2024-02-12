@@ -11,7 +11,7 @@ import {
 
 export const navigation = [
     { name: "Home", href: "/", Icon: Home },
-    { name: "About", href: "/about", Icon: Album },
+    // { name: "About", href: "/about", Icon: Album },
     { name: "Contact", href: "/contact", Icon: BookUser },
 ];
 
