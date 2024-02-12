@@ -4,19 +4,18 @@ import {
     LayoutDashboard,
     Album,
     BookUser,
-    Boxes,
     Home,
     Users,
-    FileInput,
     FormInput,
 } from "lucide-react";
 
 export const navigation = [
     { name: "Home", href: "/", Icon: Home },
-    { name: "Product", href: "/product", Icon: Boxes },
     { name: "About", href: "/about", Icon: Album },
     { name: "Contact", href: "/contact", Icon: BookUser },
 ];
+
+export const MAX_WIDTH = "1300px";
 
 export const DashboardLinks = [
     {
