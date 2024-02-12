@@ -8,7 +8,7 @@ const Products = [
         src: "/product.webp",
     },
     {
-        type: "Standard",
+        type: "Golden",
         price: "230.00",
         src: "/product1.webp",
     },
