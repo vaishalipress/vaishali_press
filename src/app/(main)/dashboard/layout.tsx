@@ -10,23 +10,23 @@ export default function DashboardRoot({
     children: React.ReactNode;
 }) {
     return (
-        <QueryProvider>
-            <ThemeProvider
-                attribute="class"
-                defaultTheme="light"
-                storageKey="vaishaliTheme"
-            >
-                <div className="flex w-screen h-full">
-                    <div className="min-h-screen h-screen sticky z-50">
-                        <SideBar />
-                    </div>
-                    <div className="w-full h-screen min-h-screen overflow-y-auto px-2 relative">
-                        {children}
-                    </div>
-                    <Toaster />
-                    <ModalProvider />
+        // <QueryProvider>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            storageKey="vaishaliTheme"
+        >
+            <div className="flex w-screen h-full">
+                <div className="min-h-screen h-screen sticky z-50">
+                    <SideBar />
                 </div>
-            </ThemeProvider>
-        </QueryProvider>
+                <div className="w-full h-screen min-h-screen overflow-y-auto px-2 relative">
+                    {children}
+                </div>
+                <Toaster />
+                <ModalProvider />
+            </div>
+        </ThemeProvider>
+        // </QueryProvider>
     );
 }

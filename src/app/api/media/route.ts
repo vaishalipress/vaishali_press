@@ -1,21 +1,21 @@
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
-import { DELETE_FILE, UPLOAD_TO_CLOUDINARY } from "@/lib/cloudinary";
+import { UPLOAD_TO_CLOUDINARY } from "@/lib/cloudinary";
 
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_CLOUD_API,
-    api_secret: process.env.CLOUDINARY_CLOUD_SECRET,
-});
+export const dynamic = "force-dynamic";
 
 export async function GET() {
     try {
+        cloudinary.config({
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_CLOUD_API,
+            api_secret: process.env.CLOUDINARY_CLOUD_SECRET,
+        });
         const assets = await cloudinary.api.resources({
             type: "upload",
             prefix: "vaishali-press", // add your folder
         });
-
-        if (assets?.resources) {
+        if (!!assets?.resources) {
             return Response.json(assets?.resources);
         } else {
             return Response.json(
@@ -27,7 +27,7 @@ export async function GET() {
         }
     } catch (err) {
         console.log("GET ALL ASSETS");
-        return Response.json({ message: "Internal Error" }, { status: 500 });
+        return Response.json(err, { status: 500 });
     }
 }
 
@@ -49,7 +49,11 @@ export async function POST(request: Request): Promise<NextResponse> {
 export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const publicId = searchParams.get("publicId") as string;
-
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_CLOUD_API,
+        api_secret: process.env.CLOUDINARY_CLOUD_SECRET,
+    });
     const result = await cloudinary.uploader.destroy(publicId, {
         invalidate: true,
         resource_type: "image",

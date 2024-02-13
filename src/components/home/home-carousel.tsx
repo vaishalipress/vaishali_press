@@ -4,18 +4,13 @@ import {
     CarouselContent,
     CarouselItem,
 } from "@/components/ui/carousel";
+import { useAssests } from "@/hooks/use-fetch-data";
 import Autoplay from "embla-carousel-autoplay";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 
-interface ImageType {
-    secure_url: string;
-    public_id: string;
-}
-export const HomeCarousel = ({
-    Images,
-}: {
-    Images: { public_id: string; secure_url: string }[] | undefined;
-}) => {
+export const HomeCarousel = () => {
+    const { data, isLoading } = useAssests();
     return (
         <Carousel
             className="w-full h-[170px] sm:h-[450px] relative"
@@ -27,7 +22,14 @@ export const HomeCarousel = ({
             ]}
         >
             <CarouselContent>
-                {Images?.map((image, idx) => (
+                {isLoading && (
+                    <CarouselItem>
+                        <div className="relative w-full h-[170px] sm:h-[450px] flex items-center justify-center">
+                            <Loader2 className="w-8 h-8 animate-spin" />
+                        </div>
+                    </CarouselItem>
+                )}
+                {data?.map((image, idx) => (
                     <CarouselItem key={idx}>
                         <div className="relative w-full h-[170px] sm:h-[450px]">
                             <Image

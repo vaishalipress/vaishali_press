@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/providers/auth-provider";
 import { Analytics } from "@vercel/analytics/react";
+import QueryProvider from "@/components/providers/react-query-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -18,8 +19,10 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body className={inter.className} suppressHydrationWarning>
-                <AuthProvider>{children}</AuthProvider>
-                <Analytics />
+                <QueryProvider>
+                    <AuthProvider>{children}</AuthProvider>
+                    <Analytics />
+                </QueryProvider>
             </body>
         </html>
     );
