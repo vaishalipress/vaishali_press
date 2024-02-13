@@ -4,7 +4,7 @@ const nextConfig = {
         dangerouslyAllowSVG: true,
         remotePatterns: [
             {
-                hostname: "tailwindui.com",
+                hostname: "res.cloudinary.com",
             },
         ],
     },

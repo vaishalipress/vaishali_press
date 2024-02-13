@@ -8,10 +8,14 @@ import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 
 interface ImageType {
-    url: string;
-    alt: string;
+    secure_url: string;
+    public_id: string;
 }
-export const HomeCarousel = ({ Images }: { Images: ImageType[] }) => {
+export const HomeCarousel = ({
+    Images,
+}: {
+    Images: { public_id: string; secure_url: string }[] | undefined;
+}) => {
     return (
         <Carousel
             className="w-full h-[170px] sm:h-[450px] relative"
@@ -23,13 +27,13 @@ export const HomeCarousel = ({ Images }: { Images: ImageType[] }) => {
             ]}
         >
             <CarouselContent>
-                {Images.map((image, idx) => (
+                {Images?.map((image, idx) => (
                     <CarouselItem key={idx}>
                         <div className="relative w-full h-[170px] sm:h-[450px]">
                             <Image
-                                src={image?.url}
+                                src={image?.secure_url}
                                 fill
-                                alt={image.alt}
+                                alt={"carousel"}
                                 className="object-fill w-full h-full"
                             />
                         </div>

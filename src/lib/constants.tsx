@@ -11,7 +11,6 @@ import {
 
 export const navigation = [
     { name: "Home", href: "/", Icon: Home },
-    // { name: "About", href: "/about", Icon: Album },
     { name: "Contact", href: "/contact", Icon: BookUser },
 ];
 
@@ -43,6 +42,12 @@ export const DashboardLinks = [
         name: "Sales",
         Icon: <BaggageClaim className="text-gray-700 dark:text-yellow-500" />,
     },
+    {
+        link: "/dashboard/carousel",
+        name: "carousel",
+        Icon: <Album className="text-indigo-700 dark:text-indigo-500" />,
+    },
+
     {
         link: "/dashboard/password",
         name: "Password",

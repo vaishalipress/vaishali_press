@@ -143,3 +143,13 @@ export const useClientStats = (date: DateRange | undefined) => {
         },
     });
 };
+
+export const useAssests = () => {
+    return useQuery<{ public_id: string; secure_url: string }[]>({
+        queryKey: ["assets"],
+        queryFn: async () => {
+            const { data } = await axios("/api/media");
+            return data;
+        },
+    });
+};

@@ -30,8 +30,8 @@ export const useCustumQuery = () => {
 
     const addData = (key: QueryKey, data: queryType) => {
         queryClient.setQueryData(key, (old: queryType[]) => {
-            const clients = [data, ...old];
-            return clients;
+            const allData = [data, ...old];
+            return allData;
         });
     };
 

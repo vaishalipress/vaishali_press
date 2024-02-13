@@ -39,3 +39,5 @@ export const downloadToPDF = (
     doc.save(downloadName);
     doc.autoPrint();
 };
+
+export const IMAGE_SIZE = 1024000; // 1mb = 1024000
