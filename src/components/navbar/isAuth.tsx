@@ -22,9 +22,7 @@ export const IsAuth: FC<Props> = ({
 
     return (
         <>
-            {status === "loading" ? (
-                <Loader2 className="animate-spin" />
-            ) : isAuth ? (
+            {isAuth ? (
                 <Link
                     className={cn(
                         "text-sm font-semibold leading-6 text-gray-900 flex gap-1 items-center justify-center",
@@ -45,7 +43,10 @@ export const IsAuth: FC<Props> = ({
                     href={"/login"}
                     onClick={() => !!setOpen && setOpen(!open)}
                 >
-                    <span aria-hidden="true" className="mr-2">&rarr;</span>Log in 
+                    <span aria-hidden="true" className="mr-2">
+                        &rarr;
+                    </span>
+                    Log in
                 </Link>
             )}
         </>
