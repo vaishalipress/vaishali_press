@@ -55,21 +55,20 @@ const Products = [
     },
 ];
 
-interface ProductType {}
 export const MostPopularProducts = () => {
     return (
-        <Link href={"/contact"}>
-            <div className="flex flex-col gap-5">
-                <h1 className="ml-3 sm:ml-0 text-2xl font-semibold uppercase text-black">
-                    Most Popular
-                </h1>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-9 place-items-center text-black">
-                    {Products?.map((product, idx) => (
-                        <ProductCard key={idx} {...product} />
-                    ))}
-                </div>
+        <div className="flex flex-col gap-5 mt-10">
+            <h1 className="ml-3 sm:ml-0 text-2xl font-semibold uppercase text-black">
+                Most Popular
+            </h1>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-9 place-items-center text-black">
+                {Products?.map((product, idx) => (
+                    <Link href={"/contact"} key={idx}>
+                        <ProductCard {...product} />
+                    </Link>
+                ))}
             </div>
-        </Link>
+        </div>
     );
 };
 
