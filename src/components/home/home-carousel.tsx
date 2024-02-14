@@ -14,7 +14,7 @@ export const HomeCarousel = ({
 }) => {
     return (
         <Carousel
-            className="w-full h-[170px] sm:h-[450px] relative"
+            className="w-full h-[300px] sm:h-[450px] lg:h-[550px] relative"
             plugins={[
                 Autoplay({
                     delay: 3000,
@@ -25,11 +25,12 @@ export const HomeCarousel = ({
             <CarouselContent>
                 {data?.map((image, idx) => (
                     <CarouselItem key={idx}>
-                        <div className="relative w-full h-[170px] sm:h-[450px]">
+                        <div className="relative w-full h-[300px] sm:h-[450px] lg:h-[550px]">
                             <Image
                                 src={image?.secure_url}
                                 fill
                                 alt={"carousel"}
+                                priority
                                 className="object-fill w-full h-full"
                             />
                         </div>

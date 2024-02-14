@@ -6,8 +6,9 @@ import { Loader2 } from "lucide-react";
 
 export const HomeComponent = () => {
     const { data, isLoading } = useAssests();
+
     return (
-        <div>
+        <div className="px-3 lg:px-0">
             {isLoading ? (
                 <div className="h-[80vh] flex items-center justify-center">
                     <Loader2 className="w-8 h-8 animate-spin" />
