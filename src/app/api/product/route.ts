@@ -32,7 +32,9 @@ export const POST = async (req: Request) => {
             );
         }
         const isExist = await Product.findOne({
-            name: data.name,
+            name: {
+                $regex: data.name.trim(), $options: "i"
+            },
         });
 
         if (isExist) {
@@ -141,6 +143,23 @@ export const PUT = async (req: Request) => {
             );
         }
 
+
+        const isExistWithData = await Product.find({
+            $nor: [{ _id: isExist._id }],
+            name: {
+                $regex: data.name.trim(), $options: "i"
+            },
+
+        })
+
+
+        if (isExistWithData?.[0]) {
+            return NextResponse.json(
+                { message: "product already exists with same name.", success: false },
+                { status: 400 }
+            );
+        }
+
         const product = await Product.findByIdAndUpdate(
             id,
             {
@@ -156,11 +175,13 @@ export const PUT = async (req: Request) => {
             });
         }
 
+
         return NextResponse.json(
             { product, message: "Product updated", success: true },
             { status: 201 }
         );
     } catch (error: any) {
+        console.log(error)
         return Response.json(error.name, { status: error.name ? 400 : 500 });
     }
 };

@@ -4,6 +4,8 @@ import CONNECT_TO_DB from "@/lib/connectToDb";
 import { isAuth } from "@/lib/isAuth";
 import { clientSchema } from "@/lib/schema";
 import Sale from "@/models/sale";
+import { z } from "zod";
+import mongoose from "mongoose";
 
 CONNECT_TO_DB();
 
@@ -22,7 +24,7 @@ export const POST = async (req: Request) => {
                 }
             );
         }
-        const data = await req.json();
+        const data: z.infer<typeof clientSchema> = await req.json();
         const { success } = clientSchema.safeParse(data);
 
         if (!success) {
@@ -32,8 +34,25 @@ export const POST = async (req: Request) => {
             );
         }
 
+
+        const isExist = await Client.findOne({
+            district: data.district,
+            market: data.market,
+            name: {
+                $regex: data.name, $options: "i"
+            }
+        })
+
+
+        if (isExist) {
+            return NextResponse.json(
+                { message: "client already exists.", success: false },
+                { status: 400 }
+            );
+        }
+
         const client = await Client.create({
-            ...data,
+            ...data
         });
 
         if (!client) {
@@ -161,7 +180,7 @@ export const PUT = async (req: Request) => {
             );
         }
 
-        const data = await req.json();
+        const data: z.infer<typeof clientSchema> = await req.json();
         const { success } = clientSchema.safeParse(data);
 
         if (!success) {
@@ -180,10 +199,31 @@ export const PUT = async (req: Request) => {
             );
         }
 
+
+        const isExistWithData = await Client.find({
+            $nor: [{ _id: isExist._id }],
+            name: {
+                $regex: data.name.trim(), $options: "i"
+            },
+
+            market: data.market,
+            district: data.district,
+        })
+
+
+
+        if (isExistWithData?.[0]) {
+            return NextResponse.json(
+                { message: "client already exists with same name.", success: false },
+                { status: 400 }
+            );
+        }
+
+
         const client = await Client.findByIdAndUpdate(
             id,
             {
-                ...data,
+                ...data
             },
             { new: true }
         );

@@ -12,6 +12,7 @@ const ProductSchema = new Schema<ProductI>(
             type: String,
             required: true,
             unique: true,
+            trim: true
         },
         price: {
             type: Number,
