@@ -16,7 +16,7 @@ export const HomeComponent = () => {
             ) : (
                 <>
                     <HomeCarousel data={data} />
-                    <MostPopularProducts />
+                    {/* <MostPopularProducts /> */}
                 </>
             )}
         </div>
