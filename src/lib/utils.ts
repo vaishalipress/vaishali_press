@@ -40,4 +40,4 @@ export const downloadToPDF = (
     doc.autoPrint();
 };
 
-export const IMAGE_SIZE = 1024000; // 1mb = 1024000
+export const IMAGE_SIZE = 1024000 * 5; // 1mb = 1024000

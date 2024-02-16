@@ -1,5 +1,5 @@
 import { CarouselMediaUploader } from "@/components/carousel-setting/carousel-uploader";
-import { CarouselImageList } from "@/components/carousel-setting/list";
+import { CarouselImageList } from "@/components/carousel-setting/carousel-image-list";
 
 export default function CarouselSettings() {
     return (

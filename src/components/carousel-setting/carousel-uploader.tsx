@@ -15,7 +15,7 @@ export const CarouselMediaUploader = () => {
         const file = e.target.files?.[0];
         if (file) {
             if (file.size > IMAGE_SIZE) {
-                toast("😶 Image Should be lesser than 40kb");
+                toast("😶 Image Should be lesser than 5mb");
                 return;
             }
             try {
