@@ -32,9 +32,7 @@ export const POST = async (req: Request) => {
             );
         }
         const isExist = await Product.findOne({
-            name: {
-                $regex: data.name.trim(), $options: "i"
-            },
+            name: data.name.trim().toLowerCase(),
         });
 
         if (isExist) {
@@ -146,9 +144,7 @@ export const PUT = async (req: Request) => {
 
         const isExistWithData = await Product.find({
             $nor: [{ _id: isExist._id }],
-            name: {
-                $regex: data.name.trim(), $options: "i"
-            },
+            name: data.name.trim().toLowerCase(),
 
         })
 

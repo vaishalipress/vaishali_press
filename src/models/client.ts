@@ -13,7 +13,8 @@ const clientSchema = new Schema<ClientI>(
         name: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            lowercase: true
         },
         district: {
             type: String,

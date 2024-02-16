@@ -5,7 +5,6 @@ import { isAuth } from "@/lib/isAuth";
 import { clientSchema } from "@/lib/schema";
 import Sale from "@/models/sale";
 import { z } from "zod";
-import mongoose from "mongoose";
 
 CONNECT_TO_DB();
 
@@ -38,9 +37,7 @@ export const POST = async (req: Request) => {
         const isExist = await Client.findOne({
             district: data.district,
             market: data.market,
-            name: {
-                $regex: data.name, $options: "i"
-            }
+            name: data.name.trim().toLowerCase(),
         })
 
 
@@ -202,9 +199,7 @@ export const PUT = async (req: Request) => {
 
         const isExistWithData = await Client.find({
             $nor: [{ _id: isExist._id }],
-            name: {
-                $regex: data.name.trim(), $options: "i"
-            },
+            name: data.name.trim().toLowerCase(),
 
             market: data.market,
             district: data.district,

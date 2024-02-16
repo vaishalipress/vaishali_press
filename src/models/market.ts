@@ -11,7 +11,8 @@ const MarketSchema = new Schema<MarketI>(
         name: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            lowercase: true
         },
         district: {
             type: String,
