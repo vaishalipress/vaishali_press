@@ -43,7 +43,7 @@ import { salesSchema } from "@/lib/schema";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { handleAxiosError } from "@/lib/error";
@@ -52,6 +52,7 @@ import { useClient, useProduct } from "@/hooks/use-fetch-data";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useSaleFilter } from "@/hooks/useSaleFilter";
+import { ClientTypeExtented } from "@/lib/types";
 
 export default function AddSales() {
     const form = useForm<z.infer<typeof salesSchema>>({
@@ -68,8 +69,24 @@ export default function AddSales() {
     const { addSale } = useCustumQuery();
     const [total, setTotal] = useState(0);
     const { page, view } = useSaleFilter();
-    const { data: clients, isLoading: isClientLoading } = useClient();
     const { data: products, isLoading: isProductLoading } = useProduct();
+    const { data: clientsData, isLoading: isClientLoading } = useClient();
+    const [clients, setClients] = useState<ClientTypeExtented[] | undefined>([])
+
+    useEffect(() => {
+        const sorted = clientsData?.sort(function (a, b) {
+            if (a.name < b.name) {
+                return -1;
+            }
+            if (a.name > b.name) {
+                return 1;
+            }
+            return 0;
+        });
+
+        setClients(sorted)
+    }, [clientsData])
+
     const { mutate, isPending } = useMutation({
         mutationFn: async (values: z.infer<typeof salesSchema>) => {
             const { data } = await axios.post(`/api/sale`, values);

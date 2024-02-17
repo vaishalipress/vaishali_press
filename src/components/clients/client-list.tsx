@@ -13,10 +13,27 @@ import { useModal } from "@/hooks/use-modal-store";
 import { LoadingCells } from "../loading";
 import { format } from "date-fns";
 import { useClient } from "@/hooks/use-fetch-data";
+import { ClientTypeExtented } from "@/lib/types";
+import { useEffect, useState } from "react";
 
 export default function ClientList() {
     const { onOpen } = useModal();
-    const { data, isLoading } = useClient();
+    const { data: clientsData, isLoading } = useClient();
+    const [data, setData] = useState<ClientTypeExtented[] | undefined>([])
+
+    useEffect(() => {
+        const sorted = clientsData?.sort(function (a, b) {
+            if (a.name < b.name) {
+                return -1;
+            }
+            if (a.name > b.name) {
+                return 1;
+            }
+            return 0;
+        });
+
+        setData(sorted)
+    }, [clientsData])
 
     return (
         <div className="border max-w-7xl w-full rounded-md py-3 shadow-md">

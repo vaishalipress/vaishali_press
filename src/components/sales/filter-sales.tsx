@@ -22,6 +22,8 @@ import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { filterType } from "@/hooks/useSaleFilter";
 import { useClient, useProduct } from "@/hooks/use-fetch-data";
+import { ClientTypeExtented, ProductTypeExtended } from "@/lib/types";
+import { useEffect, useState } from "react";
 
 export const FilterSale = ({
     toggleType,
@@ -50,15 +52,43 @@ export const FilterSale = ({
     setPage: (page: number) => void;
     setView: (view: number) => void;
 }) => {
-    const { data: clients, isLoading: isClientLoading } = useClient();
-    const { data: products, isLoading: isProductLoading } = useProduct();
+    const { data: productsData, isLoading: isProductLoading } = useProduct();
+    const [products, setProducts] = useState<ProductTypeExtended[] | undefined>([])
+
+    const { data: clientsData, isLoading: isClientLoading } = useClient();
+    const [clients, setClients] = useState<ClientTypeExtented[] | undefined>([])
+
+    useEffect(() => {
+        const sorted = clientsData?.sort(function (a, b) {
+            if (a.name < b.name) {
+                return -1;
+            }
+            if (a.name > b.name) {
+                return 1;
+            }
+            return 0;
+        });
+
+        setClients(sorted)
+    }, [clientsData])
+
+    useEffect(() => {
+        const sorted = productsData?.sort(function (a, b) {
+            if (a.name < b.name) {
+                return -1;
+            }
+            if (a.name > b.name) {
+                return 1;
+            }
+            return 0;
+        });
+        setProducts(sorted)
+    }, [productsData])
+
 
     const onChangeView = (value: string) => {
         setView(Number(value));
         setPage(1);
-        // params.set("view", value);
-        // params.set("page", "1");
-        // replace(`${path}?${params}`);
     };
 
     return (
@@ -66,27 +96,24 @@ export const FilterSale = ({
             <Badge
                 onClick={() => toggleType("all")}
                 variant={"secondary"}
-                className={`text-sm cursor-pointer hover:bg-indigo-300 ${
-                    type === "all" && "bg-indigo-300"
-                }`}
+                className={`text-sm cursor-pointer hover:bg-indigo-300 ${type === "all" && "bg-indigo-300"
+                    }`}
             >
                 All
             </Badge>
             <Badge
                 onClick={() => toggleType("today")}
                 variant={"secondary"}
-                className={`text-sm cursor-pointer hover:bg-indigo-300 ${
-                    type === "today" && "bg-indigo-300"
-                }`}
+                className={`text-sm cursor-pointer hover:bg-indigo-300 ${type === "today" && "bg-indigo-300"
+                    }`}
             >
                 Today
             </Badge>
             <Badge
                 onClick={() => toggleType("yesterday")}
                 variant={"secondary"}
-                className={`text-sm cursor-pointer hover:bg-indigo-300 ${
-                    type === "yesterday" && "bg-indigo-300"
-                }`}
+                className={`text-sm cursor-pointer hover:bg-indigo-300 ${type === "yesterday" && "bg-indigo-300"
+                    }`}
             >
                 Yesterday
             </Badge>
