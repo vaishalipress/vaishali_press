@@ -33,6 +33,7 @@ import {
     Smartphone,
     Smile,
     ToyBrick,
+    Trash,
     User,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -292,6 +293,17 @@ export const EditClientModal = () => {
                                     </span>
                                 </div>
                             )}
+                        </Button>
+                        <Button
+                            type="button"
+                            variant={"destructive"}
+                            className="px-2 py-0 flex items-center gap-2"
+                            onClick={() => {
+                                onOpen("deleteClient", { client });
+                            }}
+                        >
+                            <Trash className="w-3 h-3 md:w-4 md:h-4" />
+                            <span>DELETE</span>
                         </Button>
                     </form>
                 </Form>

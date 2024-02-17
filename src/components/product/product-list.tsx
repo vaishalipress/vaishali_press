@@ -8,44 +8,141 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "../ui/button";
-import { Boxes, IndianRupee, Pen, Trash } from "lucide-react";
+import { Boxes, Download, IndianRupee, Pen, Trash } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { LoadingCells } from "../loading";
 import { format } from "date-fns";
 import { useProduct } from "@/hooks/use-fetch-data";
+import { downloadToPDF } from "@/lib/utils";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { useEffect, useMemo, useState } from "react";
+import { ProductTypeExtended } from "@/lib/types";
 
 export default function ProductList() {
     const { onOpen } = useModal();
-    const { data, isLoading } = useProduct();
+    const { data: productData, isLoading } = useProduct();
+    const [data, setData] = useState<ProductTypeExtended[] | undefined>([]);
+    const [sort, setSort] = useState<"atoz" | "latest">("atoz");
 
+    const sortByAtoZ = useMemo(() => {
+        if (!productData) return;
+
+        const sorted = [...productData]?.sort(function (a, b) {
+            if (a.name < b.name) {
+                return -1;
+            }
+            if (a.name > b.name) {
+                return 1;
+            }
+            return 0;
+        });
+
+        return sorted;
+    }, [productData]);
+
+    const sortByDate = useMemo(() => {
+        if (!productData) return;
+        const sorted = [...productData]?.sort(function (a, b) {
+            if (a.createdAt < b.createdAt) {
+                return 1;
+            }
+            if (a.createdAt > b.createdAt) {
+                return -1;
+            }
+            return 0;
+        });
+
+        return sorted;
+    }, [productData]);
+
+    useEffect(() => {
+        setData(sortByAtoZ);
+    }, [productData, sortByAtoZ]);
     return (
         <div className="border max-w-3xl w-full rounded-md py-3 shadow-md">
-            <div className="flex items-center gap-3 mb-3 px-3">
-                <Boxes className="text-indigo-500 w-6 h-6" />
-                <h1 className="uppercase text-indigo-600 font-bold text-lg">
-                    Products
-                </h1>
+            <div className="flex items-center justify-between gap-3 mb-3 px-3">
+                <div className="flex items-center gap-3">
+                    <Boxes className="text-indigo-500 w-6 h-6" />
+                    <h1 className="uppercase text-indigo-600 font-bold text-lg">
+                        Products
+                    </h1>
+                </div>
+
+                <div className="flex gap-3">
+                    <Select
+                        value={sort}
+                        onValueChange={(e: "atoz" | "latest") => {
+                            setSort(e);
+
+                            if (e === "latest") {
+                                setData(sortByDate);
+                            } else if (e === "atoz") {
+                                setData(sortByAtoZ);
+                            }
+                        }}
+                        defaultValue={sort}
+                    >
+                        <SelectTrigger className="w-24">
+                            <SelectValue placeholder={"Filter"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Filter</SelectLabel>
+
+                                <SelectItem value={"latest"}>Latest</SelectItem>
+                                <SelectItem value={"atoz"}>A-Z</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+
+                    <Button
+                        variant={"ghost"}
+                        size={"sm"}
+                        onClick={() =>
+                            downloadToPDF(
+                                isLoading,
+                                "#products",
+                                `products.pdf`
+                            )
+                        }
+                    >
+                        <Download className="w-5 h-5" />
+                    </Button>
+                </div>
             </div>
             <div>
-                <Table>
+                <Table id="products">
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[150px] uppercase">
+                            <TableHead className="w-[50px]">S.NO</TableHead>
+                            <TableHead className="max-w-[250px] uppercase">
                                 name
                             </TableHead>
                             <TableHead className="uppercase">Price</TableHead>
                             <TableHead className="uppercase min-w-[120px]">
                                 Date
                             </TableHead>
-                            <TableHead className="text-right uppercase min-w-[130px] md:min-w-[150px]">
-                                Actions
-                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {isLoading && <LoadingCells rows={10} cols={4} />}
-                        {data?.map((product) => (
-                            <TableRow key={product?._id}>
+                        {data?.map((product, idx) => (
+                            <TableRow
+                                key={product?._id}
+                                className="cursor-pointer"
+                                onClick={() => {
+                                    onOpen("editProduct", { product });
+                                }}
+                            >
+                                <TableCell>{idx + 1}</TableCell>
                                 <TableCell className="font-medium capitalize">
                                     {product.name.toLocaleUpperCase()}
                                 </TableCell>
@@ -61,31 +158,6 @@ export default function ProductList() {
                                         new Date(product?.createdAt),
                                         "dd-MM-yyyy"
                                     )}
-                                </TableCell>
-
-                                <TableCell className="text-right">
-                                    {/* EDIT BTN */}
-                                    <Button
-                                        variant={"outline"}
-                                        className="px-2 py-0"
-                                        onClick={() => {
-                                            onOpen("editProduct", { product });
-                                        }}
-                                    >
-                                        <Pen className="w-3 h-3 md:w-4 md:h-4" />
-                                    </Button>
-                                    {/* DELETE BTN */}
-                                    <Button
-                                        variant={"outline"}
-                                        className="ml-2 px-2 py-0"
-                                        onClick={() => {
-                                            onOpen("deleteProduct", {
-                                                product,
-                                            });
-                                        }}
-                                    >
-                                        <Trash className="w-3 h-3 md:w-4 md:h-4" />
-                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}

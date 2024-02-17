@@ -21,7 +21,7 @@ export const DistrictDashboard = () => {
     return (
         <div className="w-full pb-2">
             <div className="flex justify-between mb-2 items-center gap-2 bg-slate-200 dark:bg-slate-700 py-3 px-3 rounded-md">
-                <h1 className="text-sm lg:text-xl uppercase  font-semibold">
+                <h1 className="text-sm lg:text-base uppercase font-semibold">
                     District Performance
                 </h1>
 
@@ -45,7 +45,7 @@ export const DistrictDashboard = () => {
             )}
             <Accordion type="multiple" className="w-full">
                 {data?.map((district) => (
-                    <DistrictPage key={district._id} {...district} />
+                    <DistrictPage key={district?._id} {...district} />
                 ))}
             </Accordion>
         </div>
@@ -68,7 +68,7 @@ export const DistrictPage = ({
             {/* District sction */}
             <AccordionTrigger className="flex gap-3 w-full px-3 py-2 bg-orange-200 dark:bg-orange-800">
                 <div className="flex items-center gap-2 w-[93%] justify-between">
-                    <span className="text-sm lg:text-base font-medium  dark:text-zinc-200 uppercase">
+                    <span className="text-sm font-medium  dark:text-zinc-200 uppercase">
                         {district}
                     </span>
                     <DistrictHeaderInfo
@@ -83,12 +83,12 @@ export const DistrictPage = ({
                 <div className="flex gap-2 flex-wrap px-3">
                     {markets?.map((market) => (
                         <MarketSection
-                            key={market.market}
-                            market={market.market}
-                            totalAmount={market.totalAmount}
-                            totalClient={market.totalClient}
-                            totalSale={market.totalSale}
-                            clients={market.clients}
+                            key={market?.market}
+                            market={market?.market}
+                            totalAmount={market?.totalAmount}
+                            totalClient={market?.totalClient}
+                            totalSale={market?.totalSale}
+                            clients={market?.clients}
                         />
                     ))}
                 </div>

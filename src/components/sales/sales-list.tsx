@@ -94,6 +94,7 @@ export default function SalesList() {
                     <Table id="sales">
                         <TableHeader>
                             <TableRow>
+                                <TableHead>S.No</TableHead>
                                 <TableHead className="uppercase min-w-[75px] lg:min-w-[120px]">
                                     Date
                                 </TableHead>
@@ -120,7 +121,7 @@ export default function SalesList() {
                         </TableHeader>
                         <TableBody>
                             {isLoading && <LoadingCells cols={8} />}
-                            {data?.sales?.map((sale) => (
+                            {data?.sales?.map((sale, idx) => (
                                 <TableRow
                                     key={sale?._id}
                                     className="cursor-pointer"
@@ -128,6 +129,9 @@ export default function SalesList() {
                                         onOpen("editSale", { sale });
                                     }}
                                 >
+                                    <TableCell>
+                                        {view * ((page || 1) - 1) + idx + 1}
+                                    </TableCell>
                                     <TableCell className="text-xs lg:text-sm">
                                         {sale?.date &&
                                             format(

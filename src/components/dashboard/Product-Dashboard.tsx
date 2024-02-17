@@ -27,7 +27,7 @@ export const ProductDashboard = () => {
     return (
         <div className="mb-4 mt-6 w-full">
             <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
-                <h1 className="text-sm lg:text-xl uppercase  font-semibold">
+                <h1 className="text-sm lg:text-base uppercase  font-semibold">
                     Product Performance
                 </h1>
 
@@ -59,7 +59,10 @@ export const ProductDashboard = () => {
 
                 <Accordion type="multiple" className="w-full">
                     {data?.map((product) => (
-                        <ProductStats product={product} key={product.product} />
+                        <ProductStats
+                            product={product}
+                            key={product?.product}
+                        />
                     ))}
                 </Accordion>
             </div>
@@ -70,16 +73,16 @@ export const ProductDashboard = () => {
 const ProductStats = ({ product }: { product: ProductData }) => {
     return (
         <AccordionItem
-            value={product.product}
+            value={product?.product}
             className="w-full h-fit border rounded-md flex flex-col gap-3 mb-3"
         >
             <AccordionTrigger className="flex gap-3 w-full px-3 py-2 bg-orange-200 dark:bg-orange-800">
                 <div className="flex items-center gap-2 w-[93%] justify-between">
-                    <span className="text-sm lg:text-base font-medium  dark:text-zinc-200 uppercase">
-                        {product.product}
+                    <span className="text-sm font-medium  dark:text-zinc-200 uppercase">
+                        {product?.product}
                     </span>
                     <span className="text-xs dark:text-zinc-200 uppercase">
-                        SOLD : {product.totalSales}
+                        SOLD : {product?.totalSales}
                     </span>
                 </div>
             </AccordionTrigger>
@@ -88,18 +91,18 @@ const ProductStats = ({ product }: { product: ProductData }) => {
                 <div className="flex gap-3 flex-wrap px-3 py-3">
                     {product?.stats?.map((stat) => (
                         <div
-                            key={stat.district}
+                            key={stat?.district}
                             className="border rounded-md overflow-hidden"
                         >
                             <div className="bg-rose-50 dark:bg-slate-600 flex justify-between items-start px-3 py-3 ">
                                 <span className="text-xs dark:text-zinc-200 uppercase">
-                                    {stat.district}
+                                    {stat?.district}
                                 </span>
                                 <span className="text-xs dark:text-zinc-200 uppercase">
-                                    sold : {stat.sales}
+                                    sold : {stat?.sales}
                                 </span>
                             </div>
-                            <Market market={stat.market} />
+                            <Market market={stat?.market} />
                         </div>
                     ))}
                 </div>

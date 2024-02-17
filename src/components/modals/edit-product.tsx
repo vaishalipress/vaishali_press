@@ -24,12 +24,12 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { productSchema } from "@/lib/schema";
-import { Box, Loader2, Pencil } from "lucide-react";
+import { Box, Loader2, Pencil, Trash } from "lucide-react";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
 
 export const EditProductModal = () => {
-    const { isOpen, onClose, type, data } = useModal();
+    const { isOpen, onClose, type, data, onOpen } = useModal();
     const isModalOpen = isOpen && type === "editProduct";
     const { product } = data;
 
@@ -138,6 +138,18 @@ export const EditProductModal = () => {
                                     </span>
                                 </div>
                             )}
+                        </Button>
+
+                        <Button
+                            variant={"destructive"}
+                            className="ml-2 px-2 py-0"
+                            onClick={() => {
+                                onOpen("deleteProduct", {
+                                    product,
+                                });
+                            }}
+                        >
+                            <Trash className="w-3 h-3 md:w-4 md:h-4" />
                         </Button>
                     </form>
                 </Form>

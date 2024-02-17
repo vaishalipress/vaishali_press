@@ -21,16 +21,7 @@ const DonutChart = ({ dataSet }: { dataSet: (number | undefined)[] }) => {
         ],
     };
 
-    return (
-        <Doughnut
-            data={data}
-            options={{
-                scales: {
-                    // outerWidth: 0,
-                },
-            }}
-        />
-    );
+    return <Doughnut data={data} />;
 };
 interface dataType {
     name: string;
@@ -61,19 +52,19 @@ export const Donut = ({
                 </div>
             </div>
 
-            <div className="flex flex-col items-start max-w-[40%] sm:max-w-fit overflow-hidden">
+            <div className="flex flex-col items-start gap-1 md:gap-3 max-w-[40%] sm:max-w-fit overflow-hidden">
                 {data?.[0] && (
                     <div className="flex items-center flex-col">
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 min-w-2 min-h-2 bg-[#98D89E] rounded-full" />
                             <span className="font-semibold text-xs md:text-sm uppercase">
-                                {data?.[0].name}
+                                {data?.[0]?.name}
                             </span>
                         </div>
 
                         <span className="text-sm text-zinc-400 self-start ml-5 flex items-center">
                             {rupeeSymbol && <IndianRupee className="w-3 h-3" />}
-                            {data?.[0].value}
+                            {data?.[0]?.value}
                         </span>
                     </div>
                 )}
@@ -83,12 +74,12 @@ export const Donut = ({
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 min-w-2 min-h-2 bg-[#F6DC7D] rounded-full" />
                             <span className="font-semibold text-xs md:text-sm uppercase">
-                                {data?.[1].name}
+                                {data?.[1]?.name}
                             </span>
                         </div>
                         <span className="text-sm text-zinc-400 self-start ml-5 flex items-center">
                             {rupeeSymbol && <IndianRupee className="w-3 h-3" />}
-                            {data?.[1].value}
+                            {data?.[1]?.value}
                         </span>
                     </div>
                 )}
@@ -98,12 +89,12 @@ export const Donut = ({
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 min-w-2 min-h-2 bg-[#EE8484] rounded-full" />
                             <span className="font-semibold text-xs md:text-sm uppercase">
-                                {data?.[2].name}
+                                {data?.[2]?.name}
                             </span>
                         </div>
                         <span className="text-sm text-zinc-400 self-start ml-5 flex items-center">
                             {rupeeSymbol && <IndianRupee className="w-3 h-3" />}
-                            {data?.[2].value}
+                            {data?.[2]?.value}
                         </span>
                     </div>
                 )}

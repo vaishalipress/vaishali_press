@@ -18,7 +18,7 @@ export default function ClientStats() {
     const { date, setDate, toggleType, type } = useFilterDate();
     const { data, isLoading } = useClientStats(date);
     return (
-        <div className="max-w-xl w-full flex flex-col gap-3">
+        <div className="max-w-3xl w-full flex flex-col gap-3">
             <div className="border w-full rounded-md shadow-md">
                 <div className="flex flex-col justify-between gap-3 px-3 py-3 bg-[#FFCCCC] dark:bg-slate-300 rounded-tl-md rounded-tr-md">
                     <div className="flex items-center gap-3">
