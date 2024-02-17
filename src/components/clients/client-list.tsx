@@ -73,12 +73,8 @@ export default function ClientList() {
     }, [clientsData]);
 
     useEffect(() => {
-        if (sort === "latest") {
-            setData(sortedClientByDate);
-        } else if (sort === "atoz") {
-            setData(sortedClientByAtoZ);
-        }
-    }, [clientsData]);
+        setData(sortedClientByAtoZ);
+    }, [clientsData, sortedClientByAtoZ]);
 
     const searchClientByName = useCallback(
         (name: string) => {

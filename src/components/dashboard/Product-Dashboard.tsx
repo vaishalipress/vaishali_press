@@ -59,7 +59,7 @@ export const ProductDashboard = () => {
 
                 <Accordion type="multiple" className="w-full">
                     {data?.map((product) => (
-                        <ProductStats product={product} />
+                        <ProductStats product={product} key={product.product} />
                     ))}
                 </Accordion>
             </div>
@@ -119,7 +119,7 @@ const Market = ({ market }: { market: MarketStats[] }) => {
             </TableHeader>
             <TableBody>
                 {market?.map((m) => (
-                    <TableRow>
+                    <TableRow key={m.market}>
                         <TableCell className="uppercase text-xs">
                             {m?.market}
                         </TableCell>
