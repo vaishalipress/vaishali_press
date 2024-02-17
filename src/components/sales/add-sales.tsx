@@ -112,7 +112,10 @@ export default function AddSales() {
             }
         },
         onSettled: () => {
-            form.reset();
+            form.resetField("client")
+            form.resetField("product")
+            form.resetField("qty")
+            form.resetField("rate")
             setTotal(0);
         },
 
@@ -173,7 +176,7 @@ export default function AddSales() {
                                                         className={cn(
                                                             "w-[280px] justify-start text-left font-normal",
                                                             !field.value &&
-                                                                "text-muted-foreground"
+                                                            "text-muted-foreground"
                                                         )}
                                                     >
                                                         <CalendarIcon className="mr-5 h-5 w-4" />
@@ -341,9 +344,9 @@ export default function AddSales() {
                                                 onChange={(e) => {
                                                     setTotal(
                                                         Number(e.target.value) *
-                                                            form.getValues(
-                                                                "rate"
-                                                            )
+                                                        form.getValues(
+                                                            "rate"
+                                                        )
                                                     );
                                                     field.onChange(
                                                         Number(e.target.value)
@@ -375,9 +378,9 @@ export default function AddSales() {
                                                 onChange={(e) => {
                                                     setTotal(
                                                         Number(e.target.value) *
-                                                            form.getValues(
-                                                                "qty"
-                                                            )
+                                                        form.getValues(
+                                                            "qty"
+                                                        )
                                                     );
                                                     field.onChange(
                                                         Number(e.target.value)

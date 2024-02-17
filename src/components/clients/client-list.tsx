@@ -43,6 +43,9 @@ export default function ClientList() {
                             <TableHead className="uppercase min-w-[120px]">
                                 Date
                             </TableHead>
+                            <TableHead className="uppercase min-w-[120px]">
+                                Mobile
+                            </TableHead>
                             <TableHead className="text-right uppercase min-w-[130px] md:min-w-[150px]">
                                 Actions
                             </TableHead>
@@ -74,6 +77,8 @@ export default function ClientList() {
                                         "dd-MM-yyyy"
                                     )}
                                 </TableCell>
+
+                                <TableCell>{client?.mobile}</TableCell>
                                 <TableCell className="text-right">
                                     {/* EDIT BTN */}
                                     <Button
