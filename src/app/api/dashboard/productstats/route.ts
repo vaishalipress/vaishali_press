@@ -195,7 +195,12 @@ export const GET = async (req: Request) => {
                     _id: 0,
                     product: "$_id",
                     totalSales: 1,
-                    stats: 1,
+                    stats: {
+                        $sortArray: {
+                            input: "$stats",
+                            sortBy: { sales: -1 },
+                        },
+                    },
                 },
             },
         ]).sort({ totalSales: -1 });
