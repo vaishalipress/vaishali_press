@@ -55,7 +55,6 @@ export const GET = async (req: Request) => {
                         market: "$client.market",
                     },
 
-                    // Product stats
                     totalSales: {
                         $sum: "$qty",
                     },
