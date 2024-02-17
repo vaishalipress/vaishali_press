@@ -13,7 +13,13 @@ import { ProductMarketWiseData, ProductData } from "@/lib/types";
 import { LoadingCells } from "@/components/loading";
 import { FileWarning, IndianRupee } from "lucide-react";
 import { useFilterDate } from "@/hooks/useFilterDate";
-import { Filter } from "../filter";
+import { Filter } from "@/components/filter";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export const ProductDashboard = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
@@ -50,9 +56,12 @@ export const ProductDashboard = () => {
                         </p>
                     </div>
                 )}
-                {data?.map((dist) => (
-                    <District dist={dist} key={dist.district} />
-                ))}
+
+                <Accordion type="multiple" className="w-full">
+                    {data?.map((dist) => (
+                        <District dist={dist} key={dist.district} />
+                    ))}
+                </Accordion>
             </div>
         </div>
     );
@@ -60,18 +69,24 @@ export const ProductDashboard = () => {
 
 const District = ({ dist }: { dist: ProductData }) => {
     return (
-        <div className="border rounded-md w-fit h-fit flex flex-col gap-1 justify-between">
-            <div className="flex justify-between items-center bg-slate-300 dark:bg-slate-500 py-2 px-3 rounded-tl-md rounded-tr-md">
+        <AccordionItem
+            value={dist.district}
+            className="w-full h-fit border rounded-md flex flex-col gap-3 mb-3"
+        >
+            <AccordionTrigger className="flex gap-3 w-full px-3 py-2 bg-orange-200 dark:bg-orange-800">
                 <span className="w-fit text-base font-medium uppercase">
                     {dist.district}
                 </span>
-            </div>
-            <div className="flex gap-3 flex-wrap px-3 py-3">
-                {dist.markets.map((market) => (
-                    <Market market={market} key={market.name} />
-                ))}
-            </div>
-        </div>
+            </AccordionTrigger>
+
+            <AccordionContent>
+                <div className="flex gap-3 flex-wrap px-3 py-3">
+                    {dist.markets.map((market) => (
+                        <Market market={market} key={market.name} />
+                    ))}
+                </div>
+            </AccordionContent>
+        </AccordionItem>
     );
 };
 

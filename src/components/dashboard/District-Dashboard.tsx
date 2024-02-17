@@ -6,14 +6,14 @@ import { MarketTypeInDashboard } from "@/lib/types";
 import { useClientDashboardInfo } from "@/hooks/use-fetch-data";
 import { LoadingCells } from "@/components/loading";
 import { Table, TableBody } from "@/components/ui/table";
-import { Filter } from "../filter";
+import { Filter } from "@/components/filter";
 import { useFilterDate } from "@/hooks/useFilterDate";
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-} from "../ui/accordion";
+} from "@/components/ui/accordion";
 
 export const DistrictDashboard = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
@@ -44,11 +44,9 @@ export const DistrictDashboard = () => {
                 </div>
             )}
             <Accordion type="multiple" className="w-full">
-                {/* <div className="w-full flex flex-wrap gap-3"> */}
                 {data?.map((district) => (
                     <DistrictPage key={district._id} {...district} />
                 ))}
-                {/* </div> */}
             </Accordion>
         </div>
     );
@@ -68,7 +66,7 @@ export const DistrictPage = ({
             className="w-full h-fit border rounded-md flex flex-col gap-3 mb-3"
         >
             {/* District sction */}
-            <AccordionTrigger className="flex gap-3 w-full px-3 py-2 bg-zinc-300 dark:bg-zinc-600">
+            <AccordionTrigger className="flex gap-3 w-full px-3 py-2 bg-orange-200 dark:bg-orange-800">
                 <div className="flex items-center gap-2 w-[93%] justify-between">
                     <span className="text-sm lg:text-base font-medium  dark:text-zinc-200 uppercase">
                         {district}
