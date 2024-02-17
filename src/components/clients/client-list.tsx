@@ -14,7 +14,14 @@ import { LoadingCells } from "../loading";
 import { format } from "date-fns";
 import { useClient } from "@/hooks/use-fetch-data";
 import { ClientTypeExtented } from "@/lib/types";
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+    ChangeEvent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import {
     Select,
     SelectContent,
@@ -26,15 +33,13 @@ import {
 } from "@/components/ui/select";
 import { Input } from "../ui/input";
 
-
 export default function ClientList() {
     const { onOpen } = useModal();
     const { data: clientsData, isLoading } = useClient();
-    const [sort, setSort] = useState<"atoz" | "latest">("atoz")
-    const [data, setData] = useState<ClientTypeExtented[] | undefined>([])
-    const [search, setSearch] = useState("")
-    let timerRef = useRef<
-        NodeJS.Timeout | null>(null)
+    const [sort, setSort] = useState<"atoz" | "latest">("atoz");
+    const [data, setData] = useState<ClientTypeExtented[] | undefined>([]);
+    const [search, setSearch] = useState("");
+    let timerRef = useRef<NodeJS.Timeout | null>(null);
 
     const sortedClientByAtoZ = useMemo(() => {
         if (!clientsData) return;
@@ -49,8 +54,8 @@ export default function ClientList() {
             return 0;
         });
 
-        return sorted
-    }, [clientsData])
+        return sorted;
+    }, [clientsData]);
 
     const sortedClientByDate = useMemo(() => {
         if (!clientsData) return;
@@ -64,94 +69,77 @@ export default function ClientList() {
             return 0;
         });
 
-        return sorted
-    }, [clientsData])
-
-
+        return sorted;
+    }, [clientsData]);
 
     useEffect(() => {
         if (sort === "latest") {
-            setData(sortedClientByDate)
+            setData(sortedClientByDate);
         } else if (sort === "atoz") {
-            setData(sortedClientByAtoZ)
-
+            setData(sortedClientByAtoZ);
         }
+    }, [clientsData]);
 
-    }, [clientsData])
-
-    const searchClientByName = useCallback((name: string) => {
-        if (!clientsData) return;
-        const searchedClient = [...clientsData].filter(client => client.name.startsWith(name))
-        setData(searchedClient)
-    }, [clientsData])
+    const searchClientByName = useCallback(
+        (name: string) => {
+            if (!clientsData) return;
+            const searchedClient = [...clientsData].filter((client) =>
+                client.name.startsWith(name)
+            );
+            setData(searchedClient);
+        },
+        [clientsData]
+    );
 
     const searchHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value)
-        setSort("latest")
+        setSearch(e.target.value);
+        setSort("latest");
         if (timerRef.current) {
-            clearTimeout(timerRef.current)
+            clearTimeout(timerRef.current);
         }
-        timerRef.current = setTimeout(() => { searchClientByName(e.target.value) }, 300)
-    }
+        timerRef.current = setTimeout(() => {
+            searchClientByName(e.target.value);
+        }, 300);
+    };
 
     return (
         <div className="border max-w-7xl w-full rounded-md py-3 shadow-md">
             <div className="flex items-center justify-between gap-3 mb-3 px-3">
-
                 <div className="flex items-center gap-3">
                     <Users className="text-indigo-500 w-6 h-6" />
                     <h1 className="uppercase text-indigo-600 font-bold text-lg">
-                        Clients
+                        Clients - <span>{data?.length}</span>
                     </h1>
-
                 </div>
                 <div className="flex gap-3">
-
-                    <Input placeholder="Search" value={search} onChange={(e) => searchHandler(e)} />
+                    <Input
+                        placeholder="Search"
+                        value={search}
+                        onChange={(e) => searchHandler(e)}
+                    />
 
                     <Select
                         value={sort}
-                        onValueChange={(
-                            e: "atoz" | "latest"
-                        ) => {
-                            setSort(e)
+                        onValueChange={(e: "atoz" | "latest") => {
+                            setSort(e);
 
                             if (e === "latest") {
-                                setData(sortedClientByDate)
+                                setData(sortedClientByDate);
                             } else if (e === "atoz") {
-                                setData(sortedClientByAtoZ)
-
+                                setData(sortedClientByAtoZ);
                             }
                         }}
                         defaultValue={sort}
-
                     >
                         <SelectTrigger className="max-w-24">
-                            <SelectValue
-                                placeholder={
-                                    "Filter"
-                                }
-                            />
+                            <SelectValue placeholder={"Filter"} />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectLabel>
-                                    Filter
-                                </SelectLabel>
+                                <SelectLabel>Filter</SelectLabel>
 
-                                <SelectItem
-
-                                    value={"latest"}
-                                >
-                                    Latest
-                                </SelectItem>
-                                <SelectItem
-
-                                    value={"atoz"}
-
-                                >
-                                    A-Z
-                                </SelectItem>
+                                <SelectItem value={"latest"}>Latest</SelectItem>
+                                <SelectItem value={"atoz"}>A-Z</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>

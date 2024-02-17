@@ -8,6 +8,12 @@ import { LoadingCells } from "@/components/loading";
 import { Table, TableBody } from "@/components/ui/table";
 import { Filter } from "../filter";
 import { useFilterDate } from "@/hooks/useFilterDate";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "../ui/accordion";
 
 export const DistrictDashboard = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
@@ -37,12 +43,13 @@ export const DistrictDashboard = () => {
                     </Table>
                 </div>
             )}
-            {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-3"> */}
-            <div className="w-full flex flex-wrap gap-3">
+            <Accordion type="multiple" className="w-full">
+                {/* <div className="w-full flex flex-wrap gap-3"> */}
                 {data?.map((district) => (
                     <DistrictPage key={district._id} {...district} />
                 ))}
-            </div>
+                {/* </div> */}
+            </Accordion>
         </div>
     );
 };
@@ -56,32 +63,39 @@ export const DistrictPage = ({
     totalMarket,
 }: districtType) => {
     return (
-        <div className="w-full max-w-fit h-fit border rounded-md  pb-3 flex flex-col gap-3">
+        <AccordionItem
+            value={district}
+            className="w-full h-fit border rounded-md flex flex-col gap-3 mb-3"
+        >
             {/* District sction */}
-            <div className="flex gap-3 justify-between w-full px-3 py-2 bg-zinc-300 dark:bg-zinc-600">
-                <span className="h-8 text-sm lg:text-base font-medium  dark:text-zinc-200 uppercase">
-                    {district}
-                </span>
-                <DistrictHeaderInfo
-                    totalAmount={totalAmount}
-                    totalMarket={totalMarket}
-                    totalClient={totalClient}
-                    totalSale={totalSale}
-                />
-            </div>
-            <div className="flex gap-2 flex-wrap px-3">
-                {markets?.map((market) => (
-                    <MarketSection
-                        key={market.market}
-                        market={market.market}
-                        totalAmount={market.totalAmount}
-                        totalClient={market.totalClient}
-                        totalSale={market.totalSale}
-                        clients={market.clients}
+            <AccordionTrigger className="flex gap-3 w-full px-3 py-2 bg-zinc-300 dark:bg-zinc-600">
+                <div className="flex items-center gap-2 w-[93%] justify-between">
+                    <span className="text-sm lg:text-base font-medium  dark:text-zinc-200 uppercase">
+                        {district}
+                    </span>
+                    <DistrictHeaderInfo
+                        totalAmount={totalAmount}
+                        totalMarket={totalMarket}
+                        totalClient={totalClient}
+                        totalSale={totalSale}
                     />
-                ))}
-            </div>
-        </div>
+                </div>
+            </AccordionTrigger>
+            <AccordionContent>
+                <div className="flex gap-2 flex-wrap px-3">
+                    {markets?.map((market) => (
+                        <MarketSection
+                            key={market.market}
+                            market={market.market}
+                            totalAmount={market.totalAmount}
+                            totalClient={market.totalClient}
+                            totalSale={market.totalSale}
+                            clients={market.clients}
+                        />
+                    ))}
+                </div>
+            </AccordionContent>
+        </AccordionItem>
     );
 };
 
