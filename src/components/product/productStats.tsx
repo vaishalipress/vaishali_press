@@ -20,11 +20,11 @@ export default function ProductStats() {
     const { data, isLoading } = useProductStats(date);
     return (
         <div className="max-w-xl w-full flex flex-col gap-3">
-            <div className="border w-full rounded-md py-3 shadow-md">
-                <div className="flex flex-col justify-between gap-3 mb-3 px-3">
+            <div className="border w-full rounded-md shadow-md">
+                <div className="flex flex-col justify-between gap-3 py-3 px-3 bg-[#FFCCCC] dark:bg-slate-300 rounded-tl-md rounded-tr-md">
                     <div className="flex items-center gap-3">
-                        <BoomBox className="text-indigo-500 w-6 h-6" />
-                        <h1 className="uppercase text-indigo-600 font-bold text-sm lg:text-lg">
+                        <BoomBox className="text-[#174634] w-6 h-6" />
+                        <h1 className="uppercase text-[#174634] font-bold text-sm lg:text-lg">
                             Product Performance
                         </h1>
                     </div>
@@ -39,7 +39,7 @@ export default function ProductStats() {
                         isLoading={isLoading}
                     />
                 </div>
-                <div className="max-h-[500px] overflow-y-auto no-scrollbar">
+                <div className="max-h-[500px] overflow-y-auto">
                     <Table id="products">
                         <TableHeader>
                             <TableRow>

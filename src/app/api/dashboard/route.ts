@@ -129,7 +129,7 @@ export const GET = async (req: Request) => {
                     markets: {
                         $sortArray: {
                             input: "$markets",
-                            sortBy: { totalAmount: -1 },
+                            sortBy: { totalAmount: -1, totalClient: -1 },
                         },
                     },
                 },

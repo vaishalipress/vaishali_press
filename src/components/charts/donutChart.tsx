@@ -47,9 +47,9 @@ export const Donut = ({
     data: dataType[] | undefined;
 }) => {
     return (
-        <div className="flex justify-between items-center shadow-lg border px-8 py-3 rounded-lg w-full  gap-20">
+        <div className="w-full flex justify-between items-center gap-5 shadow-lg border px-8 py-3 rounded-lg">
             <div className="flex flex-col items-center gap-4">
-                <h1 className="font-semibold capitalize">{title}</h1>
+                <h1 className="font-semibold uppercase">{title}</h1>
                 <div className="w-24 h-24 md:w-40 md:h-40">
                     <DonutChart
                         dataSet={[
@@ -61,12 +61,12 @@ export const Donut = ({
                 </div>
             </div>
 
-            <div className="flex flex-col items-start">
+            <div className="flex flex-col items-start max-w-[40%] sm:max-w-fit overflow-hidden">
                 {data?.[0] && (
                     <div className="flex items-center flex-col">
                         <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#98D89E] rounded-full" />
-                            <span className="font-semibold text-sm capitalize">
+                            <div className="w-2 h-2 min-w-2 min-h-2 bg-[#98D89E] rounded-full" />
+                            <span className="font-semibold text-xs md:text-sm uppercase">
                                 {data?.[0].name}
                             </span>
                         </div>
@@ -81,8 +81,8 @@ export const Donut = ({
                 {data?.[1] && (
                     <div className="flex items-center flex-col">
                         <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#F6DC7D] rounded-full" />
-                            <span className="font-semibold text-sm capitalize">
+                            <div className="w-2 h-2 min-w-2 min-h-2 bg-[#F6DC7D] rounded-full" />
+                            <span className="font-semibold text-xs md:text-sm uppercase">
                                 {data?.[1].name}
                             </span>
                         </div>
@@ -96,8 +96,8 @@ export const Donut = ({
                 {data?.[2] && (
                     <div className="flex items-center flex-col">
                         <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#EE8484] rounded-full" />
-                            <span className="font-semibold text-sm capitalize">
+                            <div className="w-2 h-2 min-w-2 min-h-2 bg-[#EE8484] rounded-full" />
+                            <span className="font-semibold text-xs md:text-sm uppercase">
                                 {data?.[2].name}
                             </span>
                         </div>

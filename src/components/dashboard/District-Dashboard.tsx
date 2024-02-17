@@ -1,6 +1,5 @@
 "use client";
 import { IndianRupee } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { districtType } from "@/lib/types";
 import { Clients } from "@/components/dashboard/client-table";
 import { MarketTypeInDashboard } from "@/lib/types";
@@ -15,8 +14,8 @@ export const DistrictDashboard = () => {
     const { data, isLoading } = useClientDashboardInfo(date);
     return (
         <div className="w-full">
-            <div className="flex justify-between mb-3 items-center gap-2">
-                <h1 className="text-sm lg:text-xl uppercase  font-semibold">
+            <div className="flex justify-between mb-2 items-center gap-2 bg-zinc-300 py-3 px-3 rounded-md">
+                <h1 className="text-sm lg:text-xl uppercase  font-semibold text-orange-900">
                     District Performance
                 </h1>
 
@@ -39,7 +38,7 @@ export const DistrictDashboard = () => {
                 </div>
             )}
             {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-3"> */}
-            <div className="w-full flex flex-wrap gap-2">
+            <div className="w-full flex flex-wrap gap-3">
                 {data?.map((district) => (
                     <DistrictPage key={district._id} {...district} />
                 ))}
@@ -57,15 +56,12 @@ export const DistrictPage = ({
     totalMarket,
 }: districtType) => {
     return (
-        <div className="w-full max-w-fit h-fit border rounded-md px-3 py-3 flex flex-col gap-3">
+        <div className="w-full max-w-fit h-fit border rounded-md  pb-3 flex flex-col gap-3">
             {/* District sction */}
-            <div className="flex gap-3 justify-between w-full py-2">
-                <Badge
-                    variant={"secondary"}
-                    className="h-8 text-sm lg:text-base font-medium  dark:text-zinc-200 uppercase"
-                >
+            <div className="flex gap-3 justify-between w-full px-3 py-2 bg-zinc-300 dark:bg-zinc-600">
+                <span className="h-8 text-sm lg:text-base font-medium  dark:text-zinc-200 uppercase">
                     {district}
-                </Badge>
+                </span>
                 <DistrictHeaderInfo
                     totalAmount={totalAmount}
                     totalMarket={totalMarket}
@@ -73,7 +69,7 @@ export const DistrictPage = ({
                     totalSale={totalSale}
                 />
             </div>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap px-3">
                 {markets?.map((market) => (
                     <MarketSection
                         key={market.market}
@@ -143,11 +139,9 @@ export const MarketSection = ({
     clients,
 }: MarketTypeInDashboard) => {
     return (
-        <div className="w-full border rounded-md px-3 py-2 max-w-md">
-            <div className="flex w-full gap-3 justify-between items-center py-3">
-                <span className="font-medium capitalize text-sm px-3">
-                    {market}
-                </span>
+        <div className="w-full  max-h-96  overflow-y-auto border rounded-md  max-w-md relative">
+            <div className="flex w-full gap-3 justify-between items-center px-3 py-3 sticky top-0 bg-orange-300 z-20 dark:bg-orange-900">
+                <span className="font-medium capitalize text-sm">{market}</span>
                 <MarketHeaderInfo
                     totalAmount={totalAmount}
                     totalClient={totalClient}
@@ -155,6 +149,7 @@ export const MarketSection = ({
                 />
             </div>
             {/* Client */}
+
             <Clients clients={clients} />
         </div>
     );

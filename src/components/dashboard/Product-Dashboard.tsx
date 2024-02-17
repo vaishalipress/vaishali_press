@@ -20,7 +20,7 @@ export const ProductDashboard = () => {
     const { data, isLoading } = useProductInfo(date);
     return (
         <div className="mb-4 mt-6 w-full">
-            <div className="flex justify-between mb-3 items-center gap-2">
+            <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
                 <h1 className="text-sm lg:text-xl uppercase  font-semibold">
                     Product Performance By District
                 </h1>
@@ -60,16 +60,13 @@ export const ProductDashboard = () => {
 
 const District = ({ dist }: { dist: ProductData }) => {
     return (
-        <div className="border py-4 px-3 rounded-md w-fit h-fit flex flex-col gap-3 justify-between">
-            <div className="flex justify-between items-center">
-                <Badge
-                    variant={"secondary"}
-                    className="w-fit text-base font-medium uppercase"
-                >
+        <div className="border rounded-md w-fit h-fit flex flex-col gap-1 justify-between">
+            <div className="flex justify-between items-center bg-slate-300 dark:bg-slate-500 py-2 px-3 rounded-tl-md rounded-tr-md">
+                <span className="w-fit text-base font-medium uppercase">
                     {dist.district}
-                </Badge>
+                </span>
             </div>
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex gap-3 flex-wrap px-3 py-3">
                 {dist.markets.map((market) => (
                     <Market market={market} key={market.name} />
                 ))}
@@ -80,9 +77,9 @@ const District = ({ dist }: { dist: ProductData }) => {
 
 const Market = ({ market }: { market: ProductMarketWiseData }) => {
     return (
-        <div className="px-2 py-3 border rounded-lg flex flex-col gap-2">
-            <div className="flex justify-between items-center">
-                <span className="font-medium capitalize text-sm px-3">
+        <div className="pb-3 border rounded-md flex flex-col gap-2">
+            <div className="flex justify-between items-center bg-green-300 dark:bg-green-600 py-2 px-3 rounded-tl-md rounded-tr-md">
+                <span className="font-medium capitalize text-sm">
                     {market?.name}
                 </span>
             </div>

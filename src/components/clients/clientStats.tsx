@@ -19,11 +19,11 @@ export default function ClientStats() {
     const { data, isLoading } = useClientStats(date);
     return (
         <div className="max-w-xl w-full flex flex-col gap-3">
-            <div className="border w-full rounded-md py-3 shadow-md">
-                <div className="flex flex-col justify-between gap-3 mb-3 px-3">
+            <div className="border w-full rounded-md shadow-md">
+                <div className="flex flex-col justify-between gap-3 px-3 py-3 bg-[#FFCCCC] dark:bg-slate-300 rounded-tl-md rounded-tr-md">
                     <div className="flex items-center gap-3">
-                        <UserSearch className="text-indigo-500 w-6 h-6" />
-                        <h1 className="uppercase text-indigo-600 font-bold text-sm lg:text-lg">
+                        <UserSearch className="text-[#174634] w-6 h-6" />
+                        <h1 className="uppercase text-[#174634] font-bold text-sm lg:text-lg">
                             Client Performance
                         </h1>
                     </div>
@@ -38,7 +38,7 @@ export default function ClientStats() {
                         isLoading={isLoading}
                     />
                 </div>
-                <div className="max-h-[500px] overflow-y-auto no-scrollbar">
+                <div className="max-h-[500px] overflow-y-auto">
                     <Table id="clientStats">
                         <TableHeader>
                             <TableRow>
@@ -57,7 +57,7 @@ export default function ClientStats() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {isLoading && <LoadingCells cols={4}  rows={5}/>}
+                            {isLoading && <LoadingCells cols={4} rows={5} />}
                             {data?.map((client) => (
                                 <TableRow key={client?._id}>
                                     <TableCell className="text-xs lg:text-sm uppercase">
