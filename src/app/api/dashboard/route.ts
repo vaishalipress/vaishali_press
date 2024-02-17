@@ -135,7 +135,8 @@ export const GET = async (req: Request) => {
                 },
             },
         ]).sort({
-            totalMarket: -1,
+            totalAmount: -1,
+            totalClient: -1,
         });
 
         return Response.json(sales);
