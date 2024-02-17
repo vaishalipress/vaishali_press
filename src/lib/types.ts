@@ -64,21 +64,19 @@ export interface districtType {
     markets: MarketTypeInDashboard[];
 }
 
-export interface ProductInfo {
-    name: string;
-    totalQtySold: number;
-    avgPrice: number;
+export interface MarketStats {
+    market: string;
+    sales: number;
 }
-export interface ProductMarketWiseData {
-    name: string;
-    totalQtySold: number;
-    products: ProductInfo[];
+export interface DistrictStats {
+    district: string;
+    sales: number;
+    market: MarketStats[];
 }
 export interface ProductData {
-    _id: string;
-    district: string;
-    totalQtySold: number;
-    markets: ProductMarketWiseData[];
+    product: string;
+    totalSales: number;
+    stats: DistrictStats[];
 }
 
 export interface MarketType {

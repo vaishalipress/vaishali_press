@@ -8,7 +8,7 @@
 
 # testing
 /coverage
-/src/app/api/test/*
+src/app/api/test/route.ts
 
 # next.js
 /.next/

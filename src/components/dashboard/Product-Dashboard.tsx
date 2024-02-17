@@ -9,7 +9,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ProductMarketWiseData, ProductData } from "@/lib/types";
+import { DistrictStats, MarketStats, ProductData } from "@/lib/types";
 import { LoadingCells } from "@/components/loading";
 import { FileWarning, IndianRupee } from "lucide-react";
 import { useFilterDate } from "@/hooks/useFilterDate";
@@ -28,7 +28,7 @@ export const ProductDashboard = () => {
         <div className="mb-4 mt-6 w-full">
             <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
                 <h1 className="text-sm lg:text-xl uppercase  font-semibold">
-                    Product Performance By District
+                    Product Performance
                 </h1>
 
                 <Filter
@@ -58,8 +58,8 @@ export const ProductDashboard = () => {
                 )}
 
                 <Accordion type="multiple" className="w-full">
-                    {data?.map((dist) => (
-                        <District dist={dist} key={dist.district} />
+                    {data?.map((product) => (
+                        <ProductStats product={product} />
                     ))}
                 </Accordion>
             </div>
@@ -67,22 +67,40 @@ export const ProductDashboard = () => {
     );
 };
 
-const District = ({ dist }: { dist: ProductData }) => {
+const ProductStats = ({ product }: { product: ProductData }) => {
     return (
         <AccordionItem
-            value={dist.district}
+            value={product.product}
             className="w-full h-fit border rounded-md flex flex-col gap-3 mb-3"
         >
             <AccordionTrigger className="flex gap-3 w-full px-3 py-2 bg-orange-200 dark:bg-orange-800">
-                <span className="w-fit text-base font-medium uppercase">
-                    {dist.district}
-                </span>
+                <div className="flex items-center gap-2 w-[93%] justify-between">
+                    <span className="text-sm lg:text-base font-medium  dark:text-zinc-200 uppercase">
+                        {product.product}
+                    </span>
+                    <span className="text-xs dark:text-zinc-200 uppercase">
+                        SOLD : {product.totalSales}
+                    </span>
+                </div>
             </AccordionTrigger>
 
             <AccordionContent>
                 <div className="flex gap-3 flex-wrap px-3 py-3">
-                    {dist.markets.map((market) => (
-                        <Market market={market} key={market.name} />
+                    {product?.stats?.map((stat) => (
+                        <div
+                            key={stat.district}
+                            className="border rounded-md overflow-hidden"
+                        >
+                            <div className="bg-rose-50 dark:bg-slate-600 flex justify-between items-start px-3 py-3 ">
+                                <span className="text-xs dark:text-zinc-200 uppercase">
+                                    {stat.district}
+                                </span>
+                                <span className="text-xs dark:text-zinc-200 uppercase">
+                                    sold : {stat.sales}
+                                </span>
+                            </div>
+                            <Market market={stat.market} />
+                        </div>
                     ))}
                 </div>
             </AccordionContent>
@@ -90,45 +108,26 @@ const District = ({ dist }: { dist: ProductData }) => {
     );
 };
 
-const Market = ({ market }: { market: ProductMarketWiseData }) => {
+const Market = ({ market }: { market: MarketStats[] }) => {
     return (
-        <div className="pb-3 border rounded-md flex flex-col gap-2">
-            <div className="flex justify-between items-center bg-green-300 dark:bg-green-600 py-2 px-3 rounded-tl-md rounded-tr-md">
-                <span className="font-medium capitalize text-sm">
-                    {market?.name}
-                </span>
-            </div>
-            <Table>
-                <TableHeader>
-                    <TableRow className="text-xs">
-                        <TableHead className="uppercase w-32">
-                            Product
-                        </TableHead>
-                        <TableHead className="uppercase w-32">
-                            Avg Price
-                        </TableHead>
-                        <TableHead className="uppercase w-32">Sold</TableHead>
+        <Table>
+            <TableHeader>
+                <TableRow className="text-xs">
+                    <TableHead className="uppercase w-32">Market</TableHead>
+                    <TableHead className="uppercase w-32">Sold</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {market?.map((m) => (
+                    <TableRow>
+                        <TableCell className="uppercase text-xs">
+                            {m?.market}
+                        </TableCell>
+
+                        <TableCell className="text-xs">{m?.sales}</TableCell>
                     </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {market.products.map((product) => (
-                        <TableRow key={product?.name}>
-                            <TableCell className="uppercase text-xs">
-                                {product?.name}
-                            </TableCell>
-                            <TableCell className="text-xs">
-                                <div className="capitalize flex items-center">
-                                    <IndianRupee className="w-3 h-3" />
-                                    {product?.avgPrice}
-                                </div>
-                            </TableCell>
-                            <TableCell className="text-xs">
-                                {product?.totalQtySold}
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </div>
+                ))}
+            </TableBody>
+        </Table>
     );
 };
