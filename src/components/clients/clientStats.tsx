@@ -42,6 +42,7 @@ export default function ClientStats() {
                     <Table id="clientStats">
                         <TableHeader>
                             <TableRow>
+                                <TableHead>S.No</TableHead>
                                 <TableHead className="uppercase min-w-[75px] lg:min-w-[120px]">
                                     Name
                                 </TableHead>
@@ -57,9 +58,10 @@ export default function ClientStats() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {isLoading && <LoadingCells cols={4} rows={5} />}
-                            {data?.map((client) => (
+                            {isLoading && <LoadingCells cols={5} rows={5} />}
+                            {data?.map((client, idx) => (
                                 <TableRow key={client?._id}>
+                                    <TableCell>{idx + 1}</TableCell>
                                     <TableCell className="text-xs lg:text-sm uppercase">
                                         {client.name}
                                     </TableCell>

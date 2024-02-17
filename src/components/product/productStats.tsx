@@ -43,6 +43,7 @@ export default function ProductStats() {
                     <Table id="products">
                         <TableHeader>
                             <TableRow>
+                                <TableHead>S.No</TableHead>
                                 <TableHead className="uppercase min-w-[75px] lg:min-w-[120px]">
                                     Product
                                 </TableHead>
@@ -52,9 +53,10 @@ export default function ProductStats() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {isLoading && <LoadingCells cols={2} rows={5} />}
-                            {data?.map((product) => (
+                            {isLoading && <LoadingCells cols={3} rows={5} />}
+                            {data?.map((product, idx) => (
                                 <TableRow key={product?._id}>
+                                    <TableCell>{idx + 1}</TableCell>
                                     <TableCell className="text-xs lg:text-sm uppercase">
                                         {product.name}
                                     </TableCell>

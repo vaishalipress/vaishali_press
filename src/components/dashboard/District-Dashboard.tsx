@@ -19,9 +19,9 @@ export const DistrictDashboard = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
     const { data, isLoading } = useClientDashboardInfo(date);
     return (
-        <div className="w-full">
-            <div className="flex justify-between mb-2 items-center gap-2 bg-zinc-300 py-3 px-3 rounded-md">
-                <h1 className="text-sm lg:text-xl uppercase  font-semibold text-orange-900">
+        <div className="w-full pb-2">
+            <div className="flex justify-between mb-2 items-center gap-2 bg-slate-200 dark:bg-slate-700 py-3 px-3 rounded-md">
+                <h1 className="text-sm lg:text-xl uppercase  font-semibold">
                     District Performance
                 </h1>
 
