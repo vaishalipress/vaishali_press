@@ -1,12 +1,13 @@
 import {
     ClientTypeExtented,
     MarketType,
-    ProductData,
+    ProductPerformance,
     ProductStats,
+    ProductStatsInEachDistrict,
     ProductTypeExtended,
     SalesTypeExtended,
     clientStats,
-    districtType,
+    DistrictStatsInPerformance,
 } from "@/lib/types";
 import { getDayMax, getDayMin } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -22,7 +23,6 @@ export const useClient = () => {
         },
     });
 };
-
 export const useProduct = () => {
     return useQuery<ProductTypeExtended[]>({
         queryKey: ["products-list"],
@@ -67,8 +67,8 @@ export const useSale = (
     });
 };
 
-export const useClientDashboardInfo = (date: DateRange | undefined) => {
-    return useQuery<districtType[]>({
+export const useDistrictPerformanceByClient = (date: DateRange | undefined) => {
+    return useQuery<DistrictStatsInPerformance[]>({
         queryKey: [
             "clientsAndSalesInfo",
             date?.from?.getDate(),
@@ -76,7 +76,7 @@ export const useClientDashboardInfo = (date: DateRange | undefined) => {
         ],
         queryFn: async () => {
             const { data } = await axios.get(
-                `/api/dashboard?${
+                `/api/dashboard/districtStatByClient?${
                     date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
                 }&${date?.to && `to=${getDayMax(date.to).toUTCString()}`}`
             );
@@ -85,8 +85,10 @@ export const useClientDashboardInfo = (date: DateRange | undefined) => {
     });
 };
 
-export const useProductInfo = (date: DateRange | undefined) => {
-    return useQuery<ProductData[]>({
+export const useAllProductPerformanceInDetails = (
+    date: DateRange | undefined
+) => {
+    return useQuery<ProductPerformance[]>({
         queryKey: [
             "productAndSoldInfo",
             date?.from?.getDate(),
@@ -95,6 +97,25 @@ export const useProductInfo = (date: DateRange | undefined) => {
         queryFn: async () => {
             const { data } = await axios.get(
                 `/api/dashboard/productstats?${
+                    date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
+                }&${date?.to && `to=${getDayMax(date.to).toUTCString()}`}`
+            );
+            return data;
+        },
+    });
+};
+export const useDistrictPerformanceByProducts = (
+    date: DateRange | undefined
+) => {
+    return useQuery<ProductStatsInEachDistrict[]>({
+        queryKey: [
+            "DistrictPerformanceByProducts",
+            date?.from?.getDate(),
+            date?.to?.getDate(),
+        ],
+        queryFn: async () => {
+            const { data } = await axios.get(
+                `/api/dashboard/districtStatByProduct?${
                     date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
                 }&${date?.to && `to=${getDayMax(date.to).toUTCString()}`}`
             );

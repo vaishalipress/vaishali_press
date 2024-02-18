@@ -1,5 +1,5 @@
 "use client";
-import { clientType } from "@/lib/types";
+import { EachClientTypeInMarket } from "@/lib/types";
 import {
     Table,
     TableBody,
@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { IndianRupee } from "lucide-react";
 
-export const Clients = ({ clients }: { clients: clientType[] }) => {
+export const Clients = ({ clients }: { clients: EachClientTypeInMarket[] }) => {
     return (
         <Table>
             <TableHeader>

@@ -1,9 +1,9 @@
 "use client";
 import { IndianRupee } from "lucide-react";
-import { districtType } from "@/lib/types";
+import { DistrictStatsInPerformance } from "@/lib/types";
 import { Clients } from "@/components/dashboard/client-table";
-import { MarketTypeInDashboard } from "@/lib/types";
-import { useClientDashboardInfo } from "@/hooks/use-fetch-data";
+import { EachMarketTypeInDistrict } from "@/lib/types";
+import { useDistrictPerformanceByClient } from "@/hooks/use-fetch-data";
 import { LoadingCells } from "@/components/loading";
 import { Table, TableBody } from "@/components/ui/table";
 import { Filter } from "@/components/filter";
@@ -15,14 +15,14 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 
-export const DistrictDashboard = () => {
+export const DistrictPerformanceByClient = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
-    const { data, isLoading } = useClientDashboardInfo(date);
+    const { data, isLoading } = useDistrictPerformanceByClient(date);
     return (
         <div className="w-full pb-2">
             <div className="flex justify-between mb-2 items-center gap-2 bg-slate-200 dark:bg-slate-700 py-3 px-3 rounded-md">
                 <h1 className="text-sm lg:text-base uppercase font-semibold">
-                    District Performance
+                    District Performance By Client
                 </h1>
 
                 <Filter
@@ -59,7 +59,7 @@ export const DistrictPage = ({
     totalSale,
     markets,
     totalMarket,
-}: districtType) => {
+}: DistrictStatsInPerformance) => {
     return (
         <AccordionItem
             value={district}
@@ -149,7 +149,7 @@ export const MarketSection = ({
     totalClient,
     totalSale,
     clients,
-}: MarketTypeInDashboard) => {
+}: EachMarketTypeInDistrict) => {
     return (
         <div className="w-full  max-h-96  overflow-y-auto border rounded-md  max-w-md relative">
             <div className="flex w-full gap-3 justify-between items-center px-3 py-3 sticky top-0 bg-orange-300 z-20 dark:bg-orange-900">

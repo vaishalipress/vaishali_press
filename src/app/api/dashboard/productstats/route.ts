@@ -206,7 +206,7 @@ export const GET = async (req: Request) => {
         ]).sort({ totalSales: -1 });
         return Response.json(sales);
     } catch (error) {
-        console.log("Dashboard", error);
+        console.log("Error in ProductStats", error);
         return Response.json(error, { status: 500 });
     }
 };

@@ -1,5 +1,5 @@
 "use client";
-import { useProductInfo } from "@/hooks/use-fetch-data";
+import { useAllProductPerformanceInDetails } from "@/hooks/use-fetch-data";
 import {
     Table,
     TableBody,
@@ -8,8 +8,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { DistrictStats, MarketStats, ProductData } from "@/lib/types";
+import {
+    MarketStatsInProductPerformance,
+    ProductPerformance,
+} from "@/lib/types";
 import { LoadingCells } from "@/components/loading";
 import { FileWarning, IndianRupee } from "lucide-react";
 import { useFilterDate } from "@/hooks/useFilterDate";
@@ -23,7 +25,7 @@ import {
 
 export const ProductDashboard = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
-    const { data, isLoading } = useProductInfo(date);
+    const { data, isLoading } = useAllProductPerformanceInDetails(date);
     return (
         <div className="mb-4 mt-6 w-full">
             <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
@@ -70,7 +72,7 @@ export const ProductDashboard = () => {
     );
 };
 
-const ProductStats = ({ product }: { product: ProductData }) => {
+const ProductStats = ({ product }: { product: ProductPerformance }) => {
     return (
         <AccordionItem
             value={product?.product}
@@ -111,7 +113,7 @@ const ProductStats = ({ product }: { product: ProductData }) => {
     );
 };
 
-const Market = ({ market }: { market: MarketStats[] }) => {
+const Market = ({ market }: { market: MarketStatsInProductPerformance[] }) => {
     return (
         <Table>
             <TableHeader>

@@ -1,5 +1,6 @@
 import ClientStats from "@/components/clients/clientStats";
-import { DistrictDashboard } from "@/components/dashboard/District-Dashboard";
+import { DistrictPerformanceByClient } from "@/components/dashboard/District-Performance-By-Client";
+import { DistrictPerformanceByProducts } from "@/components/dashboard/District-Performance-By-Products";
 import { ProductDashboard } from "@/components/dashboard/Product-Dashboard";
 import ProductStats from "@/components/product/productStats";
 
@@ -15,7 +16,8 @@ export default async function DashboardPage() {
 
                 <ProductDashboard />
 
-                <DistrictDashboard />
+                <DistrictPerformanceByClient />
+                <DistrictPerformanceByProducts />
             </div>
         );
     } catch (error) {

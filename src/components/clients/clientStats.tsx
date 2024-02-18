@@ -52,13 +52,12 @@ export default function ClientStats() {
                                 <TableHead className="uppercase">
                                     District
                                 </TableHead>
-                                <TableHead className="uppercase">
-                                    Amount
-                                </TableHead>
+                                <TableHead className="uppercase">Sales</TableHead>
+                                <TableHead className="uppercase">Amount</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {isLoading && <LoadingCells cols={5} rows={5} />}
+                            {isLoading && <LoadingCells cols={6} rows={5} />}
                             {data?.map((client, idx) => (
                                 <TableRow key={client?._id}>
                                     <TableCell>{idx + 1}</TableCell>
@@ -71,8 +70,11 @@ export default function ClientStats() {
                                     <TableCell className="text-xs lg:text-sm uppercase">
                                         {client?.district}
                                     </TableCell>
+                                    <TableCell className="text-xs lg:text-sm">
+                                        {client?.sales}
+                                    </TableCell>
                                     <TableCell>
-                                        <div className="capitalize flex items-center text-xs lg:text-sm">
+                                        <div className="flex items-center text-xs lg:text-sm">
                                             <IndianRupee className="w-3 h-3" />
                                             {client?.amount}
                                         </div>

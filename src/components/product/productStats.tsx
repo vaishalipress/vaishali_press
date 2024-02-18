@@ -7,7 +7,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { BoomBox } from "lucide-react";
+import { BoomBox, IndianRupee } from "lucide-react";
 import { LoadingCells } from "@/components/loading";
 import { useProductStats } from "@/hooks/use-fetch-data";
 import { Filter } from "@/components/filter";
@@ -48,20 +48,38 @@ export default function ProductStats() {
                                     Product
                                 </TableHead>
                                 <TableHead className="uppercase">
+                                    Price
+                                </TableHead>
+                                <TableHead className="uppercase">
                                     Sold
+                                </TableHead>
+                                <TableHead className="uppercase">
+                                    Amount
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {isLoading && <LoadingCells cols={3} rows={5} />}
+                            {isLoading && <LoadingCells cols={5} rows={5} />}
                             {data?.map((product, idx) => (
                                 <TableRow key={product?._id}>
                                     <TableCell>{idx + 1}</TableCell>
                                     <TableCell className="text-xs lg:text-sm uppercase">
-                                        {product.name}
+                                        {product?.name}
+                                    </TableCell>
+                                    <TableCell className="text-xs lg:text-sm">
+                                        <div className="flex items-center text-xs lg:text-sm">
+                                            <IndianRupee className="w-3 h-3" />
+                                            {product?.price}
+                                        </div>
                                     </TableCell>
                                     <TableCell className="text-xs lg:text-sm">
                                         {product?.sales}
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center text-xs lg:text-sm">
+                                            <IndianRupee className="w-3 h-3" />
+                                            {product?.amount}
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))}

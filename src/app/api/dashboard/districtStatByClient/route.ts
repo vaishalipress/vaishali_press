@@ -98,7 +98,15 @@ export const GET = async (req: Request) => {
                             totalAmount: {
                                 $sum: "$clients.totalAmount",
                             },
-                            clients: "$clients",
+                            clients: {
+                                $sortArray: {
+                                    input: "$clients",
+                                    sortBy: {
+                                        totalAmount: -1,
+                                        totalClient: -1,
+                                    },
+                                },
+                            },
                         },
                     },
                 },
@@ -141,7 +149,7 @@ export const GET = async (req: Request) => {
 
         return Response.json(sales);
     } catch (error) {
-        console.log("Error in Dashboard");
+        console.log("Error in districtStatByClient");
         return Response.json(error, { status: 500 });
     }
 };

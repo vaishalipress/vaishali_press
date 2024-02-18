@@ -3,7 +3,7 @@ import {
     ClientTypeExtented,
     ProductTypeExtended,
     SalesTypeExtended,
-    clientType,
+    EachClientTypeInMarket,
 } from "@/lib/types";
 
 export type ModalType =
@@ -20,7 +20,7 @@ interface ModalData {
     client?: ClientTypeExtented;
     product?: ProductTypeExtended;
     sale?: SalesTypeExtended;
-    clientSalesDetail?: clientType;
+    clientSalesDetail?: EachClientTypeInMarket;
     market?: {
         district?: string;
     };
