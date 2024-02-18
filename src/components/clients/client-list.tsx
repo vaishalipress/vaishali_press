@@ -158,7 +158,7 @@ export default function ClientList() {
                         <TableRow>
                             <TableHead>S.No</TableHead>
                             <TableHead className="w-[150px] uppercase">
-                                name
+                                Name
                             </TableHead>
                             <TableHead className="uppercase">Market</TableHead>
                             <TableHead className="uppercase">
@@ -187,14 +187,30 @@ export default function ClientList() {
                             >
                                 <TableCell>{idx + 1}</TableCell>
                                 <TableCell className="font-medium capitalize">
-                                    {client?.name}
+                                    {client?.name
+                                        ?.split(" ")
+                                        ?.map((word) => {
+                                            return (
+                                                word[0].toUpperCase() +
+                                                word.substring(1)
+                                            );
+                                        })
+                                        .join(" ")}
                                 </TableCell>
                                 <TableCell className="capitalize">
-                                    {client?.market ? client?.market : "NA"}
+                                    {client?.market
+                                        ? client?.market
+                                              ?.charAt(0)
+                                              ?.toUpperCase() +
+                                          client?.market?.substring(1)
+                                        : "NA"}
                                 </TableCell>
 
                                 <TableCell className="capitalize">
-                                    {client?.district}
+                                    {client?.district
+                                        ?.charAt(0)
+                                        ?.toUpperCase() +
+                                        client?.district?.substring(1)}
                                 </TableCell>
                                 <TableCell>
                                     {format(
