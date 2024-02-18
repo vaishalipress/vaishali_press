@@ -163,7 +163,7 @@ export const GET = async (req: Request) => {
             ],
         })
             .populate("client product")
-            .sort({ date: -1 })
+            .sort({ date: -1, client: 1 })
             .limit(per_page)
             .skip(per_page * (page - 1));
 
