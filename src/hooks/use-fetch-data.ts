@@ -193,3 +193,13 @@ export const useAssests = () => {
         staleTime: 60 * 1000 * 30,
     });
 };
+export const useUsers = () => {
+    return useQuery<{ email: string; _id: string }[]>({
+        queryKey: ["user-list"],
+        queryFn: async () => {
+            const { data } = await axios("/api/user");
+            return data;
+        },
+        staleTime: 60 * 1000 * 30,
+    });
+};

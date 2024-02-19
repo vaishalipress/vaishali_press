@@ -69,12 +69,10 @@ export const authOptions: AuthOptions = {
     },
     callbacks: {
         async signIn({ user }) {
-            const AuthorizedEmail = [
-                "vaishalipressmuz@gmail.com",
-                "aaditya1392@gmail.com",
-            ];
-            if (user?.email && AuthorizedEmail.includes(user?.email))
-                return true;
+            const isExist = await User.findOne({
+                email: user?.email,
+            });
+            if (isExist) return true;
             return false;
         },
         async jwt({ token, user }) {

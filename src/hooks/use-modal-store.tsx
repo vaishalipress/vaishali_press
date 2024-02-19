@@ -14,7 +14,8 @@ export type ModalType =
     | "editSale"
     | "deleteSale"
     | "userSaleDetails"
-    | "market";
+    | "market"
+    | "deleteUser";
 
 interface ModalData {
     client?: ClientTypeExtented;
@@ -23,6 +24,10 @@ interface ModalData {
     clientSalesDetail?: EachClientTypeInMarket;
     market?: {
         district?: string;
+    };
+    user?: {
+        email?: string;
+        _id?: string;
     };
 }
 

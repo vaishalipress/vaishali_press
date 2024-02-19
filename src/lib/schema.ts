@@ -58,6 +58,16 @@ export const salesSchema = z.object({
     date: z.date(),
 });
 
+export const userSchema = z.object({
+    email: z
+        .string({ required_error: "Email is required." })
+        .email("Invalid Email"),
+    password: z
+        .string({ required_error: "password is Required" })
+        .trim()
+        .min(8, { message: "password must be atleast 8 characters" }),
+});
+
 export const changePasswordSchema = z
     .object({
         password: z

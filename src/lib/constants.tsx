@@ -9,6 +9,7 @@ import {
     FormInput,
     UserSearch,
     BoxSelect,
+    Lock,
 } from "lucide-react";
 
 export const navigation = [
@@ -64,6 +65,11 @@ export const DashboardLinks = [
         link: "/dashboard/password",
         name: "Password",
         Icon: <FormInput className="text-rose-700 dark:text-rose-500" />,
+    },
+    {
+        link: "/dashboard/access",
+        name: "Access",
+        Icon: <Lock className="text-rose-700 dark:text-rose-500" />,
     },
 ];
 

@@ -5,6 +5,7 @@ import { EditClientModal } from "@/components/modals/edit-client";
 import { EditProductModal } from "@/components/modals/edit-product";
 import { EditSaleModal } from "@/components/modals/edit-sale";
 import { MarketModal } from "@/components/modals/marketModal";
+import { DeleteUserModal } from "@/components/modals/delete-user";
 
 const ModalProvider = () => {
     return (
@@ -16,6 +17,7 @@ const ModalProvider = () => {
             <EditSaleModal />
             <DeleteSaleModal />
             <MarketModal />
+            <DeleteUserModal />
         </>
     );
 };
