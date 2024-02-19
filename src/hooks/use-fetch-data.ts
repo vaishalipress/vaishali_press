@@ -8,6 +8,7 @@ import {
     SalesTypeExtended,
     clientStats,
     DistrictStatsInPerformance,
+    ClientPerformance,
 } from "@/lib/types";
 import { getDayMax, getDayMin } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -77,6 +78,24 @@ export const useDistrictPerformanceByClient = (date: DateRange | undefined) => {
         queryFn: async () => {
             const { data } = await axios.get(
                 `/api/dashboard/districtStatByClient?${
+                    date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
+                }&${date?.to && `to=${getDayMax(date.to).toUTCString()}`}`
+            );
+            return data;
+        },
+    });
+};
+
+export const useClientPerformanceStats = (date: DateRange | undefined) => {
+    return useQuery<ClientPerformance[]>({
+        queryKey: [
+            "client Performance stats",
+            date?.from?.getDate(),
+            date?.to?.getDate(),
+        ],
+        queryFn: async () => {
+            const { data } = await axios.get(
+                `/api/dashboard/clientStats?${
                     date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
                 }&${date?.to && `to=${getDayMax(date.to).toUTCString()}`}`
             );
@@ -171,5 +190,6 @@ export const useAssests = () => {
             const { data } = await axios("/api/media");
             return data;
         },
+        staleTime: 60 * 1000 * 30,
     });
 };

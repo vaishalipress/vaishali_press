@@ -64,6 +64,25 @@ export interface ProductStatsInEachDistrict {
 }
 
 /**
+ * PRODUCT PERFORMANCE
+ */
+
+export interface MarketStatsInProductPerformance {
+    market: string;
+    sales: number;
+}
+export interface DistrictSalesStats {
+    district: string;
+    sales: number;
+    market: MarketStatsInProductPerformance[];
+}
+export interface ProductPerformance {
+    product: string;
+    totalSales: number;
+    stats: DistrictSalesStats[];
+}
+
+/**
  * DISTRICT PERFORMANCE BY CLIENT
  */
 
@@ -99,20 +118,17 @@ export interface DistrictStatsInPerformance {
 }
 
 /**
- * PRODUCT PERFORMANCE
+ * CLIENT PERFORMANCE
  */
 
-export interface MarketStatsInProductPerformance {
-    market: string;
-    sales: number;
-}
-export interface DistrictSalesStats {
-    district: string;
-    sales: number;
-    market: MarketStatsInProductPerformance[];
-}
-export interface ProductPerformance {
+export interface ClientSale {
     product: string;
-    totalSales: number;
-    stats: DistrictSalesStats[];
+    qty: number;
+    amount: number;
+}
+export interface ClientPerformance {
+    totalQty: number;
+    totalAmount: number;
+    client: ClientI & { _id: string };
+    sales: ClientSale[];
 }

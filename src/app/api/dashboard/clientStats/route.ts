@@ -45,50 +45,58 @@ export const GET = async (req: Request) => {
                     foreignField: "_id",
                     localField: "client",
                     as: "client",
-                },
-            },
-            {
-                $group: {
-                    _id: {
-                        product: "$name",
-                        district: "$client.district",
-                        market: "$client.market",
-                    },
-                    sales: { $sum: "$qty" },
-                },
-            },
-            {
-                $group: {
-                    _id: {
-                        product: "$_id.product",
-                        district: "$_id.district",
-                    },
-                    sales: { $sum: "$sales" },
-                    markets: {
-                        $push: {
-                            market: {
-                                $first: "$_id.market",
+                    pipeline: [
+                        {
+                            $project: {
+                                _id: 1,
+                                name: 1,
+                                district: 1,
+                                market: 1,
+                                mobile: 1,
                             },
-                            sales: "$sales",
                         },
+                    ],
+                },
+            },
+            {
+                $addFields: {
+                    amount: {
+                        $multiply: ["$rate", "$qty"],
                     },
                 },
             },
             {
                 $group: {
-                    _id: "$_id.product",
-                    totalSales: {
-                        $sum: "$sales",
+                    // grouping by client and product
+                    _id: {
+                        client: "$client",
+                        product: "$name",
                     },
-                    stats: {
+
+                    qty: {
+                        $sum: "$qty",
+                    },
+                    amount: {
+                        $sum: "$amount",
+                    },
+                },
+            },
+            {
+                $group: {
+                    // grounp by client
+                    _id: "$_id.client",
+                    totalQty: {
+                        $sum: "$qty",
+                    },
+                    totalAmount: {
+                        $sum: "$amount",
+                    },
+                    sales: {
+                        // set of product and total qty bought
                         $push: {
-                            district: {
-                                $first: "$_id.district",
-                            },
-                            sales: {
-                                $sum: "$sales",
-                            },
-                            market: "$markets",
+                            product: "$_id.product",
+                            qty: "$qty",
+                            amount: "$amount",
                         },
                     },
                 },
@@ -96,20 +104,30 @@ export const GET = async (req: Request) => {
             {
                 $project: {
                     _id: 0,
-                    product: "$_id",
-                    totalSales: 1,
-                    stats: {
+                    client: {
+                        $first: "$_id",
+                    },
+                    sales: {
+                        // sorting sales
                         $sortArray: {
-                            input: "$stats",
-                            sortBy: { sales: -1 },
+                            input: "$sales",
+                            sortBy: {
+                                qty: -1,
+                            },
                         },
                     },
+                    totalQty: 1,
+                    totalAmount: 1,
                 },
             },
-        ]).sort({ totalSales: -1 });
+        ]).sort({
+            totalAmount: -1,
+            "client.name": 1,
+        });
+
         return Response.json(sales);
     } catch (error) {
-        console.log("Error in ProductStats", error);
+        console.log("Error in Client stats", error);
         return Response.json(error, { status: 500 });
     }
 };

@@ -7,6 +7,8 @@ import {
     Home,
     Users,
     FormInput,
+    UserSearch,
+    BoxSelect,
 } from "lucide-react";
 
 export const navigation = [
@@ -26,6 +28,16 @@ export const DashboardLinks = [
         Icon: (
             <LayoutDashboard className="text-orange-800 dark:text-indigo-500" />
         ),
+    },
+    {
+        link: "/dashboard/client-performance",
+        name: "Client-Performance",
+        Icon: <UserSearch className="text-orange-800 dark:text-indigo-500" />,
+    },
+    {
+        link: "/dashboard/product-performance",
+        name: "Product-Performance",
+        Icon: <BoxSelect className="text-orange-800 dark:text-indigo-500" />,
     },
     {
         link: "/dashboard/clients",

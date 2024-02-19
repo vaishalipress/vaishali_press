@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import {
     MarketStatsInProductPerformance,
-    ProductPerformance,
+    ProductPerformance as ProductPerformanceType,
 } from "@/lib/types";
 import { LoadingCells } from "@/components/loading";
 import { FileWarning, IndianRupee } from "lucide-react";
@@ -23,11 +23,11 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 
-export const ProductDashboard = () => {
+export const ProductPerformance = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
     const { data, isLoading } = useAllProductPerformanceInDetails(date);
     return (
-        <div className="mb-4 mt-6 w-full">
+        <div className="mb-4 w-full">
             <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
                 <h1 className="text-sm lg:text-base uppercase  font-semibold">
                     Product Performance
@@ -72,7 +72,7 @@ export const ProductDashboard = () => {
     );
 };
 
-const ProductStats = ({ product }: { product: ProductPerformance }) => {
+const ProductStats = ({ product }: { product: ProductPerformanceType }) => {
     return (
         <AccordionItem
             value={product?.product}
