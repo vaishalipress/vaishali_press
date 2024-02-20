@@ -7,10 +7,20 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Button } from "../ui/button";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Download, Pen, Trash, Users } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
-import { LoadingCells } from "../loading";
+import { LoadingCells } from "@/components/loading";
 import { format } from "date-fns";
 import { useClient } from "@/hooks/use-fetch-data";
 import { ClientTypeExtented } from "@/lib/types";
@@ -22,16 +32,6 @@ import {
     useRef,
     useState,
 } from "react";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Input } from "../ui/input";
 import { downloadToPDF } from "@/lib/utils";
 
 export default function ClientList() {
@@ -105,8 +105,12 @@ export default function ClientList() {
                 <div className="flex items-center gap-3">
                     <Users className="text-indigo-500 w-6 h-6" />
                     <h1 className="uppercase text-indigo-600 font-bold text-lg">
-                        Clients - <span>{data?.length}</span>
+                        Clients
                     </h1>
+
+                    <span className="uppercase text-indigo-600 font-bold text-lg">
+                        {data?.length}
+                    </span>
                 </div>
                 <div className="flex gap-3">
                     <Input

@@ -1,5 +1,5 @@
-import { DistrictPerformanceByProducts } from "@/components/dashboard/District-Performance-By-Products";
-import { ProductPerformance } from "@/components/dashboard/Product-Performance";
+import { DistrictPerformanceByProducts } from "@/components/performance/District-Performance-By-Products";
+import { ProductPerformance } from "@/components/performance/Product-Performance";
 
 export default async function ProductPerformancePage() {
     return (

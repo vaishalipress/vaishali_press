@@ -1,6 +1,5 @@
 "use client";
-import { ProductStats, clientStats } from "@/lib/types";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Chart as ChartJS, ArcElement } from "chart.js";
 import { IndianRupee } from "lucide-react";
 import { Doughnut } from "react-chartjs-2";
 

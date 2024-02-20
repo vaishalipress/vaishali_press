@@ -74,6 +74,10 @@ export default function ProductList() {
                     <h1 className="uppercase text-indigo-600 font-bold text-lg">
                         Products
                     </h1>
+
+                    <span className="uppercase text-indigo-600 font-bold text-lg">
+                        {data?.length}
+                    </span>
                 </div>
 
                 <div className="flex gap-3">

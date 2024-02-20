@@ -20,6 +20,16 @@ export default function ProductStats() {
     const { data, isLoading } = useProductStats(date);
     return (
         <div className="max-w-xl w-full flex flex-col gap-3">
+            {!isLoading && data?.[0]?.sales !== 0 && (
+                <Donut
+                    data={[
+                        { name: data?.[0]?.name!, value: data?.[0]?.sales! },
+                        { name: data?.[1]?.name!, value: data?.[1]?.sales! },
+                        { name: data?.[2]?.name!, value: data?.[2]?.sales! },
+                    ]}
+                    title="Top Product"
+                />
+            )}
             <div className="border w-full rounded-md shadow-md">
                 <div className="flex flex-col justify-between gap-3 py-3 px-3 bg-[#FFCCCC] dark:bg-slate-300 rounded-tl-md rounded-tr-md">
                     <div className="flex items-center gap-3">
@@ -64,7 +74,7 @@ export default function ProductStats() {
                                 <TableRow key={product?._id}>
                                     <TableCell>{idx + 1}</TableCell>
                                     <TableCell className="text-xs lg:text-sm uppercase">
-                                        {product?.name}
+                                        {product?.name?.toUpperCase()}
                                     </TableCell>
                                     <TableCell className="text-xs lg:text-sm">
                                         <div className="flex items-center text-xs lg:text-sm">
@@ -87,17 +97,6 @@ export default function ProductStats() {
                     </Table>
                 </div>
             </div>
-
-            {!isLoading && data?.[0]?.sales !== 0 && (
-                <Donut
-                    data={[
-                        { name: data?.[0]?.name!, value: data?.[0]?.sales! },
-                        { name: data?.[1]?.name!, value: data?.[1]?.sales! },
-                        { name: data?.[2]?.name!, value: data?.[2]?.sales! },
-                    ]}
-                    title="Top Product"
-                />
-            )}
         </div>
     );
 }

@@ -12,13 +12,33 @@ import { LoadingCells } from "@/components/loading";
 import { useClientStats } from "@/hooks/use-fetch-data";
 import { Filter } from "@/components/filter";
 import { useFilterDate } from "@/hooks/useFilterDate";
-import { Donut } from "../charts/donutChart";
+import { Donut } from "@/components/charts/donutChart";
+import { useEffect, useState } from "react";
 
 export default function ClientStats() {
     const { date, setDate, toggleType, type } = useFilterDate();
     const { data, isLoading } = useClientStats(date);
+    const [amount, setAmount] = useState(0);
+    useEffect(() => {
+        let AmountSum = 0;
+        data?.forEach((s) => {
+            AmountSum += s?.amount;
+        });
+        setAmount(AmountSum);
+    }, [data]);
     return (
         <div className="max-w-3xl w-full flex flex-col gap-3">
+            {!isLoading && data?.[0]?.amount !== 0 && (
+                <Donut
+                    rupeeSymbol
+                    data={[
+                        { name: data?.[0]?.name!, value: data?.[0]?.amount! },
+                        { name: data?.[1]?.name!, value: data?.[1]?.amount! },
+                        { name: data?.[2]?.name!, value: data?.[2]?.amount! },
+                    ]}
+                    title="Top Client"
+                />
+            )}
             <div className="border w-full rounded-md shadow-md">
                 <div className="flex flex-col justify-between gap-3 px-3 py-3 bg-[#FFCCCC] dark:bg-slate-300 rounded-tl-md rounded-tr-md">
                     <div className="flex items-center gap-3">
@@ -52,8 +72,12 @@ export default function ClientStats() {
                                 <TableHead className="uppercase">
                                     District
                                 </TableHead>
-                                <TableHead className="uppercase">Sales</TableHead>
-                                <TableHead className="uppercase">Amount</TableHead>
+                                <TableHead className="uppercase">
+                                    Sales
+                                </TableHead>
+                                <TableHead className="uppercase text-right">
+                                    Amount
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -62,40 +86,38 @@ export default function ClientStats() {
                                 <TableRow key={client?._id}>
                                     <TableCell>{idx + 1}</TableCell>
                                     <TableCell className="text-xs lg:text-sm uppercase">
-                                        {client.name}
+                                        {client?.name?.toUpperCase()}
                                     </TableCell>
                                     <TableCell className="text-xs lg:text-sm uppercase">
                                         {client?.market}
                                     </TableCell>
                                     <TableCell className="text-xs lg:text-sm uppercase">
-                                        {client?.district}
+                                        {client?.district?.toUpperCase()}
                                     </TableCell>
                                     <TableCell className="text-xs lg:text-sm">
                                         {client?.sales}
                                     </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center text-xs lg:text-sm">
+                                    <TableCell className="text-right">
+                                        <div className="flex items-center justify-end text-xs lg:text-sm">
                                             <IndianRupee className="w-3 h-3" />
                                             {client?.amount}
                                         </div>
                                     </TableCell>
                                 </TableRow>
                             ))}
+                            <TableRow>
+                                <TableCell colSpan={5}>Total</TableCell>
+                                <TableCell className="text-right">
+                                    <div className="flex items-center text-xs lg:text-sm">
+                                        <IndianRupee className="w-3 h-3" />
+                                        {amount}
+                                    </div>
+                                </TableCell>
+                            </TableRow>
                         </TableBody>
                     </Table>
                 </div>
             </div>
-            {!isLoading && data?.[0]?.amount !== 0 && (
-                <Donut
-                    rupeeSymbol
-                    data={[
-                        { name: data?.[0]?.name!, value: data?.[0]?.amount! },
-                        { name: data?.[1]?.name!, value: data?.[1]?.amount! },
-                        { name: data?.[2]?.name!, value: data?.[2]?.amount! },
-                    ]}
-                    title="Top Client"
-                />
-            )}
         </div>
     );
 }

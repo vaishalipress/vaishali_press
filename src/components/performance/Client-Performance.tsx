@@ -8,10 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import {
-    ClientPerformance as ClientPerformanceType,
-    ProductPerformance as ProductPerformanceType,
-} from "@/lib/types";
+import { ClientPerformance as ClientPerformanceType } from "@/lib/types";
 import { LoadingCells } from "@/components/loading";
 import { FileWarning, IndianRupee } from "lucide-react";
 import { useFilterDate } from "@/hooks/useFilterDate";

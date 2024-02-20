@@ -1,7 +1,7 @@
 "use client";
 import { IndianRupee } from "lucide-react";
 import { DistrictStatsInPerformance } from "@/lib/types";
-import { Clients } from "@/components/dashboard/client-table";
+import { Clients } from "@/components/performance/client-table";
 import { EachMarketTypeInDistrict } from "@/lib/types";
 import { useDistrictPerformanceByClient } from "@/hooks/use-fetch-data";
 import { LoadingCells } from "@/components/loading";

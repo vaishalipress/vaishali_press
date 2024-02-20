@@ -2,11 +2,11 @@
 import { IMAGE_SIZE } from "@/lib/utils";
 import axios from "axios";
 import { ChangeEvent, useState } from "react";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Loader2, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
-import { ActionTooltip } from "../action-tooltip";
+import { ActionTooltip } from "@/components/action-tooltip";
 import { useCustumQuery } from "@/hooks/use-queries";
 export const CarouselMediaUploader = () => {
     const [isUploading, setIsUploading] = useState(false);

@@ -1,5 +1,5 @@
-import { ClientPerformance } from "@/components/dashboard/Client-Performance";
-import { DistrictPerformanceByClient } from "@/components/dashboard/District-Performance-By-Client";
+import { ClientPerformance } from "@/components/performance/Client-Performance";
+import { DistrictPerformanceByClient } from "@/components/performance/District-Performance-By-Client";
 
 export default async function ClientPerformancePage() {
     return (

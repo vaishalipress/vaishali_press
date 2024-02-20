@@ -1,5 +1,4 @@
 "use client";
-import { useUsers } from "@/hooks/use-fetch-data";
 import {
     Table,
     TableBody,
@@ -7,9 +6,10 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "../ui/table";
-import { LoadingCells } from "../loading";
-import { Button } from "../ui/button";
+} from "@/components/ui/table";
+import { LoadingCells } from "@/components/loading";
+import { Button } from "@/components/ui/button";
+import { useUsers } from "@/hooks/use-fetch-data";
 import { Lock, Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useModal } from "@/hooks/use-modal-store";

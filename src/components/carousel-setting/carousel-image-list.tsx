@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useAssests } from "@/hooks/use-fetch-data";
 import { toast } from "sonner";
