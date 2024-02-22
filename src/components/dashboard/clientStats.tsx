@@ -27,7 +27,7 @@ export default function ClientStats() {
         setAmount(AmountSum);
     }, [data]);
     return (
-        <div className="max-w-3xl w-full flex flex-col gap-3">
+        <div className="w-full flex flex-col gap-3">
             {!isLoading && data?.[0]?.amount !== 0 && (
                 <Donut
                     rupeeSymbol

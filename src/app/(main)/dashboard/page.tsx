@@ -6,7 +6,7 @@ export default async function DashboardPage() {
     return (
         <div className="w-full  max-w-[1390px] m-auto h-full py-3 mb-7">
             <DashboardCards />
-            <div className="flex justify-center flex-wrap gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <ProductStats />
                 <ClientStats />
             </div>

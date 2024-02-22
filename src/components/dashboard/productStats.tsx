@@ -19,7 +19,7 @@ export default function ProductStats() {
 
     const { data, isLoading } = useProductStats(date);
     return (
-        <div className="max-w-xl w-full flex flex-col gap-3">
+        <div className=" w-full flex flex-col gap-3">
             {!isLoading && data?.[0]?.sales !== 0 && (
                 <Donut
                     data={[
