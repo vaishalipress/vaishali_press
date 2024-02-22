@@ -60,9 +60,10 @@ export const ProductPerformance = () => {
                 )}
 
                 <Accordion type="multiple" className="w-full">
-                    {data?.map((product) => (
+                    {data?.map((product, idx) => (
                         <ProductStats
                             product={product}
+                            idx={idx + 1}
                             key={product?.product}
                         />
                     ))}
@@ -72,7 +73,13 @@ export const ProductPerformance = () => {
     );
 };
 
-const ProductStats = ({ product }: { product: ProductPerformanceType }) => {
+const ProductStats = ({
+    product,
+    idx,
+}: {
+    idx: number;
+    product: ProductPerformanceType;
+}) => {
     return (
         <AccordionItem
             value={product?.product}
@@ -81,7 +88,7 @@ const ProductStats = ({ product }: { product: ProductPerformanceType }) => {
             <AccordionTrigger className="flex gap-3 w-full px-3 py-2 bg-orange-200 dark:bg-orange-800">
                 <div className="flex items-center gap-2 w-[93%] justify-between">
                     <span className="text-sm font-medium  dark:text-zinc-200 uppercase">
-                        {product?.product}
+                        {idx}. {product?.product}
                     </span>
                     <span className="text-xs dark:text-zinc-200 uppercase">
                         SOLD : {product?.totalSales}

@@ -44,8 +44,12 @@ export const DistrictPerformanceByClient = () => {
                 </div>
             )}
             <Accordion type="multiple" className="w-full">
-                {data?.map((district) => (
-                    <DistrictPage key={district?._id} {...district} />
+                {data?.map((district, idx) => (
+                    <DistrictPage
+                        key={district?._id}
+                        idx={idx + 1}
+                        {...district}
+                    />
                 ))}
             </Accordion>
         </div>
@@ -59,7 +63,8 @@ export const DistrictPage = ({
     totalSale,
     markets,
     totalMarket,
-}: DistrictStatsInPerformance) => {
+    idx,
+}: DistrictStatsInPerformance & { idx: number }) => {
     return (
         <AccordionItem
             value={district}
@@ -69,7 +74,7 @@ export const DistrictPage = ({
             <AccordionTrigger className="flex gap-3 w-full px-3 py-2 bg-orange-200 dark:bg-orange-800">
                 <div className="flex items-center gap-2 w-[93%] justify-between">
                     <span className="text-sm font-medium  dark:text-zinc-200 uppercase">
-                        {district}
+                        {idx}. {district}
                     </span>
                     <DistrictHeaderInfo
                         totalAmount={totalAmount}

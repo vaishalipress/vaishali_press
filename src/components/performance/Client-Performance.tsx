@@ -57,8 +57,12 @@ export const ClientPerformance = () => {
                 )}
 
                 <Accordion type="multiple" className="w-full">
-                    {data?.map((client) => (
-                        <Client client={client} key={client?.client?._id} />
+                    {data?.map((client, idx) => (
+                        <Client
+                            client={client}
+                            idx={idx + 1}
+                            key={client?.client?._id}
+                        />
                     ))}
                 </Accordion>
             </div>
@@ -66,7 +70,13 @@ export const ClientPerformance = () => {
     );
 };
 
-const Client = ({ client }: { client: ClientPerformanceType }) => {
+const Client = ({
+    client,
+    idx,
+}: {
+    client: ClientPerformanceType;
+    idx: number;
+}) => {
     return (
         <AccordionItem
             value={client?.client?._id}
@@ -75,7 +85,7 @@ const Client = ({ client }: { client: ClientPerformanceType }) => {
             <AccordionTrigger className="flex gap-3 w-full px-3 py-2 bg-orange-200 dark:bg-orange-800">
                 <div className="flex items-center gap-2 w-[93%] justify-between">
                     <span className="text-sm font-medium  dark:text-zinc-200 uppercase">
-                        {client?.client?.name}
+                        {idx}. {client?.client?.name}
                     </span>
                     <div className="capitalize flex items-center text-xs dark:text-zinc-200 ">
                         <span className="mr-2">Amount : </span>

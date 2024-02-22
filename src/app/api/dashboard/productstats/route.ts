@@ -88,7 +88,15 @@ export const GET = async (req: Request) => {
                             sales: {
                                 $sum: "$sales",
                             },
-                            market: "$markets",
+                            // market: "$markets",
+                            market: {
+                                $sortArray: {
+                                    input: "$markets",
+                                    sortBy: {
+                                        sales: -1,
+                                    },
+                                },
+                            },
                         },
                     },
                 },
