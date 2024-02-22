@@ -17,7 +17,7 @@ import { FilterSale } from "@/components/sales/filter-sales";
 import { useSaleFilter } from "@/hooks/useSaleFilter";
 import Pagination from "../pagination/pagination";
 import { downloadToPDF } from "@/lib/utils";
-import { Suspense } from "react";
+import { Suspense, use, useEffect, useState } from "react";
 
 export default function SalesList() {
     const { onOpen } = useModal();
@@ -46,6 +46,19 @@ export default function SalesList() {
         page,
         view
     ); //fetch data
+
+    const [amount, setAmount] = useState(0);
+    const [qty, setQty] = useState(0);
+    useEffect(() => {
+        let AmountSum = 0;
+        let qtySum = 0;
+        data?.sales?.forEach((s) => {
+            AmountSum += s?.qty * s?.rate;
+            qtySum += s?.qty;
+        });
+        setAmount(AmountSum);
+        setQty(qtySum);
+    }, [data]);
 
     return (
         <div className="max-w-7xl w-full flex flex-col gap-3">
@@ -178,6 +191,16 @@ export default function SalesList() {
                                     </TableCell>
                                 </TableRow>
                             ))}
+                            <TableRow>
+                                <TableCell colSpan={6}>TOTAL</TableCell>
+                                <TableCell colSpan={2}> {qty}</TableCell>
+                                <TableCell className="text-right">
+                                    <div className="flex items-center text-xs lg:text-sm">
+                                        <IndianRupee className="w-3 h-3" />
+                                        {amount}
+                                    </div>
+                                </TableCell>
+                            </TableRow>
                         </TableBody>
                     </Table>
 

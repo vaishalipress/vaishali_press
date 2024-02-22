@@ -89,7 +89,7 @@ export default function ClientStats() {
                                         {client?.name?.toUpperCase()}
                                     </TableCell>
                                     <TableCell className="text-xs lg:text-sm uppercase">
-                                        {client?.market}
+                                        {client?.market?.toUpperCase()}
                                     </TableCell>
                                     <TableCell className="text-xs lg:text-sm uppercase">
                                         {client?.district?.toUpperCase()}
