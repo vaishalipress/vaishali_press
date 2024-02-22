@@ -125,13 +125,15 @@ const Market = ({ market }: { market: MarketStatsInProductPerformance[] }) => {
         <Table>
             <TableHeader>
                 <TableRow className="text-xs">
+                    <TableHead>S.NO</TableHead>
                     <TableHead className="uppercase w-32">Market</TableHead>
                     <TableHead className="uppercase w-32">Sold</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {market?.map((m) => (
+                {market?.map((m, idx) => (
                     <TableRow key={m.market}>
+                        <TableCell>{idx + 1}</TableCell>
                         <TableCell className="uppercase text-xs">
                             {m?.market}
                         </TableCell>
