@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Mail, PhoneCall, WheatIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Contact() {
@@ -10,18 +12,42 @@ export default function Contact() {
                     Contact us
                 </h1>
                 <div className="mt-16 sm:mt-10 flex flex-col gap-9">
-                    <div className="flex flex-col gap-7">
-                        <h2 className="text-3xl font-semibold mb-3 ">Phone</h2>
+                    <div className="flex flex-col gap-4">
+                        <h2 className="text-3xl font-semibold mb-3 flex items-center gap-2">
+                            <PhoneCall className="text-black dark:text-black" />
+                            Phone
+                        </h2>
+                        <h3 className="text-2xl font-medium">
+                            +91 95724 90446
+                        </h3>
+                        <p className="text-xl font-normal text-black/85">
+                            Mon. – Sat. 10:00 AM – 6:00 PM
+                        </p>
+                    </div>
+                    <Separator />
+                    <div className="flex flex-col gap-4">
+                        <h2 className="text-3xl font-semibold mb-3 flex items-center gap-2">
+                            <Image
+                                src={"/whatsapp.svg"}
+                                width={30}
+                                height={30}
+                                alt="whatsapp"
+                            />
+                            WhatsApp
+                        </h2>
                         <h3 className="text-2xl font-medium">
                             +91 82943 87193
                         </h3>
                         <p className="text-xl font-normal text-black/85">
-                            Mon. – Sat. 10:00 AM – 7:00 PM
+                            Mon. – Sat. 10:00 AM – 6:00 PM
                         </p>
                     </div>
                     <Separator />
                     <div className="flex flex-col gap-8">
-                        <h2 className="text-3xl font-semibold">Email</h2>
+                        <h2 className="text-3xl font-semibold flex gap-2 items-center">
+                            <Mail className="w-6 h-6 text-black dark:text-black" />{" "}
+                            Email
+                        </h2>
                         <div className="text-xl font-normal">
                             <p>Our email is</p>
                             <p>
