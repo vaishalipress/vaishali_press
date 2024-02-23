@@ -1,11 +1,10 @@
 "use client";
-import { IndianRupee } from "lucide-react";
+import { Download, IndianRupee } from "lucide-react";
 import { DistrictStatsInPerformance } from "@/lib/types";
 import { Clients } from "@/components/performance/client-table";
 import { EachMarketTypeInDistrict } from "@/lib/types";
 import { useDistrictPerformanceByClient } from "@/hooks/use-fetch-data";
 import { LoadingCells } from "@/components/loading";
-import { Table, TableBody } from "@/components/ui/table";
 import { Filter } from "@/components/filter";
 import { useFilterDate } from "@/hooks/useFilterDate";
 import {
@@ -14,8 +13,12 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Input } from "../ui/input";
+import { Table, TableBody } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { CellConfig, jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export const DistrictPerformanceByClient = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
@@ -53,6 +56,44 @@ export const DistrictPerformanceByClient = () => {
         }, 300);
     };
 
+    const createHeaders = (keys: string[]): CellConfig[] => {
+        const result: CellConfig[] = [];
+        for (let key in keys) {
+            const cell: CellConfig = {
+                name: key,
+                prompt: key,
+                align: "center",
+                padding: 2,
+                width: 10,
+            };
+            result.push(cell);
+        }
+        return result;
+    };
+
+    const exportDataToPDF = async () => {
+        if (isLoading) return;
+        const doc = new jsPDF();
+        const exportData: string[][] = [];
+        data?.forEach((d, idx) => {
+            exportData.push([
+                `${idx + 1}`,
+                d?.district?.toUpperCase(),
+                d?.totalMarket?.toString(),
+                d?.totalClient?.toString(),
+                d?.totalSale?.toString(),
+                d?.totalAmount?.toString(),
+            ]);
+        });
+
+        autoTable(doc, {
+            head: [["S.NO", "DISTRICT", "MARKET", "CLIENT", "SALE", "AMOUNT"]],
+            body: exportData,
+        });
+
+        doc.save("district_performance.pdf");
+    };
+
     return (
         <div className="w-full pb-2 min-h-96">
             <div className="flex justify-between mb-2 items-center gap-2 bg-slate-200 dark:bg-slate-700 py-3 px-3 rounded-md">
@@ -72,6 +113,9 @@ export const DistrictPerformanceByClient = () => {
                         value={search}
                         onChange={(e) => searchHandler(e)}
                     />
+                    <Button variant={"secondary"} onClick={exportDataToPDF}>
+                        <Download className="w-5 h-5" />
+                    </Button>
                 </Filter>
             </div>
             {isLoading && (
