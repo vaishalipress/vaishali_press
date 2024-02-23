@@ -260,13 +260,12 @@ export default function ClientList() {
                                         : "NA"}
                                 </TableCell>
 
-                                {/* <TableCell className="capitalize">
+                                <TableCell className="capitalize">
                                     {client?.district
                                         ?.charAt(0)
                                         ?.toUpperCase() +
                                         client?.district?.substring(1)}
-                                </TableCell> */}
-                                <TableCell>{client?.district}</TableCell>
+                                </TableCell>
                                 <TableCell>
                                     {format(
                                         new Date(client?.createdAt),
