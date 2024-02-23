@@ -14,17 +14,51 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Input } from "../ui/input";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 
 export const DistrictPerformanceByClient = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
-    const { data, isLoading } = useDistrictPerformanceByClient(date);
+    const { data: districtData, isLoading } =
+        useDistrictPerformanceByClient(date);
+
+    const [data, setData] = useState<DistrictStatsInPerformance[] | undefined>(
+        []
+    );
+    const [search, setSearch] = useState("");
+    let timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        setData(districtData);
+    }, [districtData]);
+
+    const searchClientByName = useCallback(
+        (name: string) => {
+            if (!districtData) return;
+            const searchedClient = [...districtData].filter((dist) =>
+                dist?.district?.startsWith(name?.toLowerCase())
+            );
+            setData(searchedClient);
+        },
+        [districtData]
+    );
+
+    const searchHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+        }
+        timerRef.current = setTimeout(() => {
+            searchClientByName(e.target.value);
+        }, 300);
+    };
+
     return (
-        <div className="w-full pb-2">
+        <div className="w-full pb-2 min-h-96">
             <div className="flex justify-between mb-2 items-center gap-2 bg-slate-200 dark:bg-slate-700 py-3 px-3 rounded-md">
                 <h1 className="text-sm lg:text-base uppercase font-semibold">
                     District Performance By Client
                 </h1>
-
                 <Filter
                     date={date}
                     setDate={setDate}
@@ -32,7 +66,13 @@ export const DistrictPerformanceByClient = () => {
                     toggleType={toggleType}
                     isLoading={isLoading}
                     download={false}
-                />
+                >
+                    <Input
+                        placeholder="Search"
+                        value={search}
+                        onChange={(e) => searchHandler(e)}
+                    />
+                </Filter>
             </div>
             {isLoading && (
                 <div>

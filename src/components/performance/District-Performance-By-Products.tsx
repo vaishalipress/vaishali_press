@@ -22,12 +22,46 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Input } from "@/components/ui/input";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 
 export const DistrictPerformanceByProducts = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
-    const { data, isLoading } = useDistrictPerformanceByProducts(date);
+    const { data: districtData, isLoading } =
+        useDistrictPerformanceByProducts(date);
+
+    const [data, setData] = useState<ProductStatsInEachDistrict[] | undefined>(
+        []
+    );
+    const [search, setSearch] = useState("");
+    let timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        setData(districtData);
+    }, [districtData]);
+
+    const searchClientByName = useCallback(
+        (name: string) => {
+            if (!districtData) return;
+            const searchedClient = [...districtData].filter((dist) =>
+                dist?.district?.startsWith(name?.toLowerCase())
+            );
+            setData(searchedClient);
+        },
+        [districtData]
+    );
+
+    const searchHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+        }
+        timerRef.current = setTimeout(() => {
+            searchClientByName(e.target.value);
+        }, 300);
+    };
     return (
-        <div className="mb-4 mt-6 w-full">
+        <div className="mb-4 mt-6 w-full min-h-96">
             <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
                 <h1 className="text-sm lg:text-base uppercase font-semibold">
                     District Performance By Products
@@ -40,7 +74,13 @@ export const DistrictPerformanceByProducts = () => {
                     toggleType={toggleType}
                     isLoading={isLoading}
                     download={false}
-                />
+                >
+                    <Input
+                        placeholder="Search"
+                        value={search}
+                        onChange={(e) => searchHandler(e)}
+                    />
+                </Filter>
             </div>
             <div className="flex flex-wrap gap-3">
                 {isLoading && (

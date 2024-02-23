@@ -81,7 +81,7 @@ export default function ClientList() {
         (name: string) => {
             if (!clientsData) return;
             const searchedClient = [...clientsData].filter((client) =>
-                client?.name.startsWith(name)
+                client?.name.startsWith(name?.toLowerCase())
             );
             setData(searchedClient);
         },
