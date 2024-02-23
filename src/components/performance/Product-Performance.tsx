@@ -9,6 +9,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import {
+    DistrictSalesStats,
     MarketStatsInProductPerformance,
     ProductPerformance as ProductPerformanceType,
 } from "@/lib/types";
@@ -22,6 +23,8 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Input } from "../ui/input";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 
 export const ProductPerformance = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
@@ -80,6 +83,30 @@ const ProductStats = ({
     idx: number;
     product: ProductPerformanceType;
 }) => {
+    const [stats, setStats] = useState<DistrictSalesStats[]>(product?.stats);
+    const [search, setSearch] = useState("");
+    let timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    const searchClientByName = useCallback(
+        (name: string) => {
+            if (!product?.stats) return;
+            const searchedClient = [...product?.stats].filter((dist) =>
+                dist?.district?.startsWith(name?.toLowerCase())
+            );
+            setStats(searchedClient);
+        },
+        [product]
+    );
+
+    const searchHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+        }
+        timerRef.current = setTimeout(() => {
+            searchClientByName(e.target.value);
+        }, 300);
+    };
     return (
         <AccordionItem
             value={product?.product}
@@ -97,8 +124,15 @@ const ProductStats = ({
             </AccordionTrigger>
 
             <AccordionContent>
+                <div className="px-3 py-2">
+                    <Input
+                        placeholder="Search"
+                        value={search}
+                        onChange={searchHandler}
+                    />
+                </div>
                 <div className="flex gap-3 flex-wrap px-3 py-3">
-                    {product?.stats?.map((stat) => (
+                    {stats?.map((stat) => (
                         <div
                             key={stat?.district}
                             className="border rounded-md overflow-hidden"
