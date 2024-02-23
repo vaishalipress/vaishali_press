@@ -30,7 +30,10 @@ export const ProductSalesWithClients = () => {
                     </DialogTitle>
 
                     <div>
-                        <h1 className="uppercase font-semibold text-start"> Product</h1>
+                        <h1 className="uppercase font-semibold text-start">
+                            {" "}
+                            Product
+                        </h1>
                         <Table className="w-fit md:w-full">
                             <TableBody>
                                 <TableRow>
@@ -59,11 +62,14 @@ export const ProductSalesWithClients = () => {
                     </div>
 
                     <div className="max-h-96 h-96 max-w-[95vw] w-fit md:w-full">
-                        <h1 className="uppercase font-semibold text-start">Clients</h1>
+                        <h1 className="uppercase font-semibold text-start">
+                            Clients
+                        </h1>
                         <div className="max-h-96 h-96 overflow-auto">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
+                                        <TableHead>S.NO</TableHead>
                                         <TableHead>NAME</TableHead>
                                         <TableHead>MARKET</TableHead>
                                         <TableHead>DISTRICT</TableHead>
@@ -73,8 +79,11 @@ export const ProductSalesWithClients = () => {
                                 </TableHeader>
                                 <TableBody>
                                     {productSalesWithClients?.sales?.map(
-                                        (client) => (
+                                        (client, idx) => (
                                             <TableRow key={client?.client?._id}>
+                                                <TableCell className="capitalize text-start">
+                                                    {idx + 1}
+                                                </TableCell>
                                                 <TableCell className="capitalize text-start">
                                                     {client?.client?.name}
                                                 </TableCell>
