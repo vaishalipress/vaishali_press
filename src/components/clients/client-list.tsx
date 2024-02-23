@@ -47,7 +47,7 @@ export default function ClientList() {
 
         const sorted = [...clientsData]?.sort(function (a, b) {
             return (
-                a.name.charAt(0).localeCompare(b.name.charAt(0)) ||
+                a.name.localeCompare(b.name) ||
                 a.district.charAt(0).localeCompare(b.district.charAt(0)) ||
                 a.market.charAt(0).localeCompare(b.market.charAt(0))
             );
@@ -70,7 +70,7 @@ export default function ClientList() {
 
         const sorted = [...clientsData]?.sort(function (a, b) {
             return (
-                a.district.charAt(0).localeCompare(b.district.charAt(0)) ||
+                a.district.localeCompare(b.district) ||
                 a.market.charAt(0).localeCompare(b.market.charAt(0)) ||
                 a.name.charAt(0).localeCompare(b.name.charAt(0))
             );
@@ -86,17 +86,52 @@ export default function ClientList() {
     const searchClientByName = useCallback(
         (name: string) => {
             if (!clientsData) return;
-            const searchedClient = [...clientsData].filter((client) =>
-                client?.name.startsWith(name?.toLowerCase())
-            );
-            setData(searchedClient);
+            const searchedClient = [...clientsData].filter((client) => {
+                if (sort === "district") {
+                    return client?.district.startsWith(
+                        name?.toLocaleLowerCase()
+                    );
+                } else {
+                    return client?.name.startsWith(name?.toLowerCase());
+                }
+            });
+
+            if (name === "") {
+                if (sort === "atoz") {
+                    setData(sortedClientByAtoZ);
+                } else if (sort === "latest") {
+                    setData(sortedClientByDate);
+                } else if (sort === "district") {
+                    setData(sortByDistrictAtoZ);
+                }
+                return;
+            }
+
+            if (sort === "district") {
+                console.log("district");
+                const sorted = [...searchedClient]?.sort(function (a, b) {
+                    return (
+                        a.district.localeCompare(b.district) ||
+                        a.market.charAt(0).localeCompare(b.market.charAt(0)) ||
+                        a.name.charAt(0).localeCompare(b.name.charAt(0))
+                    );
+                });
+                setData(sorted);
+            } else {
+                setData(searchedClient);
+            }
         },
-        [clientsData]
+        [
+            clientsData,
+            sort,
+            sortByDistrictAtoZ,
+            sortedClientByAtoZ,
+            sortedClientByDate,
+        ]
     );
 
     const searchHandler = (e: ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
-        setSort("latest");
         if (timerRef.current) {
             clearTimeout(timerRef.current);
         }
@@ -120,7 +155,11 @@ export default function ClientList() {
                 </div>
                 <div className="flex gap-3">
                     <Input
-                        placeholder="Search"
+                        placeholder={
+                            sort === "atoz" || sort === "latest"
+                                ? "Search Client"
+                                : "Search District"
+                        }
                         value={search}
                         onChange={(e) => searchHandler(e)}
                     />
@@ -221,12 +260,13 @@ export default function ClientList() {
                                         : "NA"}
                                 </TableCell>
 
-                                <TableCell className="capitalize">
+                                {/* <TableCell className="capitalize">
                                     {client?.district
                                         ?.charAt(0)
                                         ?.toUpperCase() +
                                         client?.district?.substring(1)}
-                                </TableCell>
+                                </TableCell> */}
+                                <TableCell>{client?.district}</TableCell>
                                 <TableCell>
                                     {format(
                                         new Date(client?.createdAt),
