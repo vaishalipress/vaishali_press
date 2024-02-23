@@ -34,11 +34,37 @@ export const GET = async (request: Request) => {
                                       },
                             },
                         },
+
                         {
                             $addFields: {
                                 amount: {
                                     $multiply: ["$rate", "$qty"],
                                 },
+                            },
+                        },
+                        {
+                            $group: {
+                                _id: "$client",
+                                amount: { $sum: "$amount" },
+                                qty: { $sum: "$qty" },
+                            },
+                        },
+                        {
+                            $lookup: {
+                                from: "clients",
+                                foreignField: "_id",
+                                localField: "_id",
+                                as: "client",
+                            },
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                client: {
+                                    $first: "$client",
+                                },
+                                amount: 1,
+                                qty: 1,
                             },
                         },
                     ],
@@ -49,8 +75,14 @@ export const GET = async (request: Request) => {
                 $project: {
                     name: 1,
                     price: 1,
-                    sales: {
+                    sale: {
                         $sum: "$sales.qty",
+                    },
+                    sales: {
+                        $sortArray: {
+                            input: "$sales",
+                            sortBy: { amount: -1 },
+                        },
                     },
                     amount: {
                         $sum: "$sales.amount",
@@ -58,7 +90,7 @@ export const GET = async (request: Request) => {
                 },
             },
         ]).sort({
-            sales: "descending",
+            sale: "descending",
         });
 
         return Response.json(productStats, {

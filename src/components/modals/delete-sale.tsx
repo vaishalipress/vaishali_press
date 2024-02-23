@@ -16,7 +16,6 @@ import { useMutation } from "@tanstack/react-query";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
 import { useSaleFilter } from "@/hooks/useSaleFilter";
-import { useSearchParams } from "next/navigation";
 
 export const DeleteSaleModal = () => {
     const { isOpen, onClose, type, data } = useModal();

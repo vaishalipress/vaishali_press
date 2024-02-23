@@ -31,8 +31,9 @@ export interface ProductStats {
     _id: string;
     name: string;
     price: number;
-    sales: number;
+    sale: number;
     amount: number;
+    sales: { amount: number; qty: number; client: ClientTypeExtented }[];
 }
 export interface clientStats {
     _id: string;

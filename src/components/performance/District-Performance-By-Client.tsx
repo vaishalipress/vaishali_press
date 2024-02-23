@@ -56,21 +56,6 @@ export const DistrictPerformanceByClient = () => {
         }, 300);
     };
 
-    const createHeaders = (keys: string[]): CellConfig[] => {
-        const result: CellConfig[] = [];
-        for (let key in keys) {
-            const cell: CellConfig = {
-                name: key,
-                prompt: key,
-                align: "center",
-                padding: 2,
-                width: 10,
-            };
-            result.push(cell);
-        }
-        return result;
-    };
-
     const exportDataToPDF = async () => {
         if (isLoading) return;
         const doc = new jsPDF();

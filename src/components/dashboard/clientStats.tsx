@@ -95,6 +95,7 @@ export default function ClientStats() {
                                 placeholder="Search"
                                 value={search}
                                 onChange={(e) => searchHandler(e)}
+                                className="max-w-32"
                             />
                         </Filter>
                     </div>

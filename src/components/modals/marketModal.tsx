@@ -40,12 +40,9 @@ import { Button } from "../ui/button";
 import {
     AlignStartVertical,
     AlignVerticalSpaceAround,
-    Home,
     Loader2,
-    Pen,
     ToyBrick,
     Trash,
-    TriangleRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useMarket } from "@/hooks/use-fetch-data";

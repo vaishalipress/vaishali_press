@@ -23,8 +23,8 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Input } from "../ui/input";
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { ChangeEvent, useCallback, useRef, useState } from "react";
 
 export const ProductPerformance = () => {
     const { date, setDate, toggleType, type } = useFilterDate();
