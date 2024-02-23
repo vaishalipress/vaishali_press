@@ -46,13 +46,11 @@ export default function ClientList() {
         if (!clientsData) return;
 
         const sorted = [...clientsData]?.sort(function (a, b) {
-            if (a.name < b.name) {
-                return -1;
-            }
-            if (a.name > b.name) {
-                return 1;
-            }
-            return 0;
+            return (
+                a.name.charAt(0).localeCompare(b.name.charAt(0)) ||
+                a.district.charAt(0).localeCompare(b.district.charAt(0)) ||
+                a.market.charAt(0).localeCompare(b.market.charAt(0))
+            );
         });
 
         return sorted;
@@ -61,13 +59,7 @@ export default function ClientList() {
     const sortedClientByDate = useMemo(() => {
         if (!clientsData) return;
         const sorted = [...clientsData]?.sort(function (a, b) {
-            if (a.createdAt < b.createdAt) {
-                return 1;
-            }
-            if (a.createdAt > b.createdAt) {
-                return -1;
-            }
-            return 0;
+            return a.createdAt < b.createdAt ? 1 : -1;
         });
 
         return sorted;
