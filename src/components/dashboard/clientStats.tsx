@@ -13,12 +13,24 @@ import { useClientStats } from "@/hooks/use-fetch-data";
 import { Filter } from "@/components/filter";
 import { useFilterDate } from "@/hooks/useFilterDate";
 import { Donut } from "@/components/charts/donutChart";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { Input } from "../ui/input";
+import { clientStats } from "@/lib/types";
 
 export default function ClientStats() {
     const { date, setDate, toggleType, type } = useFilterDate();
-    const { data, isLoading } = useClientStats(date);
+    const { data: clientsData, isLoading } = useClientStats(date);
     const [amount, setAmount] = useState(0);
+
+    const [data, setData] = useState<clientStats[] | undefined>([]);
+    const [search, setSearch] = useState("");
+    let timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        setData(clientsData);
+    }, [clientsData]);
+
+    // calculating total of amount and sales
     useEffect(() => {
         let AmountSum = 0;
         data?.forEach((s) => {
@@ -26,6 +38,28 @@ export default function ClientStats() {
         });
         setAmount(AmountSum);
     }, [data]);
+
+    const searchClientByName = useCallback(
+        (name: string) => {
+            if (!clientsData) return;
+            const searchedClient = [...clientsData].filter((client) =>
+                client?.name.startsWith(name?.toLowerCase())
+            );
+            setData(searchedClient);
+        },
+        [clientsData]
+    );
+
+    const searchHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+        }
+        timerRef.current = setTimeout(() => {
+            searchClientByName(e.target.value);
+        }, 300);
+    };
+
     return (
         <div className="w-full flex flex-col gap-3">
             {!isLoading && data?.[0]?.amount !== 0 && (
@@ -47,16 +81,23 @@ export default function ClientStats() {
                             Client Performance
                         </h1>
                     </div>
-
-                    <Filter
-                        html="#clientStats"
-                        downloadName="clientStats"
-                        date={date}
-                        setDate={setDate}
-                        toggleType={toggleType}
-                        type={type}
-                        isLoading={isLoading}
-                    />
+                    <div className="flex items-center gap-4">
+                        <Filter
+                            html="#clientStats"
+                            downloadName="clientStats"
+                            date={date}
+                            setDate={setDate}
+                            toggleType={toggleType}
+                            type={type}
+                            isLoading={isLoading}
+                        >
+                            <Input
+                                placeholder="Search"
+                                value={search}
+                                onChange={(e) => searchHandler(e)}
+                            />
+                        </Filter>
+                    </div>
                 </div>
                 <div className="max-h-[500px] overflow-y-auto">
                     <Table id="clientStats">
@@ -105,15 +146,17 @@ export default function ClientStats() {
                                     </TableCell>
                                 </TableRow>
                             ))}
-                            <TableRow>
-                                <TableCell colSpan={5}>Total</TableCell>
-                                <TableCell className="text-right">
-                                    <div className="flex items-center text-xs lg:text-sm">
-                                        <IndianRupee className="w-3 h-3" />
-                                        {amount}
-                                    </div>
-                                </TableCell>
-                            </TableRow>
+                            {!isLoading && (
+                                <TableRow>
+                                    <TableCell colSpan={5}>Total</TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex items-center text-xs lg:text-sm">
+                                            <IndianRupee className="w-3 h-3" />
+                                            {amount}
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </div>

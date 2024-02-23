@@ -1,5 +1,6 @@
 "use client";
 import { useClientStats, useProduct } from "@/hooks/use-fetch-data";
+import { useFilterDate } from "@/hooks/useFilterDate";
 import {
     BadgeDollarSign,
     BaggageClaim,
@@ -9,13 +10,13 @@ import {
     Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Filter } from "../filter";
 
 export default function DashboardCards() {
+    const { date, setDate, toggleType, type } = useFilterDate();
     const { data: product } = useProduct();
-    const { data } = useClientStats({
-        to: new Date(),
-        from: undefined,
-    });
+    const { data, isLoading } = useClientStats(date);
+
     const [sale, setSale] = useState(0);
     const [amount, setAmount] = useState(0);
     useEffect(() => {
@@ -29,32 +30,43 @@ export default function DashboardCards() {
         setAmount(AmountSum);
     }, [data]);
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-3 mb-5 px-3">
-            <Card
-                Icon={Users}
-                title="Total Client"
-                number={data?.length as number}
-                color="indigo"
-            />
-            <Card
-                Icon={Box}
-                title="Total Product"
-                number={product?.length as number}
-                color="orange"
-            />
-            <Card
-                Icon={BaggageClaim}
-                title="Total Sale"
-                number={sale}
-                color="green"
-            />
-            <Card
-                Icon={BadgeDollarSign}
-                title="Total Amount"
-                number={amount}
-                color="zinc"
-                rupee={true}
-            />
+        <div className="px-3">
+            <div className="flex items-center justify-end">
+                <Filter
+                    date={date}
+                    setDate={setDate}
+                    toggleType={toggleType}
+                    type={type}
+                    isLoading={isLoading}
+                />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-3 mb-5">
+                <Card
+                    Icon={Users}
+                    title="Total Client"
+                    number={data?.length as number}
+                    color="indigo"
+                />
+                <Card
+                    Icon={Box}
+                    title="Total Product"
+                    number={product?.length as number}
+                    color="orange"
+                />
+                <Card
+                    Icon={BaggageClaim}
+                    title="Total Sale"
+                    number={sale}
+                    color="green"
+                />
+                <Card
+                    Icon={BadgeDollarSign}
+                    title="Total Amount"
+                    number={amount}
+                    color="zinc"
+                    rupee={true}
+                />
+            </div>
         </div>
     );
 }

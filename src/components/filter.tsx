@@ -12,8 +12,18 @@ import { CalendarIcon, Download } from "lucide-react";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { filterType } from "@/hooks/useSaleFilter";
-import { MutableRefObject } from "react";
+import { HtmlHTMLAttributes } from "react";
 
+interface props extends HtmlHTMLAttributes<HTMLDivElement> {
+    download?: boolean;
+    html?: string;
+    downloadName?: string;
+    isLoading: boolean;
+    date: DateRange | undefined;
+    type: filterType;
+    toggleType: (value: filterType) => void;
+    setDate: (value: DateRange | undefined) => void;
+}
 export const Filter = ({
     toggleType,
     type,
@@ -23,18 +33,16 @@ export const Filter = ({
     html,
     downloadName,
     download = true,
-}: {
-    download?: boolean;
-    html?: string;
-    downloadName?: string;
-    isLoading: boolean;
-    date: DateRange | undefined;
-    type: filterType;
-    toggleType: (value: filterType) => void;
-    setDate: (value: DateRange | undefined) => void;
-}) => {
+    className,
+    children,
+}: props) => {
     return (
-        <div className="flex gap-2 justify-start overflow-x-auto no-scrollbar">
+        <div
+            className={cn(
+                "flex gap-2 justify-start overflow-x-auto no-scrollbar",
+                className
+            )}
+        >
             <Badge
                 onClick={() => toggleType("all")}
                 variant={"secondary"}
@@ -102,6 +110,7 @@ export const Filter = ({
                     />
                 </PopoverContent>
             </Popover>
+            {children}
             {download && html && (
                 <Button
                     variant={"ghost"}
