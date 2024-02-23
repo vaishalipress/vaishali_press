@@ -37,7 +37,7 @@ import { downloadToPDF } from "@/lib/utils";
 export default function ClientList() {
     const { onOpen } = useModal();
     const { data: clientsData, isLoading } = useClient();
-    const [sort, setSort] = useState<"atoz" | "latest">("atoz");
+    const [sort, setSort] = useState<"atoz" | "latest" | "district">("atoz");
     const [data, setData] = useState<ClientTypeExtented[] | undefined>([]);
     const [search, setSearch] = useState("");
     let timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -60,6 +60,20 @@ export default function ClientList() {
         if (!clientsData) return;
         const sorted = [...clientsData]?.sort(function (a, b) {
             return a.createdAt < b.createdAt ? 1 : -1;
+        });
+
+        return sorted;
+    }, [clientsData]);
+
+    const sortByDistrictAtoZ = useMemo(() => {
+        if (!clientsData) return;
+
+        const sorted = [...clientsData]?.sort(function (a, b) {
+            return (
+                a.district.charAt(0).localeCompare(b.district.charAt(0)) ||
+                a.market.charAt(0).localeCompare(b.market.charAt(0)) ||
+                a.name.charAt(0).localeCompare(b.name.charAt(0))
+            );
         });
 
         return sorted;
@@ -113,13 +127,15 @@ export default function ClientList() {
 
                     <Select
                         value={sort}
-                        onValueChange={(e: "atoz" | "latest") => {
+                        onValueChange={(e: "atoz" | "latest" | "district") => {
                             setSort(e);
 
                             if (e === "latest") {
                                 setData(sortedClientByDate);
                             } else if (e === "atoz") {
                                 setData(sortedClientByAtoZ);
+                            } else if (e === "district") {
+                                setData(sortByDistrictAtoZ);
                             }
                         }}
                         defaultValue={sort}
@@ -133,6 +149,9 @@ export default function ClientList() {
 
                                 <SelectItem value={"latest"}>Latest</SelectItem>
                                 <SelectItem value={"atoz"}>A-Z</SelectItem>
+                                <SelectItem value={"district"}>
+                                    District
+                                </SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
