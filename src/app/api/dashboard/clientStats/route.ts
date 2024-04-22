@@ -26,7 +26,7 @@ export const GET = async (req: Request) => {
             ? new Date(searchParams?.get("to")!)
             : new Date();
 
-        const sales = await Sale.aggregate([
+        const clients = await Sale.aggregate([
             {
                 $match: {
                     date: from
@@ -125,7 +125,7 @@ export const GET = async (req: Request) => {
             "client.name": 1,
         });
 
-        return Response.json(sales);
+        return Response.json(clients);
     } catch (error) {
         console.log("Error in Client stats", error);
         return Response.json(error, { status: 500 });
