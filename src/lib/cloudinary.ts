@@ -1,4 +1,8 @@
-import { v2 as cloudinary } from "cloudinary";
+import {
+    v2 as cloudinary,
+    UploadApiErrorResponse,
+    UploadApiResponse,
+} from "cloudinary";
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -6,7 +10,9 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_CLOUD_SECRET,
 });
 
-export const UPLOAD_TO_CLOUDINARY = async (file: File) => {
+export const UPLOAD_TO_CLOUDINARY = async (
+    file: File
+): Promise<UploadApiResponse | UploadApiErrorResponse> => {
     const fileBuffer = await file.arrayBuffer();
     var mime = file.type;
     var encoding = "base64";
@@ -14,7 +20,9 @@ export const UPLOAD_TO_CLOUDINARY = async (file: File) => {
     var fileUri = "data:" + mime + ";" + encoding + "," + base64Data;
 
     try {
-        const uploadToCloudinary = () => {
+        const uploadToCloudinary = (): Promise<
+            UploadApiResponse | UploadApiErrorResponse
+        > => {
             return new Promise((resolve, reject) => {
                 var result = cloudinary.uploader
                     .upload(fileUri, {
@@ -35,14 +43,11 @@ export const UPLOAD_TO_CLOUDINARY = async (file: File) => {
         return result;
     } catch (error) {
         console.log("server err", error);
-        return error;
+        return error as UploadApiErrorResponse;
     }
 };
 
-export const DELETE_FILE = async (url: string) => {
-    let fileUrl = url.split("/");
-    let publicId = fileUrl[fileUrl.length - 1].split(".")[0];
-
+export const DELETE_IMG = async (publicId: string) => {
     const result = await cloudinary.uploader.destroy(publicId, {
         invalidate: true,
         resource_type: "image",

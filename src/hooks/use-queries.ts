@@ -62,5 +62,20 @@ export const useCustumQuery = () => {
         });
     };
 
-    return { updateData, removeData, addData, updateSale, addSale, removeSale };
+    const removeImage = (publicId: string) => {
+        queryClient.setQueryData(["assets"], (old: { publicId: string }[]) => {
+            const allData = old?.filter((data) => data?.publicId !== publicId);
+            return allData;
+        });
+    };
+
+    return {
+        updateData,
+        removeData,
+        addData,
+        updateSale,
+        addSale,
+        removeSale,
+        removeImage,
+    };
 };

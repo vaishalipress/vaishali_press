@@ -11,6 +11,7 @@ import {
     ClientPerformance,
 } from "@/lib/types";
 import { getDayMax, getDayMin } from "@/lib/utils";
+import { CarouselI } from "@/models/carousel";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { DateRange } from "react-day-picker";
@@ -184,7 +185,7 @@ export const useClientStats = (date: DateRange | undefined) => {
 };
 
 export const useAssests = () => {
-    return useQuery<{ public_id: string; secure_url: string }[]>({
+    return useQuery<CarouselI[]>({
         queryKey: ["assets"],
         queryFn: async () => {
             const { data } = await axios("/api/media");
