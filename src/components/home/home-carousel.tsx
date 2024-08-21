@@ -28,7 +28,7 @@ export const HomeCarousel = ({ data }: { data: CarouselI[] }) => {
                                 fill
                                 alt={"carousel"}
                                 priority
-                                className="object-cover lg:object-fill w-full h-full"
+                                className="object-cover lg:object-cover w-full h-full"
                             />
                         </div>
                     </CarouselItem>
