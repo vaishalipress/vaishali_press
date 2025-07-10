@@ -33,7 +33,15 @@ export interface ProductStats {
     price: number;
     sale: number;
     amount: number;
-    sales: { amount: number; qty: number; client: ClientTypeExtented }[];
+    sales: {
+        totalAmount?: number;
+        totalQty?: number;
+        amountByProduct?: { bhl: number; bbs: number };
+        qtyByProduct?: { bhl: number; bbs: number };
+        amount?: number;
+        qty?: number;
+        client: ClientTypeExtented;
+    }[];
 }
 export interface clientStats {
     _id: string;
