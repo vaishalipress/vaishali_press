@@ -14,19 +14,23 @@ import { Filter } from "@/components/filter";
 import { useFilterDate } from "@/hooks/useFilterDate";
 import { Donut } from "../charts/donutChart";
 import { useModal } from "@/hooks/use-modal-store";
+import { useCallback } from "react";
 
 export default function ProductStats() {
     const { date, setDate, toggleType, type } = useFilterDate();
     const { data, isLoading } = useProductStats(date);
     const { onOpen } = useModal();
+    const bhlAndBbs = useCallback(() => data?.filter(p => (p.name.toLowerCase() === "bhl" || p.name.toLowerCase() === "bbs"))
+        , [data]);
     return (
         <div className=" w-full flex flex-col gap-3">
             {!isLoading && data?.[0]?.sale !== 0 && (
                 <Donut
                     data={[
+                        { name: "BHL & BBS", value: bhlAndBbs()?.[0].sale! + bhlAndBbs()?.[1].sale! },
                         { name: data?.[0]?.name!, value: data?.[0]?.sale! },
                         { name: data?.[1]?.name!, value: data?.[1]?.sale! },
-                        { name: data?.[2]?.name!, value: data?.[2]?.sale! },
+                        // { name: data?.[2]?.name!, value: data?.[2]?.sale! },
                     ]}
                     title="Top Product"
                 />

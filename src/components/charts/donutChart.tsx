@@ -5,99 +5,85 @@ import { Doughnut } from "react-chartjs-2";
 
 ChartJS.register(ArcElement);
 
-const DonutChart = ({ dataSet }: { dataSet: (number | undefined)[] }) => {
+const COLOR_PALETTE = ["#98D89E", "#F6DC7D", "#EE8484", "#F84848"];
+
+interface DonutChartProps {
+    dataSet: number[];
+    labels?: string[];
+}
+
+const DonutChart = ({ dataSet, labels }: DonutChartProps) => {
     const data = {
-        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+        labels: labels || Array.from({ length: dataSet.length }, (_, i) => `Category ${i + 1}`),
         datasets: [
             {
-                label: "# of Votes",
+                label: "Value",
                 data: dataSet,
-                backgroundColor: ["#98D89E", "#F6DC7D", "#EE8484"],
-                borderColor: ["#98D89E", "#F6DC7D", "#EE8484"],
-                borderWidth: [1, 1, 1],
-                borderRadius: [5, 5, 5],
+                backgroundColor: COLOR_PALETTE.slice(0, dataSet.length),
+                borderColor: COLOR_PALETTE.slice(0, dataSet.length),
+                borderWidth: 1,
+                borderRadius: 5,
             },
         ],
     };
 
     return <Doughnut data={data} />;
 };
-interface dataType {
+
+interface DataType {
     name: string;
     value: number;
 }
 
-export const Donut = ({
-    data,
-    title,
-    rupeeSymbol = false,
-}: {
-    rupeeSymbol?: boolean;
+interface DonutProps {
+    data?: DataType[];
     title: string;
-    data: dataType[] | undefined;
-}) => {
+    rupeeSymbol?: boolean;
+}
+
+export const Donut = ({ data, title, rupeeSymbol = false }: DonutProps) => {
+    // Filter out any undefined/null data and ensure we have valid numbers
+    const validData = data?.filter(item => item?.value !== undefined && !isNaN(item.value)) || [];
+
     return (
-        <div className="w-full flex justify-between items-center gap-5 shadow-lg border px-8 py-3 rounded-lg">
+        <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-5 shadow-lg border px-8 py-3 rounded-lg">
             <div className="flex flex-col items-center gap-4">
                 <h1 className="font-semibold uppercase">{title}</h1>
                 <div className="w-24 h-24 md:w-40 md:h-40">
-                    <DonutChart
-                        dataSet={[
-                            data?.[0]?.value,
-                            data?.[1]?.value,
-                            data?.[2]?.value,
-                        ]}
-                    />
+                    {validData.length > 0 ? (
+                        <DonutChart
+                            dataSet={validData.map(d => d.value)}
+                            labels={validData.map(d => d.name)}
+                        />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                            No data available
+                        </div>
+                    )}
                 </div>
             </div>
 
-            <div className="flex flex-col items-start gap-1 md:gap-3 max-w-[40%] sm:max-w-fit overflow-hidden">
-                {data?.[0] && (
-                    <div className="flex items-center flex-col">
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 min-w-2 min-h-2 bg-[#98D89E] rounded-full" />
-                            <span className="font-semibold text-xs md:text-sm uppercase">
-                                {data?.[0]?.name}
-                            </span>
+            {validData.length > 0 && (
+                <div className="flex flex-col items-start gap-1 md:gap-3 w-full sm:w-auto sm:max-w-[40%] overflow-hidden">
+                    {validData.map((item, index) => (
+                        <div key={`${item.name}-${index}`} className="w-full">
+                            <div className="flex items-center gap-2">
+                                <div
+                                    className="w-2 h-2 min-w-2 min-h-2 rounded-full flex-shrink-0"
+                                    style={{ backgroundColor: COLOR_PALETTE[index] }}
+                                />
+                                <span className="font-semibold text-xs md:text-sm uppercase truncate">
+                                    {item.name}
+                                </span>
+                            </div>
+                            <div className="text-sm text-zinc-400 ml-4 flex items-center">
+                                {rupeeSymbol && <IndianRupee className="w-3 h-3 mr-0.5" />}
+                                {item.value}
+                            </div>
                         </div>
-
-                        <span className="text-sm text-zinc-400 self-start ml-5 flex items-center">
-                            {rupeeSymbol && <IndianRupee className="w-3 h-3" />}
-                            {data?.[0]?.value}
-                        </span>
-                    </div>
-                )}
-
-                {data?.[1] && (
-                    <div className="flex items-center flex-col">
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 min-w-2 min-h-2 bg-[#F6DC7D] rounded-full" />
-                            <span className="font-semibold text-xs md:text-sm uppercase">
-                                {data?.[1]?.name}
-                            </span>
-                        </div>
-                        <span className="text-sm text-zinc-400 self-start ml-5 flex items-center">
-                            {rupeeSymbol && <IndianRupee className="w-3 h-3" />}
-                            {data?.[1]?.value}
-                        </span>
-                    </div>
-                )}
-
-                {data?.[2] && (
-                    <div className="flex items-center flex-col">
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 min-w-2 min-h-2 bg-[#EE8484] rounded-full" />
-                            <span className="font-semibold text-xs md:text-sm uppercase">
-                                {data?.[2]?.name}
-                            </span>
-                        </div>
-                        <span className="text-sm text-zinc-400 self-start ml-5 flex items-center">
-                            {rupeeSymbol && <IndianRupee className="w-3 h-3" />}
-                            {data?.[2]?.value}
-                        </span>
-                    </div>
-                )}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
