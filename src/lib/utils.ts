@@ -41,3 +41,14 @@ export const downloadToPDF = (
 };
 
 export const IMAGE_SIZE = 1024000 * 5; // 1mb = 1024000
+
+
+export function capitalizeWords(input: string): string {
+    return input
+        .trim()
+        .split(/\s+/) // split by one or more spaces
+        .map(word =>
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join(" ");
+}

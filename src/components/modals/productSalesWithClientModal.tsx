@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Download, IndianRupee } from "lucide-react";
 import { Button } from "../ui/button";
-import { downloadToPDF } from "@/lib/utils";
+import { capitalizeWords, downloadToPDF } from "@/lib/utils";
 
 export const ProductSalesWithClients = () => {
   const { isOpen, onClose, type, data } = useModal();
@@ -106,13 +106,13 @@ export const ProductSalesWithClients = () => {
                         {idx + 1}
                       </TableCell>
                       <TableCell className="capitalize text-start">
-                        {sale?.client?.name}
+                        {capitalizeWords(sale?.client?.name)}
                       </TableCell>
                       <TableCell className="capitalize text-start">
-                        {sale?.client?.market}
+                        {capitalizeWords(sale?.client?.market)}
                       </TableCell>
                       <TableCell className="capitalize text-start">
-                        {sale?.client?.district}
+                        {capitalizeWords(sale?.client?.district)}
                       </TableCell>
                       {sale?.qty && (
                         <TableCell className="text-start">
