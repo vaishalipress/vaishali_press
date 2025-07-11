@@ -14,7 +14,7 @@ import { Filter } from "@/components/filter";
 import { useFilterDate } from "@/hooks/useFilterDate";
 import { Donut } from "../charts/donutChart";
 import { useModal } from "@/hooks/use-modal-store";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { ClientTypeExtented } from "@/lib/types";
 
 export default function ProductStats() {
@@ -29,8 +29,10 @@ export default function ProductStats() {
     [data]
   );
 
-  const bhlAndBbsMerged = useCallback(() => {
-    const data = bhlAndBbs();
+  const bhlAndBbsData = useMemo(() => bhlAndBbs(), [bhlAndBbs]);
+
+  const bhlAndBbsMerged = useMemo(() => {
+    const data = bhlAndBbsData;
     const product: {
       _id: string;
       name: string;
@@ -58,38 +60,46 @@ export default function ProductStats() {
       const productName = product.name;
 
       product.sales.forEach((sale) => {
-        const clientId = sale.client._id;
+        const clientId = String(sale.client._id); // Ensure string key
 
         if (!mergedSalesMap.has(clientId)) {
-          // Initialize entry
           mergedSalesMap.set(clientId, {
             totalAmount: sale.amount,
             totalQty: sale.qty,
             amountByProduct: { [productName]: sale.amount },
             qtyByProduct: { [productName]: sale.qty },
-            client: sale.client,
+            client: { ...sale.client }, // shallow copy
           });
         } else {
           const existing = mergedSalesMap.get(clientId);
-          existing.totalAmount += sale.amount;
-          existing.totalQty += sale.qty;
 
-          // Add amount per product
-          existing.amountByProduct[productName] =
-            (existing.amountByProduct[productName] || 0) + sale.amount;
+          // Create a new object instead of mutating in place
+          const updated = {
+            ...existing,
+            totalAmount: existing.totalAmount + sale.amount,
+            totalQty: existing.totalQty + sale.qty,
+            amountByProduct: {
+              ...existing.amountByProduct,
+              [productName]:
+                (existing.amountByProduct[productName] || 0) + sale.amount,
+            },
+            qtyByProduct: {
+              ...existing.qtyByProduct,
+              [productName]:
+                (existing.qtyByProduct[productName] || 0) + sale.qty,
+            },
+          };
 
-          // Add qty per product
-          existing.qtyByProduct[productName] =
-            (existing.qtyByProduct[productName] || 0) + sale.qty;
+          mergedSalesMap.set(clientId, updated);
         }
       });
     });
 
-    product.sales = Array.from(mergedSalesMap.values());
+    product.sales = Array.from(mergedSalesMap.values()).sort(
+      (a, b) => b.totalQty - a.totalQty
+    );
     return product;
   }, [bhlAndBbs]);
-
-  console.log(bhlAndBbsMerged());
 
   return (
     <div className=" w-full flex flex-col gap-3">
@@ -141,19 +151,19 @@ export default function ProductStats() {
             </TableHeader>
             <TableBody>
               {isLoading && <LoadingCells cols={5} rows={5} />}
-              {!isLoading && bhlAndBbsMerged() && (
+              {!isLoading && bhlAndBbsMerged && (
                 <TableRow
-                  key={bhlAndBbsMerged()?.name}
+                  key={bhlAndBbsMerged?.name}
                   className="cursor-pointer"
                   onClick={() =>
                     onOpen("productSalesWithClient", {
-                      productSalesWithClients: bhlAndBbsMerged(),
+                      productSalesWithClients: bhlAndBbsMerged,
                     })
                   }
                 >
                   <TableCell>1</TableCell>
                   <TableCell className="text-xs lg:text-sm uppercase">
-                    {bhlAndBbsMerged()?.name?.toUpperCase()}
+                    {bhlAndBbsMerged?.name?.toUpperCase()}
                   </TableCell>
                   <TableCell className="text-xs lg:text-sm">
                     <div className="flex items-center text-xs lg:text-sm">
@@ -161,12 +171,12 @@ export default function ProductStats() {
                     </div>
                   </TableCell>
                   <TableCell className="text-xs lg:text-sm">
-                    {bhlAndBbsMerged()?.sale}
+                    {bhlAndBbsMerged?.sale}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center text-xs lg:text-sm">
                       <IndianRupee className="w-3 h-3" />
-                      {bhlAndBbsMerged()?.amount}
+                      {bhlAndBbsMerged?.amount}
                     </div>
                   </TableCell>
                 </TableRow>
