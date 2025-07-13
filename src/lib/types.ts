@@ -79,6 +79,8 @@ export interface ProductStatsInEachDistrict {
 export interface MarketStatsInProductPerformance {
     market: string;
     sales: number;
+    bbs?: number
+    bhl?: number
 }
 export interface DistrictSalesStats {
     district: string;

@@ -102,16 +102,14 @@ export const ProductSalesWithClients = () => {
                 <TableBody>
                   {productSalesWithClients?.sales?.map((sale, idx) => (
                     <TableRow key={sale?.client?._id}>
-                      <TableCell className="capitalize text-start">
-                        {idx + 1}
-                      </TableCell>
-                      <TableCell className="capitalize text-start">
+                      <TableCell className="text-start">{idx + 1}</TableCell>
+                      <TableCell className="text-start">
                         {capitalizeWords(sale?.client?.name)}
                       </TableCell>
-                      <TableCell className="capitalize text-start">
+                      <TableCell className="text-start">
                         {capitalizeWords(sale?.client?.market)}
                       </TableCell>
-                      <TableCell className="capitalize text-start">
+                      <TableCell className="text-start">
                         {capitalizeWords(sale?.client?.district)}
                       </TableCell>
                       {sale?.qty && (
@@ -134,7 +132,7 @@ export const ProductSalesWithClients = () => {
                         </>
                       )}
                       {sale?.amount && (
-                        <TableCell className="capitalize text-start">
+                        <TableCell className="text-start">
                           <div className="flex items-center text-xs lg:text-sm">
                             <IndianRupee className="w-3 h-3" />
                             {sale?.amount}

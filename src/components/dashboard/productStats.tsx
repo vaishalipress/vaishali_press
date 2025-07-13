@@ -21,7 +21,7 @@ export default function ProductStats() {
   const { date, setDate, toggleType, type } = useFilterDate();
   const { data, isLoading } = useProductStats(date);
   const { onOpen } = useModal();
-  const bhlAndBbs = useCallback(
+  const bhlAndBbs = useMemo(
     () =>
       data?.filter(
         (p) => p.name.toLowerCase() === "bhl" || p.name.toLowerCase() === "bbs"
@@ -29,10 +29,9 @@ export default function ProductStats() {
     [data]
   );
 
-  const bhlAndBbsData = useMemo(() => bhlAndBbs(), [bhlAndBbs]);
-
   const bhlAndBbsMerged = useMemo(() => {
-    const data = bhlAndBbsData;
+    if (!bhlAndBbs || bhlAndBbs?.length !== 2) return;
+    const data = bhlAndBbs;
     const product: {
       _id: string;
       name: string;
@@ -105,15 +104,22 @@ export default function ProductStats() {
     <div className=" w-full flex flex-col gap-3">
       {!isLoading && data?.[0]?.sale !== 0 && (
         <Donut
-          data={[
-            {
-              name: "BHL & BBS",
-              value: bhlAndBbs()?.[0].sale! + bhlAndBbs()?.[1].sale!,
-            },
-            { name: data?.[0]?.name!, value: data?.[0]?.sale! },
-            { name: data?.[1]?.name!, value: data?.[1]?.sale! },
-            // { name: data?.[2]?.name!, value: data?.[2]?.sale! },
-          ]}
+          data={
+            bhlAndBbs?.length === 2
+              ? [
+                  {
+                    name: "BHL & BBS",
+                    value: bhlAndBbs?.[0].sale! + bhlAndBbs?.[1].sale!,
+                  },
+                  { name: data?.[0]?.name!, value: data?.[0]?.sale! },
+                  { name: data?.[1]?.name!, value: data?.[1]?.sale! },
+                ]
+              : [
+                  { name: data?.[0]?.name!, value: data?.[0]?.sale! },
+                  { name: data?.[1]?.name!, value: data?.[1]?.sale! },
+                  { name: data?.[2]?.name!, value: data?.[2]?.sale! },
+                ]
+          }
           title="Top Product"
         />
       )}
@@ -151,7 +157,7 @@ export default function ProductStats() {
             </TableHeader>
             <TableBody>
               {isLoading && <LoadingCells cols={5} rows={5} />}
-              {!isLoading && bhlAndBbsMerged && (
+              {!isLoading && bhlAndBbs?.length === 2 && bhlAndBbsMerged && (
                 <TableRow
                   key={bhlAndBbsMerged?.name}
                   className="cursor-pointer"
@@ -191,7 +197,9 @@ export default function ProductStats() {
                     })
                   }
                 >
-                  <TableCell>{idx + 2}</TableCell>
+                  <TableCell>
+                    {(bhlAndBbs?.length === 2 ? 2 : 1) + idx}
+                  </TableCell>
                   <TableCell className="text-xs lg:text-sm uppercase">
                     {product?.name?.toUpperCase()}
                   </TableCell>
