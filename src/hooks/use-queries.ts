@@ -1,6 +1,6 @@
 import { QueryKey, useQueryClient } from "@tanstack/react-query";
 
-type queryType = { _id: string; [key: string]: string };
+type queryType = { _id: string;[key: string]: string };
 interface saleType {
     total: number;
     sales: queryType[];
@@ -13,8 +13,8 @@ export const useCustumQuery = () => {
             const allData = old?.map((client) =>
                 client?._id === data?._id
                     ? {
-                          ...data,
-                      }
+                        ...data,
+                    }
                     : client
             );
             return allData;
@@ -40,8 +40,8 @@ export const useCustumQuery = () => {
             const allData = old?.sales?.map((client) =>
                 client?._id === data?._id
                     ? {
-                          ...data,
-                      }
+                        ...data,
+                    }
                     : client
             );
             return { total: old.total, sales: allData };
@@ -51,6 +51,12 @@ export const useCustumQuery = () => {
     const removeSale = (key: QueryKey, id: string) => {
         queryClient.setQueryData(key, (old: saleType) => {
             const allData = old?.sales?.filter((data) => data?._id !== id);
+            return { total: old.total, sales: allData };
+        });
+    };
+    const removeSales = (key: QueryKey, ids: string[]) => {
+        queryClient.setQueryData(key, (old: saleType) => {
+            const allData = old?.sales?.filter((data) => !ids.includes(data?._id));
             return { total: old.total, sales: allData };
         });
     };
@@ -76,6 +82,7 @@ export const useCustumQuery = () => {
         updateSale,
         addSale,
         removeSale,
+        removeSales,
         removeImage,
     };
 };

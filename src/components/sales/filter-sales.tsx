@@ -179,7 +179,7 @@ export const FilterSale = ({
                         )}
                         <SelectItem value={"all"}>ALL CLIENT</SelectItem>
                         {clients?.map((c) => (
-                            <SelectItem key={c.name} value={c._id}>
+                            <SelectItem key={c._id} value={c._id}>
                                 {c.name.toUpperCase()}
                                 {c?.market && ` - ${c?.market?.toUpperCase()}`}
                                 {c?.district &&
