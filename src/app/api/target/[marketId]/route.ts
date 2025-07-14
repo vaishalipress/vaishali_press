@@ -21,7 +21,10 @@ export const GET = async (
 
         // 🧾 Validate marketId
         if (!Types.ObjectId.isValid(marketId)) {
-            return Response.json({ message: "Invalid market ID" }, { status: 400 });
+            return Response.json(
+                { message: "Invalid market ID" },
+                { status: 400 }
+            );
         }
 
         // 🌐 Extract filters from query params
@@ -34,10 +37,13 @@ export const GET = async (
 
         if (monthParam) {
             const month = parseInt(monthParam);
-            if (month >= 1 && month <= 12) {
+            if (month >= 0 && month <= 11) {
                 filter.month = month;
             } else {
-                return Response.json({ message: "Invalid month" }, { status: 400 });
+                return Response.json(
+                    { message: "Invalid month" },
+                    { status: 400 }
+                );
             }
         }
 
@@ -46,7 +52,10 @@ export const GET = async (
             if (year >= 2000 && year <= 2100) {
                 filter.year = year;
             } else {
-                return Response.json({ message: "Invalid year" }, { status: 400 });
+                return Response.json(
+                    { message: "Invalid year" },
+                    { status: 400 }
+                );
             }
         }
 
