@@ -68,6 +68,21 @@ export const userSchema = z.object({
         .min(8, { message: "password must be atleast 8 characters" }),
 });
 
+export const targetSchema = z.object({
+    market: z
+        .string({ required_error: "market is required." })
+        .min(3, { message: "Enter valid market" }),
+    month: z
+        .number({ required_error: "Select a valid month" })
+        .min(0, { message: "Select a valid month" }),
+    year: z
+        .number({ required_error: "Select a valid year" })
+        .min(0, { message: "Select a valid year" }),
+    targetValue: z
+        .number({ required_error: "Enter valid target value." })
+        .min(0, { message: "Enter valid target value." }),
+});
+
 export const changePasswordSchema = z
     .object({
         password: z
