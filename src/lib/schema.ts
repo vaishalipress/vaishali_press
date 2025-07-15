@@ -80,7 +80,7 @@ export const targetSchema = z.object({
         .min(2000, { message: "Select a valid year" }),
     targetValue: z
         .number({ required_error: "Enter valid target value." })
-        .min(0, { message: "Enter valid target value." }),
+        .min(1, { message: "Enter valid target value." }),
 });
 
 export const changePasswordSchema = z

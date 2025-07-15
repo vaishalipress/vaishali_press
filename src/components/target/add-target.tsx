@@ -213,9 +213,15 @@ export default function AddTarget() {
                                         </FormLabel>
                                         <FormControl>
                                             <Input
+                                                {...field}
+                                                value={field.value}
+                                                onChange={(e) =>
+                                                    field.onChange(
+                                                        Number(e.target.value)
+                                                    )
+                                                }
                                                 type="number"
                                                 min={2000}
-                                                {...field}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -247,16 +253,16 @@ export default function AddTarget() {
                                                         <SelectLabel>
                                                             Months
                                                         </SelectLabel>
-                                                        {MONTHS.map((month) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    month.value
-                                                                }
-                                                                value={month.value.toString()}
-                                                            >
-                                                                {month.label.toUpperCase()}
-                                                            </SelectItem>
-                                                        ))}
+                                                        {MONTHS.map(
+                                                            (month, idx) => (
+                                                                <SelectItem
+                                                                    key={idx}
+                                                                    value={idx.toString()}
+                                                                >
+                                                                    {month.toUpperCase()}
+                                                                </SelectItem>
+                                                            )
+                                                        )}
                                                     </SelectGroup>
                                                 </SelectContent>
                                             </Select>

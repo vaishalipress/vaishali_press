@@ -1,6 +1,7 @@
 import { ClientI } from "@/models/client";
 import { ProductI } from "@/models/product";
 import { SaleI } from "@/models/sale";
+import { TargetI } from "@/models/target";
 
 export type ClientTypeExtented = ClientI & {
     createdAt: string;
@@ -79,8 +80,8 @@ export interface ProductStatsInEachDistrict {
 export interface MarketStatsInProductPerformance {
     market: string;
     sales: number;
-    bbs?: number
-    bhl?: number
+    bbs?: number;
+    bhl?: number;
 }
 export interface DistrictSalesStats {
     district: string;
@@ -142,4 +143,16 @@ export interface ClientPerformance {
     totalAmount: number;
     client: ClientI & { _id: string };
     sales: ClientSale[];
+}
+
+/**
+ * TARGET
+ */
+
+export interface targetType {
+    month: number;
+    year: number;
+    targetValue: number;
+    market: string;
+    _id: string;
 }
