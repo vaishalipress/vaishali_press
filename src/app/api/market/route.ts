@@ -97,13 +97,14 @@ export const GET = async (request: Request) => {
                 }
             );
         }
+
         const { searchParams } = new URL(request.url);
         const district = searchParams.get("district");
 
         if (!district) {
             return Response.json(
                 {
-                    message: "district and block are required.",
+                    message: "district query param is required.",
                     success: false,
                 },
                 {
@@ -112,12 +113,15 @@ export const GET = async (request: Request) => {
             );
         }
 
-        const markets = await Market.find({ district });
+        const markets =
+            district === "all"
+                ? await Market.find({})
+                : await Market.find({ district });
 
         if (!markets) {
             return Response.json(
                 {
-                    message: "something went wrong or markets doesn't exist",
+                    message: "Something went wrong or markets don't exist",
                     success: false,
                 },
                 {
@@ -129,7 +133,7 @@ export const GET = async (request: Request) => {
         return Response.json(
             {
                 markets,
-                message: "markest fetched",
+                message: "Markets fetched successfully",
                 success: true,
             },
             {

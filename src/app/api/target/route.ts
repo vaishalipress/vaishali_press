@@ -132,7 +132,6 @@ export const GET = async (req: Request) => {
 
         const results = await Target.aggregate([
             { $match: matchStage },
-
             {
                 $lookup: {
                     from: "markets",
@@ -190,8 +189,11 @@ export const GET = async (req: Request) => {
             },
             { $sort: { year: -1 } },
         ]);
-
-        return Response.json(results, { status: 200 });
+        const allYears = await Target.distinct("year");
+        return Response.json(
+            { results, years: allYears.sort((a, b) => b - a) },
+            { status: 200 }
+        );
     } catch (error) {
         console.error("Error fetching targets:", error);
         return Response.json(
