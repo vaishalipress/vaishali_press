@@ -105,6 +105,8 @@ export const GET = async (req: Request) => {
         const market = searchParams.get("market");
         const monthParam = searchParams.get("month");
         const yearParam = searchParams.get("year");
+        const page = parseInt(searchParams.get("page") || "1");
+        const limit = parseInt(searchParams.get("limit") || "50");
 
         if (market && Types.ObjectId.isValid(market)) {
             matchStage.market = new Types.ObjectId(market);
@@ -130,68 +132,149 @@ export const GET = async (req: Request) => {
                 );
         }
 
+        // const results = await Target.aggregate([
+        //     { $match: matchStage },
+        //     {
+        //         $lookup: {
+        //             from: "markets",
+        //             localField: "market",
+        //             foreignField: "_id",
+        //             as: "marketDetails",
+        //         },
+        //     },
+        //     { $unwind: "$marketDetails" },
+        //     {
+        //         $group: {
+        //             _id: {
+        //                 year: "$year",
+        //                 month: "$month",
+        //             },
+        //             districts: {
+        //                 $push: {
+        //                     _id: "$_id",
+        //                     market: "$marketDetails.name",
+        //                     targetValue: "$targetValue",
+        //                 },
+        //             },
+        //         },
+        //     },
+        //     {
+        //         $group: {
+        //             _id: "$_id.year",
+        //             months: {
+        //                 $push: {
+        //                     month: "$_id.month",
+        //                     districts: "$districts",
+        //                 },
+        //             },
+        //         },
+        //     },
+        //     // ✅ Sort months array by month number ascending
+        //     {
+        //         $set: {
+        //             months: {
+        //                 $sortArray: {
+        //                     input: "$months",
+        //                     sortBy: { month: 1 },
+        //                 },
+        //             },
+        //         },
+        //     },
+        //     {
+        //         $project: {
+        //             _id: 0,
+        //             year: "$_id",
+        //             months: 1,
+        //         },
+        //     },
+        //     { $sort: { year: -1 } },
+        // ]);
+
         const results = await Target.aggregate([
-            { $match: matchStage },
             {
-                $lookup: {
-                    from: "markets",
-                    localField: "market",
-                    foreignField: "_id",
-                    as: "marketDetails",
-                },
-            },
-            { $unwind: "$marketDetails" },
-            {
-                $group: {
-                    _id: {
-                        year: "$year",
-                        month: "$month",
-                    },
-                    districts: {
-                        $push: {
-                            _id: "$_id",
-                            market: "$marketDetails.name",
-                            targetValue: "$targetValue",
+                $facet: {
+                    paginatedResults: [
+                        { $match: matchStage },
+                        {
+                            $lookup: {
+                                from: "markets",
+                                localField: "market",
+                                foreignField: "_id",
+                                as: "marketDetails",
+                            },
                         },
-                    },
-                },
-            },
-            {
-                $group: {
-                    _id: "$_id.year",
-                    months: {
-                        $push: {
-                            month: "$_id.month",
-                            districts: "$districts",
+                        { $unwind: "$marketDetails" },
+                        {
+                            $group: {
+                                _id: {
+                                    year: "$year",
+                                    month: "$month",
+                                },
+                                districts: {
+                                    $push: {
+                                        _id: "$_id",
+                                        market: "$marketDetails.name",
+                                        targetValue: "$targetValue",
+                                    },
+                                },
+                            },
                         },
-                    },
-                },
-            },
-
-            // ✅ Sort months array by month number ascending
-            {
-                $set: {
-                    months: {
-                        $sortArray: {
-                            input: "$months",
-                            sortBy: { month: 1 },
+                        {
+                            $group: {
+                                _id: "$_id.year",
+                                months: {
+                                    $push: {
+                                        month: "$_id.month",
+                                        districts: "$districts",
+                                    },
+                                },
+                            },
                         },
-                    },
+                        // ✅ Sort months array by month number ascending
+                        {
+                            $set: {
+                                months: {
+                                    $sortArray: {
+                                        input: "$months",
+                                        sortBy: { month: 1 },
+                                    },
+                                },
+                            },
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                year: "$_id",
+                                months: 1,
+                            },
+                        },
+                        { $sort: { year: -1 } },
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit },
+                    ],
+                    totalCount: [
+                        { $match: matchStage },
+                        {
+                            $group: {
+                                _id: "$year",
+                            },
+                        },
+                        { $count: "count" },
+                    ],
                 },
             },
-
-            {
-                $project: {
-                    _id: 0,
-                    year: "$_id",
-                    months: 1,
-                },
-            },
-            { $sort: { year: -1 } },
         ]);
         const allYears = await Target.distinct("year");
+        const paginated = results[0]?.paginatedResults || [];
+        const total = results[0]?.totalCount[0]?.count || 0;
         return Response.json(
-            { results, years: allYears.sort((a, b) => b - a) },
+            {
+                results: paginated,
+                total,
+                page,
+                limit,
+                years: allYears.sort((a, b) => b - a),
+            },
             { status: 200 }
         );
     } catch (error) {

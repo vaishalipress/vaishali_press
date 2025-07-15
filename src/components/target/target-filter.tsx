@@ -49,10 +49,10 @@ export const FilterTarget = ({
     };
 
     return (
-        <div className="flex flex-wrap gap-2 overflow-x-auto px-1 py-3">
+        <div className="flex flex-wrap sm:flex-nowrap w-full max-w-7xl gap-2 overflow-x-auto px-1">
             {/* Market */}
             <Select value={market} onValueChange={setMarket}>
-                <SelectTrigger className="w-60">
+                <SelectTrigger>
                     <SelectValue placeholder="Select Market" />
                 </SelectTrigger>
                 <SelectContent>
@@ -108,7 +108,7 @@ export const FilterTarget = ({
 
             {/* Month */}
             <Select value={month} onValueChange={setMonth}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger>
                     <SelectValue placeholder="Select Month" />
                 </SelectTrigger>
                 <SelectContent>
@@ -126,7 +126,7 @@ export const FilterTarget = ({
 
             {/* Year */}
             <Select value={year} onValueChange={setYear}>
-                <SelectTrigger className="w-32">
+                <SelectTrigger>
                     <SelectValue placeholder="Year" />
                 </SelectTrigger>
                 <SelectContent>
@@ -144,7 +144,7 @@ export const FilterTarget = ({
 
             {/* View */}
             <Select value={view.toString()} onValueChange={onChangeView}>
-                <SelectTrigger className="w-32">
+                <SelectTrigger>
                     <SelectValue placeholder="Limit" />
                 </SelectTrigger>
                 <SelectContent>

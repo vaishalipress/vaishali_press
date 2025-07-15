@@ -10,6 +10,8 @@ import {
     UserSearch,
     BoxSelect,
     Lock,
+    ArrowUpCircle,
+    TargetIcon,
 } from "lucide-react";
 
 export const navigation = [
@@ -29,6 +31,11 @@ export const DashboardLinks = [
         Icon: (
             <LayoutDashboard className="text-orange-800 dark:text-indigo-500" />
         ),
+    },
+    {
+        link: "/dashboard/target",
+        name: "target",
+        Icon: <TargetIcon className="text-orange-800 dark:text-indigo-500" />,
     },
     {
         link: "/dashboard/client-performance",

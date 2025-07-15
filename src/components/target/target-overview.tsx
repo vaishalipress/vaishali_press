@@ -9,20 +9,21 @@ import { MONTHS } from "@/lib/constants";
 import { FilterTarget } from "./target-filter";
 import { useState } from "react";
 
-interface TargetResponseType {
-    year: number;
-    months: {
-        month: number;
-        districts: {
-            _id: string;
-            market: string;
-            targetValue: number;
+interface TargetResponse {
+    results: {
+        year: number;
+        months: {
+            month: number;
+            districts: {
+                _id: string;
+                market: string;
+                targetValue: number;
+            }[];
         }[];
     }[];
-}
-
-interface TargetResponse {
-    results: TargetResponseType[];
+    total: number;
+    page: number;
+    limit: number;
     years: number[];
 }
 
@@ -31,18 +32,21 @@ export default function TargetOverview() {
     const [month, setMonth] = useState("all");
     const [year, setYear] = useState("all");
     const [page, setPage] = useState(1);
-    const [view, setView] = useState(50);
+    const [view, setView] = useState(10);
 
     const { onOpen } = useModal();
+
     const { data, isLoading, isError } = useQuery<TargetResponse>({
         queryKey: ["target-overview", { market, month, year, page, view }],
         queryFn: async () => {
             const params = new URLSearchParams();
+
             if (market !== "all") params.append("market", market);
             if (month !== "all") params.append("month", month);
             if (year !== "all") params.append("year", year);
-            params.append("page", page.toString());
-            params.append("limit", view.toString());
+
+            params.append("page", String(page));
+            params.append("limit", String(view));
 
             const res = await axios.get(`/api/target?${params.toString()}`);
             return res.data;
@@ -65,6 +69,8 @@ export default function TargetOverview() {
         );
     }
 
+    const totalPages = Math.ceil(data.total / view);
+
     return (
         <>
             <FilterTarget
@@ -81,25 +87,23 @@ export default function TargetOverview() {
                 years={data?.years}
             />
 
-            <div className="max-w-7xl w-full mx-auto px-4 py-6">
+            <div className="max-w-7xl w-full mx-auto px-2 py-2">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">
                     🎯 Target Overview
                 </h2>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {data?.results?.map((item) => (
+                    {data.results.map((item) => (
                         <div
                             key={item.year}
                             className="border border-gray-300 bg-white rounded-lg shadow-sm overflow-hidden"
                         >
-                            {/* Year Header */}
                             <div className="bg-blue-100 px-4 py-3 border-b border-blue-300">
                                 <h3 className="text-lg font-bold text-blue-800">
                                     📅 Year: {item.year}
                                 </h3>
                             </div>
 
-                            {/* Months */}
                             {item.months.map((monthBlock, index) => (
                                 <div
                                     key={index}
@@ -129,7 +133,7 @@ export default function TargetOverview() {
                                                             target: {
                                                                 ...target,
                                                                 month: monthBlock.month,
-                                                                year: item?.year,
+                                                                year: item.year,
                                                             },
                                                         })
                                                     }
@@ -143,6 +147,27 @@ export default function TargetOverview() {
                             ))}
                         </div>
                     ))}
+                </div>
+
+                {/* Pagination Controls */}
+                <div className="flex justify-center items-center gap-4 mt-8">
+                    <Button
+                        variant="outline"
+                        disabled={page === 1}
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    >
+                        ⬅ Prev
+                    </Button>
+                    <span className="text-sm font-medium">
+                        Page {page} of {totalPages}
+                    </span>
+                    <Button
+                        variant="outline"
+                        disabled={page === totalPages}
+                        onClick={() => setPage((p) => p + 1)}
+                    >
+                        Next ➡
+                    </Button>
                 </div>
             </div>
         </>
