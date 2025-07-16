@@ -89,6 +89,7 @@ export async function getTargetAchievementByYearMarketMonth(query: {
                     $group: {
                         _id: null,
                         totalSales: { $sum: { $multiply: ["$qty", "$rate"] } },
+                        totalQty: { $sum: "$qty" },
                     },
                 },
             ],
@@ -110,6 +111,7 @@ export async function getTargetAchievementByYearMarketMonth(query: {
             },
             targetValue: { $sum: "$targetValue" },
             actualSales: { $sum: { $ifNull: ["$salesData.totalSales", 0] } },
+            actualQty: { $sum: { $ifNull: ["$salesData.totalQty", 0] } },
         },
     });
 
@@ -143,11 +145,13 @@ export async function getTargetAchievementByYearMarketMonth(query: {
                     month: "$_id.month",
                     targetValue: "$targetValue",
                     actualSales: "$actualSales",
+                    actualQty: "$actualQty",
                     achievementPercentage: "$achievementPercentage",
                 },
             },
             yearlyTarget: { $sum: "$targetValue" },
             yearlySales: { $sum: "$actualSales" },
+            yearlyQty: { $sum: "$actualQty" },
         },
     });
 
@@ -180,11 +184,13 @@ export async function getTargetAchievementByYearMarketMonth(query: {
                     months: "$months",
                     yearlyTarget: "$yearlyTarget",
                     yearlySales: "$yearlySales",
+                    yearlyQty: "$yearlySales",
                     yearlyAchievement: "$yearlyAchievement",
                 },
             },
             overallYearlyTarget: { $sum: "$yearlyTarget" },
             overallYearlySales: { $sum: "$yearlySales" },
+            overallYearlyQty: { $sum: "$yearlyQty" },
         },
     });
 
@@ -218,6 +224,7 @@ export async function getTargetAchievementByYearMarketMonth(query: {
             markets: 1,
             overallYearlyTarget: 1,
             overallYearlySales: 1,
+            overallYearlyQty: 1,
             overallYearlyAchievement: 1,
         },
     });
@@ -326,6 +333,7 @@ export async function getTargetAchievementYearMonthMarket(query: {
                     $group: {
                         _id: null,
                         totalSales: { $sum: { $multiply: ["$qty", "$rate"] } },
+                        totalQty: { $sum: "$qty" },
                     },
                 },
             ],
@@ -348,6 +356,7 @@ export async function getTargetAchievementYearMonthMarket(query: {
             },
             targetValue: { $sum: "$targetValue" },
             actualSales: { $sum: { $ifNull: ["$salesData.totalSales", 0] } },
+            actualQty: { $sum: { $ifNull: ["$salesData.totalQty", 0] } },
             ...(groupBy === "market" && {
                 marketName: { $first: "$marketData.name" },
             }),
@@ -386,6 +395,7 @@ export async function getTargetAchievementYearMonthMarket(query: {
             month: { $first: "$_id.month" },
             monthlyTarget: { $sum: "$targetValue" },
             monthlySales: { $sum: "$actualSales" },
+            monthlyQty: { $sum: "$actualQty" },
             groups: {
                 $push: {
                     [groupBy === "market" ? "marketId" : "district"]:
@@ -393,6 +403,7 @@ export async function getTargetAchievementYearMonthMarket(query: {
                     ...(groupBy === "market" && { marketName: "$marketName" }),
                     targetValue: "$targetValue",
                     actualSales: "$actualSales",
+                    actualQty: "$actualQty",
                     achievementPercentage: "$achievementPercentage",
                 },
             },
@@ -427,12 +438,14 @@ export async function getTargetAchievementYearMonthMarket(query: {
                     month: "$month",
                     monthlyTarget: "$monthlyTarget",
                     monthlySales: "$monthlySales",
+                    monthlyQty: "$monthlyQty",
                     monthlyAchievement: "$monthlyAchievement",
                     groups: "$groups",
                 },
             },
             yearlyTarget: { $sum: "$monthlyTarget" },
             yearlySales: { $sum: "$monthlySales" },
+            yearlyQty: { $sum: "$monthlyQty" },
         },
     });
 
@@ -467,6 +480,7 @@ export async function getTargetAchievementYearMonthMarket(query: {
                         month: "$$monthData.month",
                         monthlyTarget: "$$monthData.monthlyTarget",
                         monthlySales: "$$monthData.monthlySales",
+                        monthlyQty: "$$monthData.monthlyQty",
                         monthlyAchievement: "$$monthData.monthlyAchievement",
                         groups: "$$monthData.groups",
                     },
@@ -474,6 +488,7 @@ export async function getTargetAchievementYearMonthMarket(query: {
             },
             yearlyTarget: 1,
             yearlySales: 1,
+            yearlyQty: 1,
             yearlyAchievement: 1,
         },
     });
@@ -584,6 +599,7 @@ export async function getTargetAchievementCombined(query: {
                     $group: {
                         _id: null,
                         totalSales: { $sum: { $multiply: ["$qty", "$rate"] } },
+                        totalQty: { $sum: "$qty" },
                     },
                 },
             ],
@@ -599,6 +615,7 @@ export async function getTargetAchievementCombined(query: {
     pipeline.push({
         $addFields: {
             actualSales: { $ifNull: ["$salesData.totalSales", 0] },
+            actualQty: { $ifNull: ["$salesData.totalQty", 0] },
             achievementPercentage: {
                 $cond: [
                     { $eq: ["$targetValue", 0] },
@@ -625,6 +642,7 @@ export async function getTargetAchievementCombined(query: {
             _id: groupBy === "market" ? "$market" : "$marketData.district",
             targetValue: { $sum: "$targetValue" },
             actualSales: { $sum: "$actualSales" },
+            actualQty: { $sum: "$actualQty" },
             achievementPercentage: { $avg: "$achievementPercentage" },
             count: { $sum: 1 },
             ...(groupBy === "market" && {
@@ -644,11 +662,19 @@ export async function getTargetAchievementCombined(query: {
             ...(groupBy === "market" && { marketName: 1 }),
             targetValue: 1,
             actualSales: 1,
+            actualQty: 1,
             achievementPercentage: 1,
             count: 1,
         },
     });
 
+    // Sort by year and month
+    pipeline.push({
+        $sort: {
+            actualQty: -1,
+            actualSales: -1,
+        },
+    });
     return Target.aggregate(pipeline);
 }
 

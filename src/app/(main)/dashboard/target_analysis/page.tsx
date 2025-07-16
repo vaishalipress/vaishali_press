@@ -35,6 +35,7 @@ type GroupBy = "market" | "district";
 interface MarketMonthData {
     month?: number;
     targetValue?: number;
+    actualQty?: number;
     actualSales?: number;
     achievementPercentage?: number | null;
 }
@@ -45,6 +46,7 @@ interface MarketData {
     district?: string;
     months?: MarketMonthData[];
     yearlyTarget?: number;
+    yearlyQty?: number;
     yearlySales?: number;
     yearlyAchievement?: number | null;
 }
@@ -53,6 +55,7 @@ interface YearData {
     year?: number;
     markets?: MarketData[];
     overallYearlyTarget?: number;
+    overallYearlyQty?: number;
     overallYearlySales?: number;
     overallYearlyAchievement?: number | null;
 }
@@ -62,6 +65,7 @@ interface CombinedData {
     marketName?: string;
     district?: string;
     targetValue?: number;
+    actualQty?: number;
     actualSales?: number;
     achievementPercentage?: number | null;
     count?: number;
@@ -70,11 +74,13 @@ interface CombinedData {
 interface YearMonthMarketData {
     year?: number;
     yearlyTarget?: number;
+    yearlyQty?: number;
     yearlySales?: number;
     yearlyAchievement?: number | null;
     months?: {
         month?: number;
         monthlyTarget?: number;
+        monthlyQty?: number;
         monthlySales?: number;
         monthlyAchievement?: number | null;
         groups?: {
@@ -82,6 +88,7 @@ interface YearMonthMarketData {
             marketName?: string;
             district?: string;
             targetValue?: number;
+            actualQty?: number;
             actualSales?: number;
             achievementPercentage?: number | null;
         }[];
@@ -135,6 +142,15 @@ export default function TargetAnalysisPage() {
         return `${value.toFixed(2)}%`;
     };
 
+    const formatCurrency = (value: number | null | undefined) => {
+        if (value === null || value === undefined) return "-";
+        return new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 0,
+        }).format(value);
+    };
+
     const renderYearMonthMarketView = (data: YearMonthMarketData[] = []) => {
         return (
             <div className="space-y-8">
@@ -142,7 +158,9 @@ export default function TargetAnalysisPage() {
                     <div key={yearData?.year} className="border rounded-lg p-4">
                         <h3 className="text-lg font-semibold mb-4">
                             Year: {yearData?.year} | Overall Achievement:{" "}
-                            {formatPercentage(yearData?.yearlyAchievement)}
+                            {formatPercentage(yearData?.yearlyAchievement)} |
+                            Total Qty: {yearData?.yearlyQty ?? "-"} | Total
+                            Sales: {formatCurrency(yearData?.yearlySales)}
                         </h3>
 
                         <div className="space-y-6">
@@ -158,6 +176,12 @@ export default function TargetAnalysisPage() {
                                         | Monthly Achievement:{" "}
                                         {formatPercentage(
                                             monthData?.monthlyAchievement
+                                        )}{" "}
+                                        | Monthly Qty:{" "}
+                                        {monthData?.monthlyQty ?? "-"} | Monthly
+                                        Sales:{" "}
+                                        {formatCurrency(
+                                            monthData?.monthlySales
                                         )}
                                     </h4>
 
@@ -170,6 +194,7 @@ export default function TargetAnalysisPage() {
                                                         : "District"}
                                                 </TableHead>
                                                 <TableHead>Target</TableHead>
+                                                <TableHead>Quantity</TableHead>
                                                 <TableHead>Sales</TableHead>
                                                 <TableHead>
                                                     Achievement
@@ -178,54 +203,57 @@ export default function TargetAnalysisPage() {
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {monthData?.groups?.map(
-                                                (group) => (
-                                                    <TableRow
-                                                        key={
-                                                            group?.marketId ??
-                                                            group?.district
-                                                        }
-                                                    >
-                                                        <TableCell>
-                                                            {groupBy === "market"
-                                                                ? group?.marketName
-                                                                : group?.district}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {group?.targetValue ??
-                                                                "-"}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {group?.actualSales ??
-                                                                "-"}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {formatPercentage(
-                                                                group?.achievementPercentage
-                                                            )}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <Badge
-                                                                variant={
-                                                                    (group?.actualSales ??
-                                                                        0) >=
-                                                                    (group?.targetValue ??
-                                                                        0)
-                                                                        ? "default"
-                                                                        : "destructive"
-                                                                }
-                                                            >
-                                                                {(group?.actualSales ??
+                                            {monthData?.groups?.map((group) => (
+                                                <TableRow
+                                                    key={
+                                                        group?.marketId ??
+                                                        group?.district
+                                                    }
+                                                >
+                                                    <TableCell>
+                                                        {groupBy === "market"
+                                                            ? group?.marketName
+                                                            : group?.district}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {group?.targetValue ??
+                                                            "-"}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {group?.actualQty ??
+                                                            "-"}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {formatCurrency(
+                                                            group?.actualSales
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {formatPercentage(
+                                                            group?.achievementPercentage
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge
+                                                            variant={
+                                                                (group?.actualQty ??
                                                                     0) >=
                                                                 (group?.targetValue ??
                                                                     0)
-                                                                    ? "✅ Achieved"
-                                                                    : "❌ Pending"}
-                                                            </Badge>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                )
-                                            )}
+                                                                    ? "default"
+                                                                    : "destructive"
+                                                            }
+                                                        >
+                                                            {(group?.actualQty ??
+                                                                0) >=
+                                                            (group?.targetValue ??
+                                                                0)
+                                                                ? "✅ Achieved"
+                                                                : "❌ Pending"}
+                                                        </Badge>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
                                         </TableBody>
                                     </Table>
                                 </div>
@@ -246,7 +274,10 @@ export default function TargetAnalysisPage() {
                             Year: {yearData?.year} | Overall Achievement:{" "}
                             {formatPercentage(
                                 yearData?.overallYearlyAchievement
-                            )}
+                            )}{" "}
+                            | Total Qty: {yearData?.overallYearlyQty ?? "-"} |
+                            Total Sales:{" "}
+                            {formatCurrency(yearData?.overallYearlySales)}
                         </h3>
 
                         {view === "table" ? (
@@ -285,10 +316,18 @@ export default function TargetAnalysisPage() {
                                                         {monthData ? (
                                                             <>
                                                                 <div>
-                                                                    {monthData?.actualSales ??
+                                                                    Qty:{" "}
+                                                                    {monthData?.actualQty ??
                                                                         "-"}
                                                                 </div>
+                                                                <div>
+                                                                    Sales:{" "}
+                                                                    {formatCurrency(
+                                                                        monthData?.actualSales
+                                                                    )}
+                                                                </div>
                                                                 <div className="text-xs text-muted-foreground">
+                                                                    Target:{" "}
                                                                     {monthData?.targetValue ??
                                                                         "-"}
                                                                 </div>
@@ -301,9 +340,17 @@ export default function TargetAnalysisPage() {
                                             })}
                                             <TableCell>
                                                 <div>
-                                                    {market?.yearlySales ?? "-"}
+                                                    Qty:{" "}
+                                                    {market?.yearlyQty ?? "-"}
+                                                </div>
+                                                <div>
+                                                    Sales:{" "}
+                                                    {formatCurrency(
+                                                        market?.yearlySales
+                                                    )}
                                                 </div>
                                                 <div className="text-xs text-muted-foreground">
+                                                    Target:{" "}
                                                     {market?.yearlyTarget ??
                                                         "-"}
                                                 </div>
@@ -327,25 +374,79 @@ export default function TargetAnalysisPage() {
                                 </TableBody>
                             </Table>
                         ) : (
-                            <Chart
-                                type={view}
-                                data={
-                                    yearData?.markets?.flatMap(
-                                        (market) =>
-                                            market?.months?.map((month) => ({
-                                                name: `${
-                                                    groupBy === "market"
-                                                        ? market?.marketName
-                                                        : market?.district
-                                                } - ${
-                                                    MONTHS[month?.month ?? 0]
-                                                }`,
-                                                target: month?.targetValue ?? 0,
-                                                sales: month?.actualSales ?? 0,
-                                            })) ?? []
-                                    ) ?? []
-                                }
-                            />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 className="text-center font-medium mb-2">
+                                        Quantity
+                                    </h4>
+                                    <Chart
+                                        type={view}
+                                        data={
+                                            yearData?.markets?.flatMap(
+                                                (market) =>
+                                                    market?.months?.map(
+                                                        (month) => ({
+                                                            name: `${
+                                                                groupBy ===
+                                                                "market"
+                                                                    ? market?.marketName
+                                                                    : market?.district
+                                                            } - ${
+                                                                MONTHS[
+                                                                    month?.month ??
+                                                                        0
+                                                                ]
+                                                            }`,
+                                                            target:
+                                                                month?.targetValue ??
+                                                                0,
+                                                            value:
+                                                                month?.actualQty ??
+                                                                0,
+                                                        })
+                                                    ) ?? []
+                                            ) ?? []
+                                        }
+                                        dataKey="value"
+                                    />
+                                </div>
+                                <div>
+                                    <h4 className="text-center font-medium mb-2">
+                                        Sales
+                                    </h4>
+                                    <Chart
+                                        type={view}
+                                        data={
+                                            yearData?.markets?.flatMap(
+                                                (market) =>
+                                                    market?.months?.map(
+                                                        (month) => ({
+                                                            name: `${
+                                                                groupBy ===
+                                                                "market"
+                                                                    ? market?.marketName
+                                                                    : market?.district
+                                                            } - ${
+                                                                MONTHS[
+                                                                    month?.month ??
+                                                                        0
+                                                                ]
+                                                            }`,
+                                                            target:
+                                                                month?.targetValue ??
+                                                                0,
+                                                            value:
+                                                                month?.actualSales ??
+                                                                0,
+                                                        })
+                                                    ) ?? []
+                                            ) ?? []
+                                        }
+                                        dataKey="value"
+                                        isCurrency={true}
+                                    />
+                                </div>
+                            </div>
                         )}
                     </div>
                 ))}
@@ -361,9 +462,12 @@ export default function TargetAnalysisPage() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>
-                                    {groupBy === "market" ? "Market" : "District"}
+                                    {groupBy === "market"
+                                        ? "Market"
+                                        : "District"}
                                 </TableHead>
                                 <TableHead>Target</TableHead>
+                                <TableHead>Quantity</TableHead>
                                 <TableHead>Sales</TableHead>
                                 <TableHead>Achievement</TableHead>
                                 <TableHead>Status</TableHead>
@@ -384,7 +488,10 @@ export default function TargetAnalysisPage() {
                                         {item?.targetValue ?? "-"}
                                     </TableCell>
                                     <TableCell>
-                                        {item?.actualSales ?? "-"}
+                                        {item?.actualQty ?? "-"}
+                                    </TableCell>
+                                    <TableCell>
+                                        {formatCurrency(item?.actualSales)}
                                     </TableCell>
                                     <TableCell>
                                         {formatPercentage(
@@ -394,39 +501,69 @@ export default function TargetAnalysisPage() {
                                     <TableCell>
                                         <Badge
                                             variant={
-                                                (item?.actualSales ?? 0) >=
+                                                (item?.actualQty ?? 0) >=
                                                 (item?.targetValue ?? 0)
                                                     ? "default"
                                                     : "destructive"
                                             }
                                         >
-                                            {(item?.actualSales ?? 0) >=
+                                            {(item?.actualQty ?? 0) >=
                                             (item?.targetValue ?? 0)
                                                 ? "✅ Achieved"
                                                 : "❌ Pending"}
                                         </Badge>
                                     </TableCell>
                                     {groupBy === "district" && (
-                                        <TableCell>{item?.count ?? "-"}</TableCell>
+                                        <TableCell>
+                                            {item?.count ?? "-"}
+                                        </TableCell>
                                     )}
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 ) : (
-                    <Chart
-                        type={view}
-                        data={
-                            data?.map((item) => ({
-                                name:
-                                    groupBy === "market"
-                                        ? item?.marketName ?? ""
-                                        : item?.district ?? "",
-                                target: item?.targetValue ?? 0,
-                                sales: item?.actualSales ?? 0,
-                            })) ?? []
-                        }
-                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h4 className="text-center font-medium mb-2">
+                                Quantity
+                            </h4>
+                            <Chart
+                                type={view}
+                                data={
+                                    data?.map((item) => ({
+                                        name:
+                                            groupBy === "market"
+                                                ? item?.marketName ?? ""
+                                                : item?.district ?? "",
+                                        target: item?.targetValue ?? 0,
+                                        value: item?.actualQty ?? 0,
+                                    })) ?? []
+                                }
+                                dataKey="value"
+                            />
+                        </div>
+                        <div>
+                            <h4 className="text-center font-medium mb-2">
+                                Sales
+                            </h4>
+                            <Chart
+                                type={view}
+                                data={
+                                    data?.map((item) => ({
+                                        name:
+                                            groupBy === "market"
+                                                ? item?.marketName ?? ""
+                                                : item?.district ?? "",
+                                        target: item?.targetValue ?? 0,
+                                        value: item?.actualSales ?? 0,
+                                    })) ?? []
+                                }
+                                dataKey="value"
+                                isCurrency={true}
+                            />
+                        </div>
+                    </div>
                 )}
             </div>
         );
@@ -483,10 +620,10 @@ export default function TargetAnalysisPage() {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="year-month-market">
-                            Year > Month > Market
+                            Year - Month - Market
                         </SelectItem>
                         <SelectItem value="year-market-month">
-                            Year > Market > Month
+                            Year - Market - Month
                         </SelectItem>
                         <SelectItem value="combined">Combined View</SelectItem>
                     </SelectContent>
