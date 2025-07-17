@@ -24,6 +24,7 @@ import dynamic from "next/dynamic";
 import { BarChart, IndianRupee, PieChart, TableIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MultiSelect } from "./component/multi-select";
+import { useProduct } from "@/hooks/use-fetch-data";
 
 const Chart = dynamic(() => import("@/components/charts/Chart"), {
     ssr: false,
@@ -149,6 +150,8 @@ export default function TargetAnalysisPage() {
     const [month, setMonth] = useState<string>("all");
     const [selectedMarket, setSelectedMarket] = useState<string[]>([]);
     const [selectedDistrict, setSelectedDistrict] = useState<string[]>([]);
+    const [selectedProduct, setSelectedProduct] = useState<string[]>([]);
+    const { data: productData } = useProduct();
 
     const { data, isLoading, error } = useQuery<ApiResponse>({
         queryKey: [
@@ -159,6 +162,7 @@ export default function TargetAnalysisPage() {
             endYear,
             month,
             groupBy === "market" ? selectedMarket : selectedDistrict,
+            selectedProduct,
         ],
         queryFn: async () => {
             const params = new URLSearchParams();
@@ -172,6 +176,8 @@ export default function TargetAnalysisPage() {
                 params.append("marketIds", selectedMarket.join(","));
             if (groupBy === "district" && selectedDistrict.length > 0)
                 params.append("districts", selectedDistrict.join(","));
+            if (selectedProduct.length > 0)
+                params.append("productIds", selectedProduct.join(","));
 
             const res = await axios.get(`/api/target/analysis?${params}`);
             return res.data;
@@ -738,7 +744,7 @@ export default function TargetAnalysisPage() {
                         <SelectValue placeholder="Start Year" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">All Years</SelectItem>
+                        <SelectItem value="all">From All</SelectItem>
                         {data?.years?.map((year) => (
                             <SelectItem value={year?.toString()} key={year}>
                                 {year}
@@ -752,7 +758,7 @@ export default function TargetAnalysisPage() {
                         <SelectValue placeholder="End Year" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">All Years</SelectItem>
+                        <SelectItem value="all">To All</SelectItem>
                         {data?.years?.map((year) => (
                             <SelectItem value={year?.toString()} key={year}>
                                 {year}
@@ -783,6 +789,7 @@ export default function TargetAnalysisPage() {
                         }))}
                         onChange={(v) => setSelectedDistrict(v)}
                         selected={selectedDistrict}
+                        placeholder="Select District"
                     />
                 )}
                 {groupBy === "market" && data?.markets && (
@@ -790,8 +797,21 @@ export default function TargetAnalysisPage() {
                         options={data?.markets}
                         onChange={(v) => setSelectedMarket(v)}
                         selected={selectedMarket}
+                        placeholder="Select Market"
                     />
                 )}
+
+                <MultiSelect
+                    options={
+                        productData?.map((p) => ({
+                            id: p?._id,
+                            name: p?.name,
+                        })) as { id: string; name: string }[]
+                    }
+                    onChange={(v) => setSelectedProduct(v)}
+                    selected={selectedProduct}
+                    placeholder="Select Product"
+                />
 
                 <div className="flex gap-2">
                     <button

@@ -43,7 +43,7 @@ export function MultiSelect({
             <PopoverTrigger asChild>
                 <Button
                     variant="outline"
-                    className="w-fit justify-between"
+                    className="w-[150px] justify-between"
                     role="combobox"
                     aria-expanded={open}
                 >
