@@ -13,6 +13,7 @@ import {
     ArrowUpCircle,
     TargetIcon,
     TramFrontIcon,
+    AnchorIcon,
 } from "lucide-react";
 
 export const navigation = [
@@ -42,7 +43,7 @@ export const DashboardLinks = [
         link: "/dashboard/target_analysis",
         name: "target_Analysis",
         Icon: (
-            <TramFrontIcon className="text-orange-800 dark:text-indigo-500" />
+            <AnchorIcon className="text-orange-800 dark:text-indigo-500" />
         ),
     },
     {

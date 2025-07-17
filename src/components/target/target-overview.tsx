@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Loader2, Pencil } from "lucide-react";
+import { IndianRupee, Loader2, Pencil } from "lucide-react";
 import { Button } from "../ui/button";
 import { useModal } from "@/hooks/use-modal-store";
 import { MONTHS } from "@/lib/constants";
@@ -17,7 +17,8 @@ interface TargetResponse {
             districts: {
                 _id: string;
                 market: string;
-                targetValue: number;
+                targetQty: number;
+                targetSale: number;
             }[];
         }[];
     }[];
@@ -122,8 +123,12 @@ export default function TargetOverview() {
                                                 <div className="flex-1 text-sm font-medium text-gray-800">
                                                     {target.market.toUpperCase()}
                                                 </div>
-                                                <div className="text-green-700 font-semibold text-sm">
-                                                    🎯 {target.targetValue}
+                                                <div className="text-green-700 font-semibold text-sm mr-4">
+                                                    🎯 {target.targetQty}
+                                                </div>
+                                                <div className="text-green-700 font-semibold text-sm flex items-center space-x-2">
+                                                    <IndianRupee className="w-4 h-4" />{" "}
+                                                    {target.targetSale}
                                                 </div>
                                                 <Button
                                                     size={"icon"}

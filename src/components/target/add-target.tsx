@@ -34,7 +34,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { handleAxiosError } from "@/lib/error";
 import { useMarket } from "@/hooks/use-fetch-data";
@@ -48,14 +48,15 @@ export default function AddTarget() {
             market: "",
             month: date.getMonth(),
             year: date.getFullYear(),
-            targetValue: 0,
+            targetQty: 0,
+            targetSale: 0,
         },
     });
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [selectedDistrict, setSelectedDistrict] = useState("");
     const { data: markets, isLoading: isMarketLoading } =
         useMarket(selectedDistrict);
-
+    const queryClient = useQueryClient();
     const { mutate, isPending } = useMutation({
         mutationFn: async (values: z.infer<typeof targetSchema>) => {
             const { data } = await axios.post(`/api/target`, values);
@@ -65,11 +66,13 @@ export default function AddTarget() {
 
         onSuccess(data) {
             toast("✅ " + (data?.message as string).toUpperCase());
+            queryClient.invalidateQueries({ queryKey: ["target-overview"] });
         },
         onSettled: () => {
             form.resetField("market");
             form.resetField("month");
-            form.resetField("targetValue");
+            form.resetField("targetQty");
+            form.resetField("targetSale");
             form.resetField("year");
         },
 
@@ -275,12 +278,12 @@ export default function AddTarget() {
                             {/* TARGET */}
                             <FormField
                                 control={form.control}
-                                name="targetValue"
+                                name="targetQty"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="flex gap-2 items-center">
                                             <TargetIcon className="text-lime-600 w-5 h-5" />{" "}
-                                            <span>TARGET</span>
+                                            <span>TARGET SOLD</span>
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -293,6 +296,32 @@ export default function AddTarget() {
                                                 }}
                                                 min={0}
                                                 placeholder="Target"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="targetSale"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="flex gap-2 items-center">
+                                            <TargetIcon className="text-lime-600 w-5 h-5" />{" "}
+                                            <span>TARGET SALE</span>
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                {...field}
+                                                type="number"
+                                                onChange={(e) => {
+                                                    field.onChange(
+                                                        Number(e.target.value)
+                                                    );
+                                                }}
+                                                min={0}
+                                                placeholder="Target SALE"
                                             />
                                         </FormControl>
                                         <FormMessage />

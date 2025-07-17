@@ -10,7 +10,6 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
 import { MONTHS } from "@/lib/constants";
 import { useMarket } from "@/hooks/use-fetch-data";
 
@@ -79,14 +78,14 @@ export const FilterTarget = ({
                                     marketData?.forEach((mkt) => {
                                         const district =
                                             mkt.district || "Unknown";
-                                        if (!grouped[district]) {
+                                        if (!grouped?.[district]) {
                                             grouped[district] = [];
                                         }
-                                        grouped[district].push(mkt);
+                                        grouped?.[district]?.push(mkt);
                                     });
                                     return grouped;
                                 })()
-                            ).map(([district, markets]) => (
+                            )?.map(([district, markets]) => (
                                 <SelectGroup key={district}>
                                     <SelectLabel className="uppercase">
                                         {district}

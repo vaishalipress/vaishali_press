@@ -32,13 +32,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
-import { targetSchema } from "@/lib/schema";
 import { handleAxiosError } from "@/lib/error";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 export const targetUpdateSchema = z.object({
-    targetValue: z.number().min(0),
+    targetQty: z
+        .number({ required_error: "Enter valid target value." })
+        .min(1, { message: "Enter valid target value." }),
+    targetSale: z
+        .number({ required_error: "Enter valid target value." })
+        .min(1, { message: "Enter valid target value." }),
 });
 
 const EditTargetModal = () => {
@@ -49,7 +52,8 @@ const EditTargetModal = () => {
     const form = useForm<z.infer<typeof targetUpdateSchema>>({
         resolver: zodResolver(targetUpdateSchema),
         defaultValues: {
-            targetValue: 0,
+            targetQty: 0,
+            targetSale: 0,
         },
     });
 
@@ -74,7 +78,10 @@ const EditTargetModal = () => {
     // Prefill form
     useEffect(() => {
         if (target) {
-            form.setValue("targetValue", target.targetValue, {
+            form.setValue("targetQty", target.targetQty, {
+                shouldDirty: false,
+            });
+            form.setValue("targetSale", target.targetSale, {
                 shouldDirty: false,
             });
         }
@@ -112,12 +119,12 @@ const EditTargetModal = () => {
                         {/* Target Value */}
                         <FormField
                             control={form.control}
-                            name="targetValue"
+                            name="targetQty"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className="flex items-center gap-1">
                                         <TargetIcon className="w-4 h-4 text-lime-600" />{" "}
-                                        Target
+                                        Target Sold
                                     </FormLabel>
                                     <FormControl>
                                         <Input
@@ -136,11 +143,38 @@ const EditTargetModal = () => {
                                 </FormItem>
                             )}
                         />
-                        <div className="space-x-2">
+                        <FormField
+                            control={form.control}
+                            name="targetSale"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="flex items-center gap-1">
+                                        <TargetIcon className="w-4 h-4 text-lime-600" />{" "}
+                                        Target Sale
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            type="number"
+                                            onChange={(e) => {
+                                                field.onChange(
+                                                    Number(e.target.value)
+                                                );
+                                            }}
+                                            min={0}
+                                            placeholder="Target Sale"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <div className="flex justify-between space-x-2">
                             <Button
                                 type="submit"
                                 disabled={isPending || !form.formState.isDirty}
                                 variant={"secondary"}
+                                className="w-full"
                             >
                                 {isPending ? (
                                     <Loader2 className="animate-spin w-4 h-4" />
@@ -156,6 +190,7 @@ const EditTargetModal = () => {
                                 type="button"
                                 variant={"destructive"}
                                 onClick={deleteHandler}
+                                className="ml-auto"
                             >
                                 <Trash className="w-4 h-4 mr-1" />
                                 Delete

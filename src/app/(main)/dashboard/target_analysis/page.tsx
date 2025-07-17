@@ -21,8 +21,9 @@ import {
 } from "@/components/ui/select";
 import { MONTHS } from "@/lib/constants";
 import dynamic from "next/dynamic";
-import { BarChart, PieChart, TableIcon } from "lucide-react";
+import { BarChart, IndianRupee, PieChart, TableIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MultiSelect } from "./component/multi-select";
 
 const Chart = dynamic(() => import("@/components/charts/Chart"), {
     ssr: false,
@@ -34,10 +35,12 @@ type GroupBy = "market" | "district";
 
 interface MarketMonthData {
     month?: number;
-    targetValue?: number;
+    targetQty?: number;
+    targetSale?: number;
     actualQty?: number;
     actualSales?: number;
-    achievementPercentage?: number | null;
+    salesAchievementPercentage?: number | null;
+    qtyAchievementPercentage?: number | null;
 }
 
 interface MarketData {
@@ -45,52 +48,84 @@ interface MarketData {
     marketName?: string;
     district?: string;
     months?: MarketMonthData[];
-    yearlyTarget?: number;
+    yearlyTargetQty?: number;
+    yearlyTargetSale?: number;
     yearlyQty?: number;
     yearlySales?: number;
-    yearlyAchievement?: number | null;
+    yearlySalesAchievement?: number | null;
+    yearlyQtyAchievement?: number | null;
 }
 
 interface YearData {
     year?: number;
     markets?: MarketData[];
-    overallYearlyTarget?: number;
+    overallYearlyTargetQty?: number;
+    overallYearlyTargetSale?: number;
     overallYearlyQty?: number;
     overallYearlySales?: number;
-    overallYearlyAchievement?: number | null;
+    overallYearlySalesAchievement?: number | null;
+    overallYearlyQtyAchievement?: number | null;
+    months?: {
+        month?: number;
+        monthlyTargetQty?: number;
+        monthlyTargetSale?: number;
+        monthlyQty?: number;
+        monthlySales?: number;
+        monthlySalesAchievement?: number | null;
+        monthlyQtyAchievement?: number | null;
+        groups?: {
+            marketId?: string;
+            marketName?: string;
+            district?: string;
+            targetQty?: number;
+            targetSale?: number;
+            actualQty?: number;
+            actualSales?: number;
+            salesAchievementPercentage?: number | null;
+            qtyAchievementPercentage?: number | null;
+        }[];
+    }[];
 }
 
 interface CombinedData {
     marketId?: string;
     marketName?: string;
     district?: string;
-    targetValue?: number;
+    targetQty?: number;
+    targetSale?: number;
     actualQty?: number;
     actualSales?: number;
-    achievementPercentage?: number | null;
+    salesAchievementPercentage?: number | null;
+    qtyAchievementPercentage?: number | null;
     count?: number;
 }
 
 interface YearMonthMarketData {
     year?: number;
-    yearlyTarget?: number;
+    yearlyTargetQty?: number;
+    yearlyTargetSale?: number;
     yearlyQty?: number;
     yearlySales?: number;
-    yearlyAchievement?: number | null;
+    yearlySalesAchievement?: number | null;
+    yearlyQtyAchievement?: number | null;
     months?: {
         month?: number;
-        monthlyTarget?: number;
+        monthlyTargetQty?: number;
+        monthlyTargetSale?: number;
         monthlyQty?: number;
         monthlySales?: number;
-        monthlyAchievement?: number | null;
+        monthlySalesAchievement?: number | null;
+        monthlyQtyAchievement?: number | null;
         groups?: {
             marketId?: string;
             marketName?: string;
             district?: string;
-            targetValue?: number;
+            targetQty?: number;
+            targetSale?: number;
             actualQty?: number;
             actualSales?: number;
-            achievementPercentage?: number | null;
+            salesAchievementPercentage?: number | null;
+            qtyAchievementPercentage?: number | null;
         }[];
     }[];
 }
@@ -100,6 +135,8 @@ interface ApiResponse {
     results?: YearData[] | CombinedData[] | YearMonthMarketData[];
     type?: string;
     years?: number[];
+    districts?: string[];
+    markets?: { id: string; name: string }[];
 }
 
 export default function TargetAnalysisPage() {
@@ -110,7 +147,8 @@ export default function TargetAnalysisPage() {
     const [startYear, setStartYear] = useState<string>("all");
     const [endYear, setEndYear] = useState<string>("all");
     const [month, setMonth] = useState<string>("all");
-    const [district, setDistrict] = useState<string>("all");
+    const [selectedMarket, setSelectedMarket] = useState<string[]>([]);
+    const [selectedDistrict, setSelectedDistrict] = useState<string[]>([]);
 
     const { data, isLoading, error } = useQuery<ApiResponse>({
         queryKey: [
@@ -120,7 +158,7 @@ export default function TargetAnalysisPage() {
             startYear,
             endYear,
             month,
-            district,
+            groupBy === "market" ? selectedMarket : selectedDistrict,
         ],
         queryFn: async () => {
             const params = new URLSearchParams();
@@ -130,7 +168,10 @@ export default function TargetAnalysisPage() {
             if (startYear !== "all") params.append("startYear", startYear);
             if (endYear !== "all") params.append("endYear", endYear);
             if (month !== "all") params.append("month", month);
-            if (district !== "all") params.append("district", district);
+            if (groupBy === "market" && selectedMarket.length > 0)
+                params.append("marketIds", selectedMarket.join(","));
+            if (groupBy === "district" && selectedDistrict.length > 0)
+                params.append("districts", selectedDistrict.join(","));
 
             const res = await axios.get(`/api/target/analysis?${params}`);
             return res.data;
@@ -157,9 +198,11 @@ export default function TargetAnalysisPage() {
                 {data?.map((yearData) => (
                     <div key={yearData?.year} className="border rounded-lg p-4">
                         <h3 className="text-lg font-semibold mb-4">
-                            Year: {yearData?.year} | Overall Achievement:{" "}
-                            {formatPercentage(yearData?.yearlyAchievement)} |
-                            Total Qty: {yearData?.yearlyQty ?? "-"} | Total
+                            Year: {yearData?.year} | Sold Achievement:{" "}
+                            {formatPercentage(yearData?.yearlyQtyAchievement)} |
+                            Sales Achievement:{" "}
+                            {formatPercentage(yearData?.yearlySalesAchievement)}{" "}
+                            | Total Qty: {yearData?.yearlyQty ?? "-"} | Total
                             Sales: {formatCurrency(yearData?.yearlySales)}
                         </h3>
 
@@ -173,9 +216,13 @@ export default function TargetAnalysisPage() {
                                         {monthData?.month !== undefined
                                             ? MONTHS[monthData.month]
                                             : "All"}{" "}
-                                        | Monthly Achievement:{" "}
+                                        | Monthly Sold Achievement:{" "}
                                         {formatPercentage(
-                                            monthData?.monthlyAchievement
+                                            monthData?.monthlyQtyAchievement
+                                        )}{" "}
+                                        | Monthly Sales Achievement:{" "}
+                                        {formatPercentage(
+                                            monthData?.monthlySalesAchievement
                                         )}{" "}
                                         | Monthly Qty:{" "}
                                         {monthData?.monthlyQty ?? "-"} | Monthly
@@ -193,11 +240,16 @@ export default function TargetAnalysisPage() {
                                                         ? "Market"
                                                         : "District"}
                                                 </TableHead>
-                                                <TableHead>Target</TableHead>
-                                                <TableHead>Quantity</TableHead>
-                                                <TableHead>Sales</TableHead>
                                                 <TableHead>
-                                                    Achievement
+                                                    Target Qty
+                                                </TableHead>
+                                                <TableHead>
+                                                    Target Sale
+                                                </TableHead>
+                                                <TableHead>Sold Qty</TableHead>
+                                                <TableHead>Sells</TableHead>
+                                                <TableHead>
+                                                    Achievement - Sold - Sales
                                                 </TableHead>
                                                 <TableHead>Status</TableHead>
                                             </TableRow>
@@ -216,7 +268,11 @@ export default function TargetAnalysisPage() {
                                                             : group?.district}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {group?.targetValue ??
+                                                        {group?.targetQty ??
+                                                            "-"}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {group?.targetSale ??
                                                             "-"}
                                                     </TableCell>
                                                     <TableCell>
@@ -230,7 +286,11 @@ export default function TargetAnalysisPage() {
                                                     </TableCell>
                                                     <TableCell>
                                                         {formatPercentage(
-                                                            group?.achievementPercentage
+                                                            group?.qtyAchievementPercentage
+                                                        )}{" "}
+                                                        -{" "}
+                                                        {formatPercentage(
+                                                            group?.salesAchievementPercentage
                                                         )}
                                                     </TableCell>
                                                     <TableCell>
@@ -238,7 +298,7 @@ export default function TargetAnalysisPage() {
                                                             variant={
                                                                 (group?.actualQty ??
                                                                     0) >=
-                                                                (group?.targetValue ??
+                                                                (group?.targetQty ??
                                                                     0)
                                                                     ? "default"
                                                                     : "destructive"
@@ -246,7 +306,7 @@ export default function TargetAnalysisPage() {
                                                         >
                                                             {(group?.actualQty ??
                                                                 0) >=
-                                                            (group?.targetValue ??
+                                                            (group?.targetQty ??
                                                                 0)
                                                                 ? "✅ Achieved"
                                                                 : "❌ Pending"}
@@ -271,9 +331,13 @@ export default function TargetAnalysisPage() {
                 {data?.map((yearData) => (
                     <div key={yearData?.year} className="border rounded-lg p-4">
                         <h3 className="text-lg font-semibold mb-4">
-                            Year: {yearData?.year} | Overall Achievement:{" "}
+                            Sold Achievement:{" "}
                             {formatPercentage(
-                                yearData?.overallYearlyAchievement
+                                yearData?.overallYearlyQtyAchievement
+                            )}{" "}
+                            | Sales Achievement:{" "}
+                            {formatPercentage(
+                                yearData?.overallYearlySalesAchievement
                             )}{" "}
                             | Total Qty: {yearData?.overallYearlyQty ?? "-"} |
                             Total Sales:{" "}
@@ -294,8 +358,12 @@ export default function TargetAnalysisPage() {
                                                 {month}
                                             </TableHead>
                                         ))}
-                                        <TableHead>Year Total</TableHead>
-                                        <TableHead>Achievement</TableHead>
+                                        <TableHead className="text-nowrap">
+                                            Year Total
+                                        </TableHead>
+                                        <TableHead className="text-nowrap min-w-28">
+                                            Achievement - Sold - Sales
+                                        </TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -314,58 +382,77 @@ export default function TargetAnalysisPage() {
                                                 return (
                                                     <TableCell key={idx}>
                                                         {monthData ? (
-                                                            <>
-                                                                <div>
+                                                            <div className="flex flex-col">
+                                                                <span className="text-xs text-nowrap">
                                                                     Qty:{" "}
                                                                     {monthData?.actualQty ??
                                                                         "-"}
-                                                                </div>
-                                                                <div>
+                                                                </span>
+                                                                <span className="text-xs text-nowrap">
                                                                     Sales:{" "}
                                                                     {formatCurrency(
                                                                         monthData?.actualSales
                                                                     )}
-                                                                </div>
-                                                                <div className="text-xs text-muted-foreground">
-                                                                    Target:{" "}
-                                                                    {monthData?.targetValue ??
+                                                                </span>
+                                                                <span className="text-xs text-muted-foreground text-nowrap">
+                                                                    Target Qty:{" "}
+                                                                    {monthData?.targetQty ??
                                                                         "-"}
-                                                                </div>
-                                                            </>
+                                                                </span>
+                                                                <span className="text-xs text-muted-foreground text-nowrap">
+                                                                    Target Sale:{" "}
+                                                                    <IndianRupee className="w-3 h-3 inline-block" />
+                                                                    {monthData?.targetSale ??
+                                                                        "-"}
+                                                                </span>
+                                                            </div>
                                                         ) : (
                                                             "-"
                                                         )}
                                                     </TableCell>
                                                 );
                                             })}
-                                            <TableCell>
-                                                <div>
+                                            <TableCell className="flex flex-col w-fit">
+                                                <span className="text-xs text-nowrap">
                                                     Qty:{" "}
                                                     {market?.yearlyQty ?? "-"}
-                                                </div>
-                                                <div>
+                                                </span>
+                                                <span className="text-xs text-nowrap">
                                                     Sales:{" "}
                                                     {formatCurrency(
                                                         market?.yearlySales
                                                     )}
-                                                </div>
-                                                <div className="text-xs text-muted-foreground">
+                                                </span>
+                                                <span className="text-xs text-muted-foreground">
                                                     Target:{" "}
-                                                    {market?.yearlyTarget ??
+                                                    {market?.yearlyTargetQty ??
                                                         "-"}
-                                                </div>
+                                                </span>
                                             </TableCell>
-                                            <TableCell>
+
+                                            <TableCell className="space-x-2 w-fi">
                                                 <Badge
                                                     variant={
-                                                        (market?.yearlyAchievement ??
+                                                        (market?.yearlyQtyAchievement ??
                                                             0) >= 100
                                                             ? "default"
                                                             : "destructive"
                                                     }
                                                 >
                                                     {formatPercentage(
-                                                        market?.yearlyAchievement
+                                                        market?.yearlyQtyAchievement
+                                                    )}
+                                                </Badge>
+                                                <Badge
+                                                    variant={
+                                                        (market?.yearlySalesAchievement ??
+                                                            0) >= 100
+                                                            ? "default"
+                                                            : "destructive"
+                                                    }
+                                                >
+                                                    {formatPercentage(
+                                                        market?.yearlySalesAchievement
                                                     )}
                                                 </Badge>
                                             </TableCell>
@@ -398,7 +485,7 @@ export default function TargetAnalysisPage() {
                                                                 ]
                                                             }`,
                                                             target:
-                                                                month?.targetValue ??
+                                                                month?.targetQty ??
                                                                 0,
                                                             value:
                                                                 month?.actualQty ??
@@ -407,7 +494,6 @@ export default function TargetAnalysisPage() {
                                                     ) ?? []
                                             ) ?? []
                                         }
-                                        dataKey="value"
                                     />
                                 </div>
                                 <div>
@@ -433,7 +519,7 @@ export default function TargetAnalysisPage() {
                                                                 ]
                                                             }`,
                                                             target:
-                                                                month?.targetValue ??
+                                                                month?.targetQty ??
                                                                 0,
                                                             value:
                                                                 month?.actualSales ??
@@ -442,8 +528,6 @@ export default function TargetAnalysisPage() {
                                                     ) ?? []
                                             ) ?? []
                                         }
-                                        dataKey="value"
-                                        isCurrency={true}
                                     />
                                 </div>
                             </div>
@@ -466,10 +550,13 @@ export default function TargetAnalysisPage() {
                                         ? "Market"
                                         : "District"}
                                 </TableHead>
-                                <TableHead>Target</TableHead>
-                                <TableHead>Quantity</TableHead>
+                                <TableHead>Target Qty</TableHead>
+                                <TableHead>Target Sale</TableHead>
+                                <TableHead>Sold Qty</TableHead>
                                 <TableHead>Sales</TableHead>
-                                <TableHead>Achievement</TableHead>
+                                <TableHead>
+                                    Achievement - Sold - Sales
+                                </TableHead>
                                 <TableHead>Status</TableHead>
                                 {groupBy === "district" && (
                                     <TableHead>Count</TableHead>
@@ -485,7 +572,10 @@ export default function TargetAnalysisPage() {
                                             : item?.district}
                                     </TableCell>
                                     <TableCell>
-                                        {item?.targetValue ?? "-"}
+                                        {item?.targetQty ?? "-"}
+                                    </TableCell>
+                                    <TableCell>
+                                        {item?.targetSale ?? "-"}
                                     </TableCell>
                                     <TableCell>
                                         {item?.actualQty ?? "-"}
@@ -495,20 +585,24 @@ export default function TargetAnalysisPage() {
                                     </TableCell>
                                     <TableCell>
                                         {formatPercentage(
-                                            item?.achievementPercentage
+                                            item?.qtyAchievementPercentage
+                                        )}{" "}
+                                        -{" "}
+                                        {formatPercentage(
+                                            item?.salesAchievementPercentage
                                         )}
                                     </TableCell>
                                     <TableCell>
                                         <Badge
                                             variant={
                                                 (item?.actualQty ?? 0) >=
-                                                (item?.targetValue ?? 0)
+                                                (item?.targetQty ?? 0)
                                                     ? "default"
                                                     : "destructive"
                                             }
                                         >
                                             {(item?.actualQty ?? 0) >=
-                                            (item?.targetValue ?? 0)
+                                            (item?.targetQty ?? 0)
                                                 ? "✅ Achieved"
                                                 : "❌ Pending"}
                                         </Badge>
@@ -536,11 +630,10 @@ export default function TargetAnalysisPage() {
                                             groupBy === "market"
                                                 ? item?.marketName ?? ""
                                                 : item?.district ?? "",
-                                        target: item?.targetValue ?? 0,
+                                        target: item?.targetQty ?? 0,
                                         value: item?.actualQty ?? 0,
                                     })) ?? []
                                 }
-                                dataKey="value"
                             />
                         </div>
                         <div>
@@ -555,12 +648,10 @@ export default function TargetAnalysisPage() {
                                             groupBy === "market"
                                                 ? item?.marketName ?? ""
                                                 : item?.district ?? "",
-                                        target: item?.targetValue ?? 0,
+                                        target: item?.targetQty ?? 0,
                                         value: item?.actualSales ?? 0,
                                     })) ?? []
                                 }
-                                dataKey="value"
-                                isCurrency={true}
                             />
                         </div>
                     </div>
@@ -603,7 +694,7 @@ export default function TargetAnalysisPage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-4">
+        <div className="max-w-full mx-auto p-4">
             <h2 className="text-2xl font-bold mb-6">
                 📈 Target Analysis Dashboard
             </h2>
@@ -683,6 +774,24 @@ export default function TargetAnalysisPage() {
                         ))}
                     </SelectContent>
                 </Select>
+
+                {groupBy === "district" && data?.districts && (
+                    <MultiSelect
+                        options={data?.districts.map((d) => ({
+                            id: d,
+                            name: d,
+                        }))}
+                        onChange={(v) => setSelectedDistrict(v)}
+                        selected={selectedDistrict}
+                    />
+                )}
+                {groupBy === "market" && data?.markets && (
+                    <MultiSelect
+                        options={data?.markets}
+                        onChange={(v) => setSelectedMarket(v)}
+                        selected={selectedMarket}
+                    />
+                )}
 
                 <div className="flex gap-2">
                     <button

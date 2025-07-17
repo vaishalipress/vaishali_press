@@ -5,7 +5,8 @@ export interface TargetI extends Document {
     market: mongoose.Types.ObjectId; // reference to Market
     month: number; // 1 = Jan, 12 = Dec
     year: number;
-    targetValue: number; // you can adjust fields as needed
+    targetQty: number; // you can adjust fields as needed
+    targetSale: number; // you can adjust fields as needed
 }
 
 const TargetSchema = new Schema<TargetI>(
@@ -25,7 +26,11 @@ const TargetSchema = new Schema<TargetI>(
             type: Number,
             required: true,
         },
-        targetValue: {
+        targetQty: {
+            type: Number,
+            required: true,
+        },
+        targetSale: {
             type: Number,
             required: true,
         },
@@ -35,7 +40,7 @@ const TargetSchema = new Schema<TargetI>(
 
 // 🔐 Ensure unique Target per (market + month + year)
 TargetSchema.index({ market: 1, month: 1, year: 1 }, { unique: true });
-TargetSchema.plugin(mongoose_aggregate_paginate_v2)
+TargetSchema.plugin(mongoose_aggregate_paginate_v2);
 
 const Target =
     mongoose.models.Target || mongoose.model<TargetI>("Target", TargetSchema);

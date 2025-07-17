@@ -78,7 +78,10 @@ export const targetSchema = z.object({
     year: z
         .number({ required_error: "Select a valid year" })
         .min(2000, { message: "Select a valid year" }),
-    targetValue: z
+    targetQty: z
+        .number({ required_error: "Enter valid target value." })
+        .min(1, { message: "Enter valid target value." }),
+    targetSale: z
         .number({ required_error: "Enter valid target value." })
         .min(1, { message: "Enter valid target value." }),
 });

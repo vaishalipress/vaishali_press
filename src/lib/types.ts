@@ -2,6 +2,7 @@ import { ClientI } from "@/models/client";
 import { ProductI } from "@/models/product";
 import { SaleI } from "@/models/sale";
 import { TargetI } from "@/models/target";
+import mongoose from "mongoose";
 
 export type ClientTypeExtented = ClientI & {
     createdAt: string;
@@ -152,7 +153,17 @@ export interface ClientPerformance {
 export interface targetType {
     month: number;
     year: number;
-    targetValue: number;
+    targetQty: number;
+    targetSale: number;
     market: string;
     _id: string;
+}
+
+export interface DistinctValues {
+    years: number[];
+    markets: {
+        id: mongoose.Types.ObjectId;
+        name: string;
+    }[];
+    districts: string[];
 }
