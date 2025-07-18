@@ -1,10 +1,10 @@
 import { isAuth } from "@/lib/isAuth";
-import {
-    getDistinctFilterValues,
-    getTargetAchievementByYearMarketMonth,
-    getTargetAchievementCombined,
-    getTargetAchievementYearMonthMarket,
-} from "@/lib/target-analysis";
+// import {
+//     getDistinctFilterValues,
+//     getTargetAchievementByYearMarketMonth,
+//     getTargetAchievementCombined,
+//     getTargetAchievementYearMonthMarket,
+// } from "@/lib/target-analysis";
 import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
@@ -116,76 +116,76 @@ export const GET = async (req: Request) => {
         }
 
         // Usage example:
-        const {
-            years,
-            markets,
-            districts: districtsData,
-        } = await getDistinctFilterValues();
+        // const {
+        //     years,
+        //     markets,
+        //     districts: districtsData,
+        // } = await getDistinctFilterValues();
 
-        if (type === "year-month-market") {
-            const results = await getTargetAchievementYearMonthMarket({
-                startYear,
-                endYear,
-                month,
-                marketIds,
-                productIds,
-                districts: districts || undefined,
-                groupBy,
-            });
+        // if (type === "year-month-market") {
+        //     const results = await getTargetAchievementYearMonthMarket({
+        //         startYear,
+        //         endYear,
+        //         month,
+        //         marketIds,
+        //         productIds,
+        //         districts: districts || undefined,
+        //         groupBy,
+        //     });
 
-            return Response.json(
-                {
-                    results,
-                    success: true,
-                    type: "year > month > market",
-                    years,
-                    markets,
-                    districts: districtsData,
-                },
-                { status: 200 }
-            );
-        }
+        //     return Response.json(
+        //         {
+        //             results,
+        //             success: true,
+        //             type: "year > month > market",
+        //             years,
+        //             markets,
+        //             districts: districtsData,
+        //         },
+        //         { status: 200 }
+        //     );
+        // }
 
-        if (type === "year-market-month") {
-            const results = await getTargetAchievementByYearMarketMonth({
-                year,
-                marketIds,
-                month,
-                productIds,
-                districts: districts || undefined,
-                groupBy,
-            });
+        // if (type === "year-market-month") {
+        //     const results = await getTargetAchievementByYearMarketMonth({
+        //         year,
+        //         marketIds,
+        //         month,
+        //         productIds,
+        //         districts: districts || undefined,
+        //         groupBy,
+        //     });
 
-            return Response.json(
-                {
-                    results,
-                    success: true,
-                    years,
-                    markets,
-                    districts: districtsData,
-                    type: "year > market > month",
-                },
-                { status: 200 }
-            );
-        }
+        //     return Response.json(
+        //         {
+        //             results,
+        //             success: true,
+        //             years,
+        //             markets,
+        //             districts: districtsData,
+        //             type: "year > market > month",
+        //         },
+        //         { status: 200 }
+        //     );
+        // }
 
-        const results = await getTargetAchievementCombined({
-            month,
-            year,
-            groupBy,
-            marketIds,
-            productIds,
-            districts: districts || undefined,
-        });
+        // const results = await getTargetAchievementCombined({
+        //     month,
+        //     year,
+        //     groupBy,
+        //     marketIds,
+        //     productIds,
+        //     districts: districts || undefined,
+        // });
 
         return Response.json(
             {
-                results,
+                // results,
                 success: true,
-                type: "Combined",
-                years,
-                markets,
-                districts: districtsData,
+                // type: "Combined",
+                // years,
+                // markets,
+                // districts: districtsData,
             },
             { status: 200 }
         );

@@ -1,7 +1,6 @@
 import { ClientI } from "@/models/client";
 import { ProductI } from "@/models/product";
 import { SaleI } from "@/models/sale";
-import { TargetI } from "@/models/target";
 import mongoose from "mongoose";
 
 export type ClientTypeExtented = ClientI & {
@@ -150,15 +149,6 @@ export interface ClientPerformance {
 /**
  * TARGET
  */
-
-export interface targetType {
-    month: number;
-    year: number;
-    targetQty: number;
-    targetSale: number;
-    market: string;
-    _id: string;
-}
 
 export interface DistinctValues {
     years: number[];
