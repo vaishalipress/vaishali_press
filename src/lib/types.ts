@@ -27,6 +27,7 @@ export interface MarketType {
     _id: string;
     name: string;
     district: string;
+    target: number;
 }
 
 export interface ProductStats {

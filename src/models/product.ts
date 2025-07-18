@@ -1,7 +1,8 @@
 import mongoose, { Schema } from "mongoose";
+import { Document } from "mongoose";
 import mongoose_aggregate_paginate_v2 from "mongoose-aggregate-paginate-v2";
 
-export interface ProductI {
+export interface ProductI extends Document {
     name: string;
     price: number;
 }
@@ -13,7 +14,7 @@ const ProductSchema = new Schema<ProductI>(
             required: true,
             unique: true,
             trim: true,
-            lowercase: true
+            lowercase: true,
         },
         price: {
             type: Number,

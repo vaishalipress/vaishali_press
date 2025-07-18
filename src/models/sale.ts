@@ -1,7 +1,7 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 import mongoose_aggregate_paginate_v2 from "mongoose-aggregate-paginate-v2";
 
-export interface SaleI {
+export interface SaleI extends Document {
     client: mongoose.Types.ObjectId;
     product: mongoose.Types.ObjectId;
     name: string;

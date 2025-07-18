@@ -1,7 +1,8 @@
 import mongoose, { Schema } from "mongoose";
+import { Document } from "mongoose";
 import mongoose_aggregate_paginate_v2 from "mongoose-aggregate-paginate-v2";
 
-export interface ClientI {
+export interface ClientI extends Document {
     name: string;
     district: string;
     market: string;
@@ -14,7 +15,7 @@ const clientSchema = new Schema<ClientI>(
             type: String,
             required: true,
             trim: true,
-            lowercase: true
+            lowercase: true,
         },
         district: {
             type: String,

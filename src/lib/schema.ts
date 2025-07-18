@@ -68,22 +68,23 @@ export const userSchema = z.object({
         .min(8, { message: "password must be atleast 8 characters" }),
 });
 
-export const targetSchema = z.object({
-    market: z
+export const marketTargetSchema = z.object({
+    _id: z
+        .string({ required_error: "_id is required." })
+        .min(3, { message: "Enter valid market" }),
+    name: z
         .string({ required_error: "market is required." })
         .min(3, { message: "Enter valid market" }),
-    month: z
-        .number({ required_error: "Select a valid month" })
-        .min(0, { message: "Select a valid month" }),
-    year: z
-        .number({ required_error: "Select a valid year" })
-        .min(2000, { message: "Select a valid year" }),
-    targetQty: z
+    target: z
         .number({ required_error: "Enter valid target value." })
-        .min(1, { message: "Enter valid target value." }),
-    targetSale: z
-        .number({ required_error: "Enter valid target value." })
-        .min(1, { message: "Enter valid target value." }),
+        .min(0, { message: "Enter valid target value." }),
+});
+
+export const districtTargetSchema = z.object({
+    markets: z.array(marketTargetSchema),
+});
+export const districtTargetSchemaPartial = z.object({
+    markets: z.array(marketTargetSchema.partial()),
 });
 
 export const changePasswordSchema = z

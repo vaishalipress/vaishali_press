@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
+import { Document } from "mongoose";
 
-export interface CarouselI {
+export interface CarouselI extends Document {
     imageUrl: string;
     publicId: string;
     createdAt: Date;
