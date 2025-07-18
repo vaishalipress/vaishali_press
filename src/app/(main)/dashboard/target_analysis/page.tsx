@@ -11,7 +11,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import {
     Select,
     SelectContent,
@@ -20,8 +19,6 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { MONTHS } from "@/lib/constants";
-import dynamic from "next/dynamic";
-import { IndianRupee } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MultiSelect } from "./component/multi-select";
 import { useProduct } from "@/hooks/use-fetch-data";
@@ -32,10 +29,6 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-
-const Chart = dynamic(() => import("@/components/charts/Chart"), {
-    ssr: false,
-});
 
 interface MarketData {
     name: string;
@@ -73,10 +66,10 @@ export default function TargetAnalysisPage() {
             params.append("year", year.toString());
             params.append("month", month);
             if (district) params.append("district", district);
-            if (selectedProducts?.length) {
+            if (selectedProducts?.length > 0) {
                 params.append("productIds", selectedProducts.join(","));
             }
-
+            console.log(params.get("productIds"));
             const res = await axios.get(
                 `/api/target/analysis?${params.toString()}`
             );
@@ -84,65 +77,63 @@ export default function TargetAnalysisPage() {
         },
     });
 
-    const formatPercentage = (value?: number) => {
-        if (value == null) return "-";
-        return `${Math.round(value)}%`;
-    };
-
-    const calculateAchievement = (actual?: number, target?: number) => {
-        if (target == null || actual == null || target === 0) return 0;
-        return (actual / target) * 100;
-    };
-
     return (
         <div className="max-w-full mx-auto p-4">
-            <h2 className="text-2xl font-bold mb-6">
-                📈 Target Analysis Dashboard
-            </h2>
-
             {/* Always visible filter bar */}
-            <div className="flex flex-wrap gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-                <Input
-                    type="number"
-                    value={year}
-                    onChange={(e) => setYear(Number(e.target.value))}
-                    placeholder="Year"
-                    className="w-32"
-                />
+            <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
+                <h1 className="text-sm lg:text-base uppercase  font-semibold">
+                    Target Analysis
+                </h1>
 
-                <Select value={month} onValueChange={setMonth}>
-                    <SelectTrigger className="w-40">
-                        <SelectValue placeholder="Select month" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Months</SelectItem>
-                        {MONTHS.map((monthName, index) => (
-                            <SelectItem key={index} value={index.toString()}>
-                                {monthName}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                <div className="flex gap-2">
+                    <Input
+                        type="number"
+                        value={year}
+                        onChange={(e) => setYear(Number(e.target.value))}
+                        placeholder="Year"
+                        className="w-32"
+                    />
 
-                <MultiSelect
-                    options={
-                        products?.map((p) => ({
-                            id: p?._id,
-                            name: p?.name,
-                        })) || []
-                    }
-                    selected={selectedProducts}
-                    onChange={setSelectedProducts}
-                    placeholder="Select products"
-                />
+                    <Select value={month} onValueChange={setMonth}>
+                        <SelectTrigger className="w-40">
+                            <SelectValue placeholder="Select month" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {MONTHS.map((monthName, index) => (
+                                <SelectItem
+                                    key={index}
+                                    value={index.toString()}
+                                >
+                                    {monthName}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
 
-                <Input
-                    type="text"
-                    value={district}
-                    onChange={(e) => setDistrict(e.target.value)}
-                    placeholder="Filter by district"
-                    className="w-48"
-                />
+                    <MultiSelect
+                        options={
+                            products
+                                ?.sort((a, b) =>
+                                    a?.name?.localeCompare(b?.name)
+                                )
+                                .map((p) => ({
+                                    id: p?._id,
+                                    name: p?.name,
+                                })) || []
+                        }
+                        selected={selectedProducts}
+                        onChange={setSelectedProducts}
+                        placeholder="Select products"
+                    />
+
+                    <Input
+                        type="text"
+                        value={district}
+                        onChange={(e) => setDistrict(e.target.value)}
+                        placeholder="Filter by district"
+                        className="w-48"
+                    />
+                </div>
             </div>
 
             {isLoading ? (
@@ -161,36 +152,40 @@ export default function TargetAnalysisPage() {
             ) : (
                 <div className="bg-white rounded-lg shadow">
                     <Accordion type="multiple">
-                        {data.results.map((districtData) => {
-                            const achievement = calculateAchievement(
-                                districtData.totalQty,
-                                districtData.totalTarget
-                            );
-
+                        {data.results.map((districtData, idx) => {
+                            const sum =
+                                districtData?.totalTarget -
+                                districtData?.totalQty;
                             return (
                                 <AccordionItem
                                     key={districtData.district}
                                     value={districtData.district}
+                                    className="mb-2 rounded"
                                 >
-                                    <AccordionTrigger className="hover:no-underline px-4">
-                                        <div className="flex items-center space-x-4 w-full">
-                                            <span className="font-semibold">
+                                    <AccordionTrigger className="hover:no-underline px-4 rounded bg-orange-200 dark:bg-orange-800">
+                                        <div className="flex items-center space-x-4 w-full text-sm">
+                                            <span className="mr-auto font-semibold uppercase">
+                                                {idx + 1}.{" "}
                                                 {districtData.district}
                                             </span>
-                                            <div className="flex-1 flex justify-between pr-4">
+                                            <div className="flex gap-3 px-3 min-w-60">
                                                 <span>
                                                     Target:{" "}
-                                                    {districtData.totalTarget.toLocaleString()}
+                                                    {districtData.totalTarget}
                                                 </span>
                                                 <span>
                                                     Sold:{" "}
-                                                    {districtData.totalQty.toLocaleString()}
+                                                    {districtData.totalQty}
                                                 </span>
                                                 <span>
-                                                    Achievement:{" "}
-                                                    {formatPercentage(
-                                                        achievement
-                                                    )}
+                                                    Result:{" "}
+                                                    {sum < 0
+                                                        ? `+${-1 * sum}`
+                                                        : `${
+                                                              sum !== 0
+                                                                  ? "-"
+                                                                  : ""
+                                                          }${sum}`}
                                                 </span>
                                             </div>
                                         </div>
@@ -206,20 +201,17 @@ export default function TargetAnalysisPage() {
                                                         Target
                                                     </TableHead>
                                                     <TableHead>Sold</TableHead>
-                                                    <TableHead>Sales</TableHead>
                                                     <TableHead>
-                                                        Achievement
+                                                        Result
                                                     </TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
                                                 {districtData.markets.map(
                                                     (market) => {
-                                                        const marketAchievement =
-                                                            calculateAchievement(
-                                                                market.qty,
-                                                                market.target
-                                                            );
+                                                        const result =
+                                                            market.target -
+                                                            market.qty;
 
                                                         return (
                                                             <TableRow
@@ -227,28 +219,32 @@ export default function TargetAnalysisPage() {
                                                                     market.name
                                                                 }
                                                             >
-                                                                <TableCell>
+                                                                <TableCell className="capitalize">
                                                                     {
                                                                         market.name
                                                                     }
                                                                 </TableCell>
                                                                 <TableCell>
-                                                                    {market.target.toLocaleString()}
+                                                                    {
+                                                                        market.target
+                                                                    }
                                                                 </TableCell>
                                                                 <TableCell>
-                                                                    {market.qty.toLocaleString()}
+                                                                    {market.qty}
                                                                 </TableCell>
                                                                 <TableCell>
-                                                                    <IndianRupee className="inline h-4 w-4" />
-                                                                    {(
-                                                                        market.qty *
-                                                                        100
-                                                                    ).toLocaleString()}
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    {formatPercentage(
-                                                                        marketAchievement
-                                                                    )}
+                                                                    {result < 0
+                                                                        ? `+${
+                                                                              -1 *
+                                                                              result
+                                                                          }`
+                                                                        : `${
+                                                                              result ===
+                                                                              0
+                                                                                  ? result
+                                                                                  : "-" +
+                                                                                    result
+                                                                          }`}
                                                                 </TableCell>
                                                             </TableRow>
                                                         );

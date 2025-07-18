@@ -1,11 +1,10 @@
 import { isAuth } from "@/lib/isAuth";
 import Market from "@/models/market";
-
 import mongoose, { PipelineStage } from "mongoose";
 
 export const dynamic = "force-dynamic";
 
-export async function getDistrictMarketTargetsWithSales(
+async function getDistrictMarketTargetsWithSales(
     filterOptions: { month?: number; year?: number; district?: string } = {},
     productIds: mongoose.Types.ObjectId[] = []
 ) {
@@ -38,7 +37,6 @@ export async function getDistrictMarketTargetsWithSales(
                 as: "marketClients",
             },
         },
-
         // 3. Get sales with ALL filters (date + products)
         {
             $lookup: {
@@ -128,7 +126,6 @@ export const GET = async (req: Request) => {
         const monthParam = searchParams.get("month");
         const productIdsParam = searchParams.get("productIds"); // Comma-separated product IDs
         const districtParam = searchParams.get("district");
-
         // Parse and validate product IDs
         let productIds: mongoose.Types.ObjectId[] | undefined;
         if (productIdsParam) {
