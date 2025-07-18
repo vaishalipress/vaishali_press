@@ -1,260 +1,276 @@
 "use client";
 import { useAllProductPerformanceInDetails } from "@/hooks/use-fetch-data";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import {
-  DistrictSalesStats,
-  MarketStatsInProductPerformance,
-  ProductPerformance as ProductPerformanceType,
+    DistrictSalesStats,
+    MarketStatsInProductPerformance,
+    ProductPerformance as ProductPerformanceType,
 } from "@/lib/types";
 import { LoadingCells } from "@/components/loading";
 import { FileWarning, IndianRupee } from "lucide-react";
 import { useFilterDate } from "@/hooks/useFilterDate";
 import { Filter } from "@/components/filter";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
 
 export const ProductPerformance = () => {
-  const { date, setDate, toggleType, type } = useFilterDate();
-  const { data, isLoading } = useAllProductPerformanceInDetails(date);
-  console.log(data);
+    const { date, setDate, toggleType, type } = useFilterDate();
+    const { data, isLoading } = useAllProductPerformanceInDetails(date);
 
-  const bhlAndBbs = useMemo(
-    () =>
-      data?.filter(
-        (p) =>
-          p.product.toLowerCase() === "bhl" || p.product.toLowerCase() === "bbs"
-      ),
-    [data]
-  );
-
-  const bhlAndBbsMerged = useMemo(() => {
-    if (!bhlAndBbs || bhlAndBbs?.length !== 2) return;
-    const input = bhlAndBbs;
-
-    const districtMap = new Map<
-      string,
-      { sales: number; marketMap: Map<string, MarketStatsInProductPerformance> }
-    >();
-
-    input?.forEach(({ product, stats }) => {
-      stats.forEach(({ district, sales, market }) => {
-        if (!districtMap.has(district)) {
-          districtMap.set(district, {
-            sales: 0,
-            marketMap: new Map(),
-          });
-        }
-
-        const districtData = districtMap.get(district)!;
-        districtData.sales += sales;
-
-        market.forEach(({ market: marketName, sales: marketSales }) => {
-          if (!districtData.marketMap.has(marketName)) {
-            districtData.marketMap.set(marketName, {
-              market: marketName,
-              sales: 0,
-            });
-          }
-
-          const marketEntry = districtData.marketMap.get(marketName)!;
-          marketEntry.sales += marketSales;
-          marketEntry[product as "bhl" | "bbs"] =
-            ((marketEntry[product as "bhl" | "bbs"] as number) || 0) +
-            marketSales;
-        });
-      });
-    });
-
-    // Convert the map to final output format
-    const merged: DistrictSalesStats[] = [];
-
-    Array.from(districtMap.entries()).forEach(
-      ([district, { sales, marketMap }]) => {
-        const market: MarketStatsInProductPerformance[] = Array.from(
-          marketMap.values()
-        );
-        merged.push({
-          district,
-          sales,
-          market,
-        });
-      }
+    const bhlAndBbs = useMemo(
+        () =>
+            data?.filter(
+                (p) =>
+                    p.product.toLowerCase() === "bhl" ||
+                    p.product.toLowerCase() === "bbs"
+            ),
+        [data]
     );
-    merged.sort((a, b) => b.sales - a.sales);
-    const product = {
-      product: "bhl + bbs",
-      totalSales:
-        (bhlAndBbs?.[0]?.totalSales || 0) + (bhlAndBbs?.[1]?.totalSales || 0),
-      stats: merged,
-    };
-    return product;
-  }, [bhlAndBbs]);
 
-  return (
-    <div className="mb-4 w-full">
-      <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
-        <h1 className="text-sm lg:text-base uppercase  font-semibold">
-          Product Performance
-        </h1>
+    const bhlAndBbsMerged = useMemo(() => {
+        if (!bhlAndBbs || bhlAndBbs?.length !== 2) return;
+        const input = bhlAndBbs;
 
-        <Filter
-          date={date}
-          setDate={setDate}
-          type={type}
-          toggleType={toggleType}
-          isLoading={isLoading}
-          download={false}
-        />
-      </div>
-      <div className="flex flex-wrap gap-3">
-        {isLoading && (
-          <Table>
-            <TableBody>
-              <LoadingCells rows={4} />
-            </TableBody>
-          </Table>
-        )}
-        {!data?.[0] && !isLoading && (
-          <div className="flex items-center justify-center w-full">
-            <FileWarning className="text-rose-600" />
-            <p className="uppercase font-medium text-rose-600 text-lg">
-              No Data
-            </p>
-          </div>
-        )}
+        const districtMap = new Map<
+            string,
+            {
+                sales: number;
+                marketMap: Map<string, MarketStatsInProductPerformance>;
+            }
+        >();
 
-        <Accordion type="multiple" className="w-full">
-          {!!bhlAndBbsMerged && bhlAndBbs?.length === 2 && (
-            <ProductStats product={bhlAndBbsMerged} idx={1} />
-          )}
-          {data?.map((product, idx) => (
-            <ProductStats
-              product={product}
-              idx={idx + (bhlAndBbs?.length === 2 ? 2 : 1)}
-              key={product?.product}
-            />
-          ))}
-        </Accordion>
-      </div>
-    </div>
-  );
+        input?.forEach(({ product, stats }) => {
+            stats.forEach(({ district, sales, market }) => {
+                if (!districtMap.has(district)) {
+                    districtMap.set(district, {
+                        sales: 0,
+                        marketMap: new Map(),
+                    });
+                }
+
+                const districtData = districtMap.get(district)!;
+                districtData.sales += sales;
+
+                market.forEach(({ market: marketName, sales: marketSales }) => {
+                    if (!districtData.marketMap.has(marketName)) {
+                        districtData.marketMap.set(marketName, {
+                            market: marketName,
+                            sales: 0,
+                            bbs: 0,
+                            bhl: 0,
+                        });
+                    }
+
+                    const marketEntry = districtData.marketMap.get(marketName)!;
+                    marketEntry.sales += marketSales;
+                    marketEntry[product as "bhl" | "bbs"] =
+                        ((marketEntry[product as "bhl" | "bbs"] as number) ||
+                            0) + marketSales;
+                });
+            });
+        });
+
+        // Convert the map to final output format
+        const merged: DistrictSalesStats[] = [];
+
+        Array.from(districtMap.entries()).forEach(
+            ([district, { sales, marketMap }]) => {
+                const market: MarketStatsInProductPerformance[] = Array.from(
+                    marketMap.values()
+                );
+                merged.push({
+                    district,
+                    sales,
+                    market,
+                });
+            }
+        );
+        merged.sort((a, b) => b.sales - a.sales);
+        const product = {
+            product: "bhl + bbs",
+            totalSales:
+                (bhlAndBbs?.[0]?.totalSales || 0) +
+                (bhlAndBbs?.[1]?.totalSales || 0),
+            stats: merged,
+        };
+        return product;
+    }, [bhlAndBbs]);
+
+    return (
+        <div className="mb-4 w-full">
+            <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
+                <h1 className="text-sm lg:text-base uppercase  font-semibold">
+                    Product Performance
+                </h1>
+
+                <Filter
+                    date={date}
+                    setDate={setDate}
+                    type={type}
+                    toggleType={toggleType}
+                    isLoading={isLoading}
+                    download={false}
+                />
+            </div>
+            <div className="flex flex-wrap gap-3">
+                {isLoading && (
+                    <Table>
+                        <TableBody>
+                            <LoadingCells rows={4} />
+                        </TableBody>
+                    </Table>
+                )}
+                {!data?.[0] && !isLoading && (
+                    <div className="flex items-center justify-center w-full">
+                        <FileWarning className="text-rose-600" />
+                        <p className="uppercase font-medium text-rose-600 text-lg">
+                            No Data
+                        </p>
+                    </div>
+                )}
+
+                <Accordion type="multiple" className="w-full">
+                    {!!bhlAndBbsMerged && bhlAndBbs?.length === 2 && (
+                        <ProductStats product={bhlAndBbsMerged} idx={1} />
+                    )}
+                    {data?.map((product, idx) => (
+                        <ProductStats
+                            product={product}
+                            idx={idx + (bhlAndBbs?.length === 2 ? 2 : 1)}
+                            key={product?.product}
+                        />
+                    ))}
+                </Accordion>
+            </div>
+        </div>
+    );
 };
 
 const ProductStats = ({
-  product,
-  idx,
+    product,
+    idx,
 }: {
-  idx: number;
-  product: ProductPerformanceType;
+    idx: number;
+    product: ProductPerformanceType;
 }) => {
-  const [stats, setStats] = useState<DistrictSalesStats[]>(product?.stats);
-  const [search, setSearch] = useState("");
-  let timerRef = useRef<NodeJS.Timeout | null>(null);
+    const [stats, setStats] = useState<DistrictSalesStats[]>(product?.stats);
+    const [search, setSearch] = useState("");
+    let timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const searchClientByName = useCallback(
-    (name: string) => {
-      if (!product?.stats) return;
-      const searchedClient = [...product?.stats].filter((dist) =>
-        dist?.district?.startsWith(name?.toLowerCase())
-      );
-      setStats(searchedClient);
-    },
-    [product]
-  );
+    const searchClientByName = useCallback(
+        (name: string) => {
+            if (!product?.stats) return;
+            const searchedClient = [...product?.stats].filter((dist) =>
+                dist?.district?.startsWith(name?.toLowerCase())
+            );
+            setStats(searchedClient);
+        },
+        [product]
+    );
 
-  const searchHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    timerRef.current = setTimeout(() => {
-      searchClientByName(e.target.value);
-    }, 300);
-  };
-  return (
-    <AccordionItem
-      value={product?.product}
-      className="w-full h-fit border rounded-md flex flex-col gap-3 mb-3"
-    >
-      <AccordionTrigger className="flex gap-3 w-full px-3 py-2 bg-orange-200 dark:bg-orange-800">
-        <div className="flex items-center gap-2 w-[93%] justify-between">
-          <span className="text-sm font-medium  dark:text-zinc-200 uppercase">
-            {idx}. {product?.product}
-          </span>
-          <span className="text-xs dark:text-zinc-200 uppercase">
-            SOLD : {product?.totalSales}
-          </span>
-        </div>
-      </AccordionTrigger>
+    const searchHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+        }
+        timerRef.current = setTimeout(() => {
+            searchClientByName(e.target.value);
+        }, 300);
+    };
+    return (
+        <AccordionItem
+            value={product?.product}
+            className="w-full h-fit border rounded-md flex flex-col gap-3 mb-3"
+        >
+            <AccordionTrigger className="flex gap-3 w-full px-3 py-2 bg-orange-200 dark:bg-orange-800">
+                <div className="flex items-center gap-2 w-[93%] justify-between">
+                    <span className="text-sm font-medium  dark:text-zinc-200 uppercase">
+                        {idx}. {product?.product}
+                    </span>
+                    <span className="text-xs dark:text-zinc-200 uppercase">
+                        SOLD : {product?.totalSales}
+                    </span>
+                </div>
+            </AccordionTrigger>
 
-      <AccordionContent>
-        <div className="px-3 py-2">
-          <Input placeholder="Search" value={search} onChange={searchHandler} />
-        </div>
-        <div className="flex gap-3 flex-wrap px-3 py-3">
-          {stats?.map((stat) => (
-            <div
-              key={stat?.district}
-              className="border rounded-md overflow-hidden"
-            >
-              <div className="bg-rose-50 dark:bg-slate-600 flex justify-between items-start px-3 py-3 ">
-                <span className="text-xs dark:text-zinc-200 uppercase">
-                  {stat?.district}
-                </span>
-                <span className="text-xs dark:text-zinc-200 uppercase">
-                  sold : {stat?.sales}
-                </span>
-              </div>
-              <Market market={stat?.market} />
-            </div>
-          ))}
-        </div>
-      </AccordionContent>
-    </AccordionItem>
-  );
+            <AccordionContent>
+                <div className="px-3 py-2">
+                    <Input
+                        placeholder="Search"
+                        value={search}
+                        onChange={searchHandler}
+                    />
+                </div>
+                <div className="flex gap-3 flex-wrap px-3 py-3">
+                    {stats?.map((stat) => (
+                        <div
+                            key={stat?.district}
+                            className="border rounded-md overflow-hidden"
+                        >
+                            <div className="bg-rose-50 dark:bg-slate-600 flex justify-between items-start px-3 py-3 ">
+                                <span className="text-xs dark:text-zinc-200 uppercase">
+                                    {stat?.district}
+                                </span>
+                                <span className="text-xs dark:text-zinc-200 uppercase">
+                                    sold : {stat?.sales}
+                                </span>
+                            </div>
+                            <Market market={stat?.market} />
+                        </div>
+                    ))}
+                </div>
+            </AccordionContent>
+        </AccordionItem>
+    );
 };
 
 const Market = ({ market }: { market: MarketStatsInProductPerformance[] }) => {
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow className="text-xs">
-          <TableHead>S.NO</TableHead>
-          <TableHead className="uppercase w-32">Market</TableHead>
-          {market?.[0].bhl && (
-            <TableHead className="uppercase w-32">BHL</TableHead>
-          )}
-          {market?.[0].bbs && (
-            <TableHead className="uppercase w-32">BBS</TableHead>
-          )}
-          <TableHead className="uppercase w-32">Sold</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {market?.map((m, idx) => (
-          <TableRow key={m.market}>
-            <TableCell>{idx + 1}</TableCell>
-            <TableCell className="uppercase text-xs">{m?.market}</TableCell>
+    return (
+        <Table>
+            <TableHeader>
+                <TableRow className="text-xs">
+                    <TableHead>S.NO</TableHead>
+                    <TableHead className="uppercase w-32">Market</TableHead>
+                    {market?.[0].bhl && (
+                        <TableHead className="uppercase w-32">BHL</TableHead>
+                    )}
+                    {market?.[0].bbs && (
+                        <TableHead className="uppercase w-32">BBS</TableHead>
+                    )}
+                    <TableHead className="uppercase w-32">Sold</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {market?.map((m, idx) => (
+                    <TableRow key={m.market}>
+                        <TableCell>{idx + 1}</TableCell>
+                        <TableCell className="uppercase text-xs">
+                            {m?.market}
+                        </TableCell>
 
-            {m.bhl && <TableCell className="text-xs">{m?.bhl}</TableCell>}
-            {m.bbs && <TableCell className="text-xs">{m?.bbs}</TableCell>}
-            <TableCell className="text-xs">{m?.sales}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
+                        {m?.bhl !== undefined && (
+                            <TableCell className="text-xs">{m?.bhl}</TableCell>
+                        )}
+                        {m?.bbs !== undefined && (
+                            <TableCell className="text-xs">{m?.bbs}</TableCell>
+                        )}
+                        <TableCell className="text-xs">{m?.sales}</TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    );
 };

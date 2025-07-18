@@ -34,8 +34,6 @@ interface TargetResponse {
 }
 
 export default function TargetOverview() {
-    const { onOpen } = useModal();
-
     const { data, isLoading, isError } = useQuery<TargetResponse>({
         queryKey: ["target-overview"],
         queryFn: async () => {

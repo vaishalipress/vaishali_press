@@ -88,6 +88,7 @@ export const GET = async (req: Request) => {
         if (!isauth) {
             return Response.json({ message: "Unauthorized" }, { status: 401 });
         }
+
         const pipeline: PipelineStage[] = [];
         // group data based on district
         pipeline.push({

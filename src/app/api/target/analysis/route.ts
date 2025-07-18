@@ -1,15 +1,119 @@
 import { isAuth } from "@/lib/isAuth";
-// import {
-//     getDistinctFilterValues,
-//     getTargetAchievementByYearMarketMonth,
-//     getTargetAchievementCombined,
-//     getTargetAchievementYearMonthMarket,
-// } from "@/lib/target-analysis";
-import mongoose from "mongoose";
+import Market from "@/models/market";
+
+import mongoose, { PipelineStage } from "mongoose";
 
 export const dynamic = "force-dynamic";
 
-type GroupBy = "market" | "district";
+export async function getDistrictMarketTargetsWithSales(
+    filterOptions: { month?: number; year?: number; district?: string } = {},
+    productIds: mongoose.Types.ObjectId[] = []
+) {
+    const { month, year, district } = filterOptions;
+
+    // 1. Create date range (UTC to avoid timezone issues)
+    let dateFilter = {};
+    if (month !== undefined && year !== undefined) {
+        const startDate = new Date(Date.UTC(year, month, 1));
+        const endDate = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
+        dateFilter = { date: { $gte: startDate, $lte: endDate } };
+    }
+
+    const pipeline: PipelineStage[] = [
+        // 1. First filter markets by district (partial word match)
+        {
+            $match: district
+                ? { district: { $regex: district, $options: "i" } }
+                : {},
+        },
+
+        // 2. Link clients by market name
+        {
+            $lookup: {
+                from: "clients",
+                let: { marketName: "$name" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$market", "$$marketName"] } } },
+                ],
+                as: "marketClients",
+            },
+        },
+
+        // 3. Get sales with ALL filters (date + products)
+        {
+            $lookup: {
+                from: "sales",
+                let: { clientIds: "$marketClients._id" },
+                pipeline: [
+                    // Base client match
+                    { $match: { $expr: { $in: ["$client", "$$clientIds"] } } },
+
+                    // Date filter (if month/year provided)
+                    ...(Object.keys(dateFilter).length > 0
+                        ? [{ $match: dateFilter }]
+                        : []),
+
+                    // Product filter (if productIds provided)
+                    ...(productIds.length > 0
+                        ? [{ $match: { product: { $in: productIds } } }]
+                        : []),
+
+                    // Group quantities
+                    { $group: { _id: null, totalQty: { $sum: "$qty" } } },
+                ],
+                as: "marketSales",
+            },
+        },
+
+        // 4. Process results
+        {
+            $addFields: {
+                totalQty: {
+                    $ifNull: [
+                        { $arrayElemAt: ["$marketSales.totalQty", 0] },
+                        0,
+                    ],
+                },
+            },
+        },
+        {
+            $group: {
+                _id: "$district",
+                totalTarget: { $sum: "$target" },
+                totalQty: { $sum: "$totalQty" },
+                markets: {
+                    $push: {
+                        name: "$name",
+                        target: "$target",
+                        qty: "$totalQty",
+                    },
+                },
+            },
+        },
+        {
+            $addFields: {
+                markets: {
+                    $sortArray: {
+                        input: "$markets",
+                        sortBy: { qty: -1 }, // Sort markets by qty desc
+                    },
+                },
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                district: "$_id",
+                totalTarget: 1,
+                totalQty: 1,
+                markets: 1,
+            },
+        },
+        { $sort: { totalQty: -1 } }, // Sort districts by totalQty desc
+    ];
+
+    return await Market.aggregate(pipeline).exec();
+}
 
 export const GET = async (req: Request) => {
     try {
@@ -20,36 +124,10 @@ export const GET = async (req: Request) => {
 
         const { searchParams } = new URL(req.url);
 
-        const type = searchParams.get("type") || "hierarchical";
-        const groupBy: GroupBy =
-            (searchParams.get("groupBy") as GroupBy) === "district"
-                ? "district"
-                : "market";
-
-        const startYearParam = searchParams.get("startYear");
-        const endYearParam = searchParams.get("endYear");
+        const yearParam = searchParams.get("year");
         const monthParam = searchParams.get("month");
-        const marketIdsParam = searchParams.get("marketIds"); // Comma-separated market IDs
         const productIdsParam = searchParams.get("productIds"); // Comma-separated product IDs
-        const districtParam = searchParams.get("districts");
-
-        // Parse and validate market IDs
-        let districts: string[] | undefined = undefined;
-        if (districtParam) {
-            districts = districtParam.split(",");
-        }
-
-        // Parse and validate market IDs
-        let marketIds: mongoose.Types.ObjectId[] | undefined;
-        if (marketIdsParam) {
-            const ids = marketIdsParam.split(",");
-            marketIds = ids.map((id) => {
-                if (!mongoose.Types.ObjectId.isValid(id)) {
-                    throw new Error(`Invalid market ID format: ${id}`);
-                }
-                return new mongoose.Types.ObjectId(id);
-            });
-        }
+        const districtParam = searchParams.get("district");
 
         // Parse and validate product IDs
         let productIds: mongoose.Types.ObjectId[] | undefined;
@@ -63,19 +141,7 @@ export const GET = async (req: Request) => {
             });
         }
 
-        // Validate and parse query parameters
-        let year: number | undefined;
-        if (startYearParam) {
-            year = parseInt(startYearParam);
-            if (isNaN(year)) {
-                return Response.json(
-                    { message: "Invalid year parameter" },
-                    { status: 400 }
-                );
-            }
-        }
-
-        let month: number | undefined;
+        let month: number | undefined = undefined;
         if (monthParam) {
             month = parseInt(monthParam);
             if (isNaN(month) || month < 0 || month > 11) {
@@ -86,106 +152,31 @@ export const GET = async (req: Request) => {
             }
         }
 
-        let startYear: number | undefined;
-        if (startYearParam) {
-            startYear = parseInt(startYearParam);
-            if (isNaN(startYear)) {
+        // Validate and parse query parameters
+        let year: number | undefined = undefined;
+        if (yearParam) {
+            year = parseInt(yearParam);
+            if (isNaN(year) || year < 2020 || year > 2100) {
                 return Response.json(
-                    { message: "Invalid startYear parameter" },
+                    { message: "Invalid year parameter" },
                     { status: 400 }
                 );
             }
         }
 
-        let endYear: number | undefined;
-        if (endYearParam) {
-            endYear = parseInt(endYearParam);
-            if (isNaN(endYear)) {
-                return Response.json(
-                    { message: "Invalid endYear parameter" },
-                    { status: 400 }
-                );
-            }
-        }
-
-        if (startYear && endYear && endYear < startYear) {
-            return Response.json(
-                { message: "endYear cannot be before startYear" },
-                { status: 400 }
-            );
-        }
-
-        // Usage example:
-        // const {
-        //     years,
-        //     markets,
-        //     districts: districtsData,
-        // } = await getDistinctFilterValues();
-
-        // if (type === "year-month-market") {
-        //     const results = await getTargetAchievementYearMonthMarket({
-        //         startYear,
-        //         endYear,
-        //         month,
-        //         marketIds,
-        //         productIds,
-        //         districts: districts || undefined,
-        //         groupBy,
-        //     });
-
-        //     return Response.json(
-        //         {
-        //             results,
-        //             success: true,
-        //             type: "year > month > market",
-        //             years,
-        //             markets,
-        //             districts: districtsData,
-        //         },
-        //         { status: 200 }
-        //     );
-        // }
-
-        // if (type === "year-market-month") {
-        //     const results = await getTargetAchievementByYearMarketMonth({
-        //         year,
-        //         marketIds,
-        //         month,
-        //         productIds,
-        //         districts: districts || undefined,
-        //         groupBy,
-        //     });
-
-        //     return Response.json(
-        //         {
-        //             results,
-        //             success: true,
-        //             years,
-        //             markets,
-        //             districts: districtsData,
-        //             type: "year > market > month",
-        //         },
-        //         { status: 200 }
-        //     );
-        // }
-
-        // const results = await getTargetAchievementCombined({
-        //     month,
-        //     year,
-        //     groupBy,
-        //     marketIds,
-        //     productIds,
-        //     districts: districts || undefined,
-        // });
+        const filteredData = await getDistrictMarketTargetsWithSales(
+            {
+                month,
+                year,
+                district: districtParam || undefined,
+            },
+            productIds
+        );
 
         return Response.json(
             {
-                // results,
+                results: filteredData,
                 success: true,
-                // type: "Combined",
-                // years,
-                // markets,
-                // districts: districtsData,
             },
             { status: 200 }
         );
