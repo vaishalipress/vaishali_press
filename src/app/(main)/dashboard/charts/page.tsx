@@ -10,8 +10,8 @@ import {
 import { useFilterDate } from "@/hooks/useFilterDate";
 import { useMemo, useState } from "react";
 
+const N = 20;
 function ClientPerformance() {
-    const N = 10;
     const { date, setDate, toggleType, type } = useFilterDate();
     const { data: clientsData, isLoading } = useClientPerformanceStats(date, [
         "65b91e25c8aeefd5b6171ca1",
@@ -113,7 +113,6 @@ function ClientPerformance() {
 }
 
 function DistrictPerformance() {
-    const N = 10;
     const { date, setDate, toggleType, type } = useFilterDate();
     const { data: clientsData, isLoading } = useDistrictPerformanceByProducts(
         date,
@@ -212,7 +211,6 @@ function DistrictPerformance() {
     );
 }
 function MarketPerformance() {
-    const N = 10;
     const { date, setDate, toggleType, type } = useFilterDate();
     const { data: clientsData, isLoading } = useDistrictPerformanceByProducts(
         date,
