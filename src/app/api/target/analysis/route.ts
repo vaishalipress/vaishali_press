@@ -11,23 +11,28 @@ async function getDistrictMarketTargetsWithSales(
 ) {
     const { month, year, district } = filterOptions;
 
-    // 1. Create date range (UTC to avoid timezone issues)
     let dateFilter = {};
     if (month !== undefined && year !== undefined) {
-        // Create dates in local timezone
+        // Create dates in local time first
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
 
-        // Use your helper functions to set time components
-        const startDate = getDayMin(firstDay).toUTCString();
-        const endDate = getDayMax(lastDay).toUTCString();
+        // Convert to UTC using your helper functions
+        const startDate = getDayMin(firstDay).toISOString();
+        const endDate = getDayMax(lastDay).toISOString();
 
+        // Use these UTC strings in the query
         dateFilter = {
             date: {
                 $gte: new Date(startDate),
                 $lte: new Date(endDate),
             },
         };
+
+        console.log("UTC Date range:", {
+            start: startDate,
+            end: endDate,
+        });
     }
 
     const pipeline: PipelineStage[] = [
