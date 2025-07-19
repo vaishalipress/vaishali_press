@@ -18,6 +18,9 @@ async function getDistrictMarketTargetsWithSales(
         const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
 
         dateFilter = { date: { $gte: startDate, $lte: endDate } };
+
+        console.log(startDate.toLocaleString());
+        console.log(endDate.toLocaleString());
     }
 
     const pipeline: PipelineStage[] = [
