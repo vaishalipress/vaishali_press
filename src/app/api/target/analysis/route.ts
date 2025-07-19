@@ -13,8 +13,10 @@ async function getDistrictMarketTargetsWithSales(
     // 1. Create date range (UTC to avoid timezone issues)
     let dateFilter = {};
     if (month !== undefined && year !== undefined) {
-        const startDate = new Date(Date.UTC(year, month, 1));
-        const endDate = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
+        // First day of month at 00:00:00
+        const startDate = new Date(year, month, 1, 0, 0, 0, 0);
+        const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+
         dateFilter = { date: { $gte: startDate, $lte: endDate } };
     }
 
