@@ -48,34 +48,33 @@ function ClientPerformance() {
                     Client Performance
                 </h1>
 
-                <div className="flex space-x-2 w-fit">
-                    <Filter
-                        date={date}
-                        setDate={setDate}
-                        type={type}
-                        toggleType={toggleType}
-                        isLoading={isLoading}
-                        download={false}
-                    >
-                        <Input
-                            type="text"
-                            placeholder="Search client..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            disabled={isLoading}
-                        />
+                <Filter
+                    date={date}
+                    setDate={setDate}
+                    type={type}
+                    toggleType={toggleType}
+                    isLoading={isLoading}
+                    download={false}
+                >
+                    <Input
+                        type="text"
+                        placeholder="Search client..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        disabled={isLoading}
+                        className="min-w-16"
+                    />
 
-                        {/* 🔁 Toggle */}
-                        <Button
-                            onClick={() => setShowAll((prev) => !prev)}
-                            variant={"secondary"}
-                            className="ml-2"
-                            disabled={isLoading}
-                        >
-                            {showAll ? "Show Top 10" : "Show All"}
-                        </Button>
-                    </Filter>
-                </div>
+                    {/* 🔁 Toggle */}
+                    <Button
+                        onClick={() => setShowAll((prev) => !prev)}
+                        variant={"secondary"}
+                        className="ml-2"
+                        disabled={isLoading}
+                    >
+                        {showAll ? "Show Top 10" : "Show All"}
+                    </Button>
+                </Filter>
             </div>
 
             {/* 📊 Chart */}
@@ -139,34 +138,33 @@ function DistrictPerformance() {
                     District Performance
                 </h1>
 
-                <div className="flex space-x-2 w-fit">
-                    <Filter
-                        date={date}
-                        setDate={setDate}
-                        type={type}
-                        toggleType={toggleType}
-                        isLoading={isLoading}
-                        download={false}
-                    >
-                        <Input
-                            type="text"
-                            placeholder="Search client..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            disabled={isLoading}
-                        />
+                <Filter
+                    date={date}
+                    setDate={setDate}
+                    type={type}
+                    toggleType={toggleType}
+                    isLoading={isLoading}
+                    download={false}
+                >
+                    <Input
+                        type="text"
+                        placeholder="Search client..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        disabled={isLoading}
+                        className="min-w-16"
+                    />
 
-                        {/* 🔁 Toggle */}
-                        <Button
-                            onClick={() => setShowAll((prev) => !prev)}
-                            variant={"secondary"}
-                            className="ml-2"
-                            disabled={isLoading}
-                        >
-                            {showAll ? "Show Top 10" : "Show All"}
-                        </Button>
-                    </Filter>
-                </div>
+                    {/* 🔁 Toggle */}
+                    <Button
+                        onClick={() => setShowAll((prev) => !prev)}
+                        variant={"secondary"}
+                        className="ml-2"
+                        disabled={isLoading}
+                    >
+                        {showAll ? "Show Top 10" : "Show All"}
+                    </Button>
+                </Filter>
             </div>
 
             {/* 📊 Chart */}
@@ -235,34 +233,33 @@ function MarketPerformance() {
                     Market Performance
                 </h1>
 
-                <div className="flex space-x-2 w-fit">
-                    <Filter
-                        date={date}
-                        setDate={setDate}
-                        type={type}
-                        toggleType={toggleType}
-                        isLoading={isLoading}
-                        download={false}
-                    >
-                        <Input
-                            type="text"
-                            placeholder="Search client..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            disabled={isLoading}
-                        />
+                <Filter
+                    date={date}
+                    setDate={setDate}
+                    type={type}
+                    toggleType={toggleType}
+                    isLoading={isLoading}
+                    download={false}
+                >
+                    <Input
+                        type="text"
+                        placeholder="Search client..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        disabled={isLoading}
+                        className="min-w-16"
+                    />
 
-                        {/* 🔁 Toggle */}
-                        <Button
-                            onClick={() => setShowAll((prev) => !prev)}
-                            variant={"secondary"}
-                            className="ml-2"
-                            disabled={isLoading}
-                        >
-                            {showAll ? "Show Top 10" : "Show All"}
-                        </Button>
-                    </Filter>
-                </div>
+                    {/* 🔁 Toggle */}
+                    <Button
+                        onClick={() => setShowAll((prev) => !prev)}
+                        variant={"secondary"}
+                        className="ml-2"
+                        disabled={isLoading}
+                    >
+                        {showAll ? "Show Top 10" : "Show All"}
+                    </Button>
+                </Filter>
             </div>
 
             {/* 📊 Chart */}
