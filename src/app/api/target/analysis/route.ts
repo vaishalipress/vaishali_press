@@ -1,38 +1,31 @@
 import { isAuth } from "@/lib/isAuth";
-import { getDayMax, getDayMin } from "@/lib/utils";
 import Market from "@/models/market";
 import mongoose, { PipelineStage } from "mongoose";
 
 export const dynamic = "force-dynamic";
 
 async function getDistrictMarketTargetsWithSales(
-    filterOptions: { month?: number; year?: number; district?: string } = {},
+    filterOptions: {
+        from?: Date;
+        to?: Date;
+        month?: number;
+        year?: number;
+        district?: string;
+    } = {},
     productIds: mongoose.Types.ObjectId[] = []
 ) {
-    const { month, year, district } = filterOptions;
+    const { month, year, district, from, to } = filterOptions;
 
     let dateFilter = {};
-    if (month !== undefined && year !== undefined) {
-        // Create dates in local time first
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
+    if (from !== undefined && to !== undefined) {
+        // Create dates directly in UTC
 
-        // Convert to UTC using your helper functions
-        const startDate = getDayMin(firstDay).toISOString();
-        const endDate = getDayMax(lastDay).toISOString();
-
-        // Use these UTC strings in the query
         dateFilter = {
             date: {
-                $gte: new Date(startDate),
-                $lte: new Date(endDate),
+                $lte: to,
+                $gte: from,
             },
         };
-
-        console.log("UTC Date range:", {
-            start: startDate,
-            end: endDate,
-        });
     }
 
     const pipeline: PipelineStage[] = [
@@ -152,10 +145,16 @@ export const GET = async (req: Request) => {
 
         const { searchParams } = new URL(req.url);
 
-        const yearParam = searchParams.get("year");
-        const monthParam = searchParams.get("month");
+        // const yearParam = searchParams.get("year");
+        // const monthParam = searchParams.get("month");
         const productIdsParam = searchParams.get("productIds"); // Comma-separated product IDs
         const districtParam = searchParams.get("district");
+        let from: Date | undefined = !!searchParams.get("from")
+            ? new Date(searchParams.get("from")!)
+            : undefined;
+        let to: Date | undefined = !!searchParams.get("to")
+            ? new Date(searchParams?.get("to")!)
+            : new Date();
         // Parse and validate product IDs
         let productIds: mongoose.Types.ObjectId[] | undefined;
         if (productIdsParam) {
@@ -168,33 +167,35 @@ export const GET = async (req: Request) => {
             });
         }
 
-        let month: number | undefined = undefined;
-        if (monthParam) {
-            month = parseInt(monthParam);
-            if (isNaN(month) || month < 0 || month > 11) {
-                return Response.json(
-                    { message: "Invalid month parameter (must be 0-11)" },
-                    { status: 400 }
-                );
-            }
-        }
+        // let month: number | undefined = undefined;
+        // if (monthParam) {
+        //     month = parseInt(monthParam);
+        //     if (isNaN(month) || month < 0 || month > 11) {
+        //         return Response.json(
+        //             { message: "Invalid month parameter (must be 0-11)" },
+        //             { status: 400 }
+        //         );
+        //     }
+        // }
 
-        // Validate and parse query parameters
-        let year: number | undefined = undefined;
-        if (yearParam) {
-            year = parseInt(yearParam);
-            if (isNaN(year) || year < 2020 || year > 2100) {
-                return Response.json(
-                    { message: "Invalid year parameter" },
-                    { status: 400 }
-                );
-            }
-        }
+        // // Validate and parse query parameters
+        // let year: number | undefined = undefined;
+        // if (yearParam) {
+        //     year = parseInt(yearParam);
+        //     if (isNaN(year) || year < 2020 || year > 2100) {
+        //         return Response.json(
+        //             { message: "Invalid year parameter" },
+        //             { status: 400 }
+        //         );
+        //     }
+        // }
 
         const filteredData = await getDistrictMarketTargetsWithSales(
             {
-                month,
-                year,
+                to,
+                from,
+                // month,
+                // year,
                 district: districtParam || undefined,
             },
             productIds

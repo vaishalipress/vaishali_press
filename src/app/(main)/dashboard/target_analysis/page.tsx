@@ -33,7 +33,7 @@ import autoTable from "jspdf-autotable";
 import jsPDF from "jspdf";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-import { capitalizeWords, downloadToPDF } from "@/lib/utils";
+import { capitalizeWords, downloadToPDF, getDayMax } from "@/lib/utils";
 
 interface MarketData {
     name: string;
@@ -51,6 +51,16 @@ interface DistrictData {
 interface ApiResponse {
     success: boolean;
     results?: DistrictData[];
+}
+
+function getMaxDateForMonth(year: number, month: number): Date {
+    // Create date for first day of next month
+    const firstDayNextMonth = new Date(year, month + 1, 1);
+
+    // Subtract 1 millisecond to get last moment of current month
+    const lastMomentOfMonth = new Date(firstDayNextMonth.getTime() - 1);
+
+    return lastMomentOfMonth;
 }
 
 export default function TargetAnalysisPage() {
@@ -73,6 +83,12 @@ export default function TargetAnalysisPage() {
             const params = new URLSearchParams();
             params.append("year", year.toString());
             params.append("month", month);
+
+            const fromDate = new Date(year, Number(month), 1); // July 1, 2025
+            const toDate = new Date(year, Number(month + 1), 0); // July 31, 2025
+
+            params.set("from", fromDate.toUTCString());
+            params.set("to", toDate.toUTCString());
             if (district) params.append("district", district);
             if (selectedProducts?.length > 0) {
                 params.append("productIds", selectedProducts.join(","));
