@@ -23,21 +23,33 @@ function ClientPerformance() {
 
     // 🔁 Filter + sort + slice data
     const chartData = useMemo(() => {
-        const filtered = clientsData
+        // First sort all data by totalQty to establish rankings
+        const sortedData = clientsData
+            ?.map((item, index) => ({
+                ...item,
+                originalIndex: index, // Store original position
+            }))
+            .sort((a, b) => b.totalQty - a.totalQty);
+
+        // Then filter based on search
+        const filtered = sortedData
             ?.filter((item) =>
                 item.client.name.toLowerCase().includes(search.toLowerCase())
             )
             .map((item) => ({
                 name: item.client.name,
                 value: item.totalQty,
-            }))
-            .sort((a, b) => b.value - a.value);
+                originalRank:
+                    sortedData.findIndex(
+                        (i) => i.client._id === item.client._id
+                    ) + 1, // Get the original rank (1-based)
+            }));
 
         const finalData = showAll ? filtered : filtered?.slice(0, N);
 
-        return finalData?.map((entry, index) => ({
+        return finalData?.map((entry) => ({
             ...entry,
-            name: `${index + 1}. ${entry.name}`, // Add rank prefix
+            name: `${entry.originalRank}. ${entry.name}`, // Use original rank
         }));
     }, [search, showAll, clientsData]);
 
@@ -113,21 +125,31 @@ function DistrictPerformance() {
 
     // 🔁 Filter + sort + slice data
     const chartData = useMemo(() => {
-        const filtered = clientsData
+        // First sort all districts by totalQtySold to establish original rankings
+        const sortedDistricts = clientsData
+            ?.slice() // Create a copy to avoid mutating original
+            .sort((a, b) => b.totalQtySold - a.totalQtySold)
+            .map((district, index) => ({
+                ...district,
+                originalRank: index + 1, // Store original ranking (1-based)
+            }));
+
+        // Then filter based on search while preserving original rankings
+        const filtered = sortedDistricts
             ?.filter((item) =>
                 item.district.toLowerCase().includes(search.toLowerCase())
             )
             .map((item) => ({
                 name: item.district,
                 value: item.totalQtySold,
-            }))
-            .sort((a, b) => b.value - a.value);
+                originalRank: item.originalRank, // Preserve original rank
+            }));
 
         const finalData = showAll ? filtered : filtered?.slice(0, N);
 
-        return finalData?.map((entry, index) => ({
+        return finalData?.map((entry) => ({
             ...entry,
-            name: `${index + 1}. ${entry.name}`, // Add rank prefix
+            name: `${entry.originalRank}. ${entry.name}`, // Use original rank
         }));
     }, [search, showAll, clientsData]);
 
@@ -148,7 +170,7 @@ function DistrictPerformance() {
                 >
                     <Input
                         type="text"
-                        placeholder="Search client..."
+                        placeholder="Search district..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         disabled={isLoading}
@@ -202,27 +224,36 @@ function MarketPerformance() {
 
     // 🔁 Filter + sort + slice data
     const chartData = useMemo(() => {
-        const filtered = clientsData
-            ?.flatMap((d) => {
-                return d.markets.map((m) => ({
+        // First flatten all markets and establish original rankings
+        const allMarkets = clientsData
+            ?.flatMap((d) =>
+                d.markets.map((m) => ({
                     ...m,
-                    name: `${m.name} ${d.district}`,
-                }));
-            })
+                    name: `${m.name} (${d.district})`, // Combine market and district
+                }))
+            )
+            ?.sort((a, b) => b.totalQtySold - a.totalQtySold)
+            .map((market, index) => ({
+                ...market,
+                originalRank: index + 1, // Store original ranking (1-based)
+            }));
+
+        // Then filter based on search while preserving original rankings
+        const filtered = allMarkets
             ?.filter((item) =>
                 item.name.toLowerCase().includes(search.toLowerCase())
             )
-            .map((item) => ({
+            ?.map((item) => ({
                 name: item.name,
                 value: item.totalQtySold,
-            }))
-            .sort((a, b) => b.value - a.value);
+                originalRank: item.originalRank, // Preserve original rank
+            }));
 
         const finalData = showAll ? filtered : filtered?.slice(0, N);
 
-        return finalData?.map((entry, index) => ({
+        return finalData?.map((entry) => ({
             ...entry,
-            name: `${index + 1}. ${entry.name}`, // Add rank prefix
+            name: `${entry.originalRank}. ${entry.name}`, // Use original rank
         }));
     }, [search, showAll, clientsData]);
 
@@ -243,7 +274,7 @@ function MarketPerformance() {
                 >
                     <Input
                         type="text"
-                        placeholder="Search client..."
+                        placeholder="Search market..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         disabled={isLoading}
