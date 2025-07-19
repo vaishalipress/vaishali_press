@@ -26,17 +26,30 @@ async function getDistrictMarketTargetsWithSales(
                 : {},
         },
 
-        // 2. Link clients by market name
+        // 2. Link clients by market name AND district
         {
             $lookup: {
                 from: "clients",
-                let: { marketName: "$name" },
+                let: {
+                    marketName: "$name",
+                    marketDistrict: "$district", // Capture market's district
+                },
                 pipeline: [
-                    { $match: { $expr: { $eq: ["$market", "$$marketName"] } } },
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$market", "$$marketName"] },
+                                    { $eq: ["$district", "$$marketDistrict"] }, // Match district too
+                                ],
+                            },
+                        },
+                    },
                 ],
                 as: "marketClients",
             },
         },
+
         // 3. Get sales with ALL filters (date + products)
         {
             $lookup: {
@@ -63,7 +76,7 @@ async function getDistrictMarketTargetsWithSales(
             },
         },
 
-        // 4. Process results
+        // Rest of the pipeline remains the same...
         {
             $addFields: {
                 totalQty: {
@@ -93,7 +106,7 @@ async function getDistrictMarketTargetsWithSales(
                 markets: {
                     $sortArray: {
                         input: "$markets",
-                        sortBy: { qty: -1 }, // Sort markets by qty desc
+                        sortBy: { qty: -1 },
                     },
                 },
             },
@@ -107,7 +120,7 @@ async function getDistrictMarketTargetsWithSales(
                 markets: 1,
             },
         },
-        { $sort: { totalQty: -1 } }, // Sort districts by totalQty desc
+        { $sort: { totalQty: -1 } },
     ];
 
     return await Market.aggregate(pipeline).exec();
