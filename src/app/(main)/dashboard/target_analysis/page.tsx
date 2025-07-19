@@ -29,6 +29,11 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import autoTable from "jspdf-autotable";
+import jsPDF from "jspdf";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
+import { capitalizeWords, downloadToPDF } from "@/lib/utils";
 
 interface MarketData {
     name: string;
@@ -76,6 +81,31 @@ export default function TargetAnalysisPage() {
             return res.data;
         },
     });
+
+    const exportDataToPDF = async () => {
+        if (isLoading) return;
+        const doc = new jsPDF();
+        const exportData: (number | string)[][] = [];
+        data?.results?.forEach((d, idx) => {
+            const totalTarget = d?.totalTarget;
+            const totalQty = d?.totalQty;
+            const result = totalQty - totalTarget;
+            exportData.push([
+                `${idx + 1}`,
+                d?.district?.toUpperCase(),
+                totalTarget,
+                totalQty,
+                result >= 0 ? "Pass" : "Fail",
+            ]);
+        });
+
+        autoTable(doc, {
+            head: [["S.NO", "DISTRICT", "TARGET", "SOLD", "RESULT"]],
+            body: exportData,
+        });
+
+        doc.save("District_Target.pdf");
+    };
 
     return (
         <div className="max-w-full mx-auto p-4">
@@ -133,6 +163,10 @@ export default function TargetAnalysisPage() {
                         placeholder="Filter by district"
                         className="w-48"
                     />
+
+                    <Button variant={"secondary"} onClick={exportDataToPDF}>
+                        <Download className="w-5 h-5" />
+                    </Button>
                 </div>
             </div>
 
@@ -153,9 +187,9 @@ export default function TargetAnalysisPage() {
                 <div className="bg-white rounded-lg shadow">
                     <Accordion type="multiple">
                         {data.results.map((districtData, idx) => {
-                            const sum =
-                                districtData?.totalTarget -
-                                districtData?.totalQty;
+                            const result =
+                                districtData?.totalQty -
+                                districtData?.totalTarget;
                             return (
                                 <AccordionItem
                                     key={districtData.district}
@@ -179,19 +213,30 @@ export default function TargetAnalysisPage() {
                                                 </span>
                                                 <span>
                                                     Result:{" "}
-                                                    {sum < 0
-                                                        ? `+${-1 * sum}`
-                                                        : `${
-                                                              sum !== 0
-                                                                  ? "-"
-                                                                  : ""
-                                                          }${sum}`}
+                                                    {result >= 0
+                                                        ? "Pass"
+                                                        : "Fail"}{" "}
                                                 </span>
                                             </div>
                                         </div>
                                     </AccordionTrigger>
                                     <AccordionContent>
-                                        <Table>
+                                        <div className="text-end px-2 py-1">
+                                            <Button
+                                                variant={"secondary"}
+                                                size={"icon"}
+                                                onClick={() =>
+                                                    downloadToPDF(
+                                                        isLoading,
+                                                        `#table${idx}`,
+                                                        districtData?.district
+                                                    )
+                                                }
+                                            >
+                                                <Download className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                        <Table id={`table${idx}`}>
                                             <TableHeader>
                                                 <TableRow>
                                                     <TableHead>
@@ -208,10 +253,10 @@ export default function TargetAnalysisPage() {
                                             </TableHeader>
                                             <TableBody>
                                                 {districtData.markets.map(
-                                                    (market) => {
+                                                    (market, idx) => {
                                                         const result =
-                                                            market.target -
-                                                            market.qty;
+                                                            market.qty -
+                                                            market.target;
 
                                                         return (
                                                             <TableRow
@@ -219,10 +264,11 @@ export default function TargetAnalysisPage() {
                                                                     market.name
                                                                 }
                                                             >
-                                                                <TableCell className="capitalize">
-                                                                    {
+                                                                <TableCell>
+                                                                    {idx + 1}.{" "}
+                                                                    {capitalizeWords(
                                                                         market.name
-                                                                    }
+                                                                    )}
                                                                 </TableCell>
                                                                 <TableCell>
                                                                     {
@@ -233,18 +279,9 @@ export default function TargetAnalysisPage() {
                                                                     {market.qty}
                                                                 </TableCell>
                                                                 <TableCell>
-                                                                    {result < 0
-                                                                        ? `+${
-                                                                              -1 *
-                                                                              result
-                                                                          }`
-                                                                        : `${
-                                                                              result ===
-                                                                              0
-                                                                                  ? result
-                                                                                  : "-" +
-                                                                                    result
-                                                                          }`}
+                                                                    {result >= 0
+                                                                        ? "Pass"
+                                                                        : "Fail"}
                                                                 </TableCell>
                                                             </TableRow>
                                                         );

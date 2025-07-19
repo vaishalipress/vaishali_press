@@ -17,7 +17,7 @@ import { Table, TableBody } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
-import { CellConfig, jsPDF } from "jspdf";
+import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
 export const DistrictPerformanceByClient = () => {
