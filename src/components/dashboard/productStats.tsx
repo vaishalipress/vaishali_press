@@ -67,8 +67,14 @@ export default function ProductStats() {
                     mergedSalesMap.set(clientId, {
                         totalAmount: sale.amount,
                         totalQty: sale.qty,
-                        amountByProduct: { [productName]: sale.amount },
-                        qtyByProduct: { [productName]: sale.qty },
+                        amountByProduct: {
+                            ...{ bhl: 0, bbs: 0 },
+                            [productName]: sale.amount,
+                        },
+                        qtyByProduct: {
+                            ...{ bhl: 0, bbs: 0 },
+                            [productName]: sale.qty,
+                        },
                         client: { ...sale.client }, // shallow copy
                     });
                 } else {
