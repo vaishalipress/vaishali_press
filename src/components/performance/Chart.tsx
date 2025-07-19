@@ -105,6 +105,7 @@ export default function Chart({
                             <Tooltip
                                 formatter={tooltipFormatter}
                                 labelFormatter={(label) => `Name: ${label}`}
+                                contentStyle={{ textTransform: "capitalize" }}
                             />
                         )}
                         {showLegend && <Legend />}
