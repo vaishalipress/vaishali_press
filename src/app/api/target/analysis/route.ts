@@ -17,10 +17,25 @@ async function getDistrictMarketTargetsWithSales(
         const startDate = new Date(year, month, 1, 0, 0, 0, 0);
         const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
 
-        dateFilter = { date: { $gte: startDate, $lte: endDate } };
+        dateFilter = {
+            date: {
+                $gte: new Date(
+                    startDate.toISOString().split("T")[0] + "T00:00:00.000Z"
+                ),
+                $lte: new Date(
+                    endDate.toISOString().split("T")[0] + "T23:59:59.999Z"
+                ),
+            },
+        };
 
-        console.log(startDate.toLocaleString());
-        console.log(endDate.toLocaleString());
+        console.log(
+            new Date(
+                startDate.toISOString().split("T")[0] + "T00:00:00.000Z"
+            ).toLocaleString(),
+            new Date(
+                endDate.toISOString().split("T")[0] + "T23:59:59.999Z"
+            ).toLocaleString()
+        );
     }
 
     const pipeline: PipelineStage[] = [
