@@ -1,4 +1,5 @@
 import { isAuth } from "@/lib/isAuth";
+import { getDayMax, getDayMin } from "@/lib/utils";
 import Market from "@/models/market";
 import mongoose, { PipelineStage } from "mongoose";
 
@@ -13,29 +14,20 @@ async function getDistrictMarketTargetsWithSales(
     // 1. Create date range (UTC to avoid timezone issues)
     let dateFilter = {};
     if (month !== undefined && year !== undefined) {
-        // First day of month at 00:00:00
-        const startDate = new Date(year, month, 1, 0, 0, 0, 0);
-        const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+        // Create dates in local timezone
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+
+        // Use your helper functions to set time components
+        const startDate = getDayMin(firstDay).toUTCString();
+        const endDate = getDayMax(lastDay).toUTCString();
 
         dateFilter = {
             date: {
-                $gte: new Date(
-                    startDate.toISOString().split("T")[0] + "T00:00:00.000Z"
-                ),
-                $lte: new Date(
-                    endDate.toISOString().split("T")[0] + "T23:59:59.999Z"
-                ),
+                $gte: new Date(startDate),
+                $lte: new Date(endDate),
             },
         };
-
-        console.log(
-            new Date(
-                startDate.toISOString().split("T")[0] + "T00:00:00.000Z"
-            ).toLocaleString(),
-            new Date(
-                endDate.toISOString().split("T")[0] + "T23:59:59.999Z"
-            ).toLocaleString()
-        );
     }
 
     const pipeline: PipelineStage[] = [
