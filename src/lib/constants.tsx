@@ -10,10 +10,9 @@ import {
     UserSearch,
     BoxSelect,
     Lock,
-    ArrowUpCircle,
     TargetIcon,
-    TramFrontIcon,
     AnchorIcon,
+    BarChart2Icon,
 } from "lucide-react";
 
 export const navigation = [
@@ -42,8 +41,13 @@ export const DashboardLinks = [
     {
         link: "/dashboard/target_analysis",
         name: "target_Analysis",
+        Icon: <AnchorIcon className="text-orange-800 dark:text-indigo-500" />,
+    },
+    {
+        link: "/dashboard/charts",
+        name: "charts",
         Icon: (
-            <AnchorIcon className="text-orange-800 dark:text-indigo-500" />
+            <BarChart2Icon className="text-orange-800 dark:text-indigo-500" />
         ),
     },
     {

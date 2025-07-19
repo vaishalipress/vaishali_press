@@ -1,16 +1,23 @@
 "use client";
+import { Filter } from "@/components/filter";
 import Chart from "@/components/performance/Chart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useClientPerformanceStats } from "@/hooks/use-fetch-data";
+import {
+    useClientPerformanceStats,
+    useDistrictPerformanceByProducts,
+} from "@/hooks/use-fetch-data";
 import { useFilterDate } from "@/hooks/useFilterDate";
 import { useMemo, useState } from "react";
 
-export default function ChartWrapper() {
+function ClientPerformance() {
     const N = 10;
-
     const { date, setDate, toggleType, type } = useFilterDate();
-    const { data: clientsData, isLoading } = useClientPerformanceStats(date);
+    const { data: clientsData, isLoading } = useClientPerformanceStats(date, [
+        "65b91e25c8aeefd5b6171ca1",
+        "65b91da3f46eaa0c8bd42667",
+    ]);
+
     const [showAll, setShowAll] = useState(false);
     const [search, setSearch] = useState("");
 
@@ -32,31 +39,261 @@ export default function ChartWrapper() {
             ...entry,
             name: `${index + 1}. ${entry.name}`, // Add rank prefix
         }));
-    }, [search, showAll]);
+    }, [search, showAll, clientsData]);
 
     return (
-        <div className="space-y-4">
-            <div className="flex">
-                {/* 🔍 Search */}
-                <Input
-                    type="text"
-                    placeholder="Search client..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
+        <div className="space-y-4 py-2">
+            <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
+                <h1 className="text-sm lg:text-base uppercase font-semibold">
+                    Client Performance
+                </h1>
 
-                {/* 🔁 Toggle */}
-                <Button
-                    onClick={() => setShowAll((prev) => !prev)}
-                    variant={"secondary"}
-                    className="ml-2"
-                >
-                    {showAll ? "Show Top 10" : "Show All"}
-                </Button>
+                <div className="flex space-x-2 w-fit">
+                    <Filter
+                        date={date}
+                        setDate={setDate}
+                        type={type}
+                        toggleType={toggleType}
+                        isLoading={isLoading}
+                        download={false}
+                    >
+                        <Input
+                            type="text"
+                            placeholder="Search client..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            disabled={isLoading}
+                        />
+
+                        {/* 🔁 Toggle */}
+                        <Button
+                            onClick={() => setShowAll((prev) => !prev)}
+                            variant={"secondary"}
+                            className="ml-2"
+                            disabled={isLoading}
+                        >
+                            {showAll ? "Show Top 10" : "Show All"}
+                        </Button>
+                    </Filter>
+                </div>
             </div>
 
             {/* 📊 Chart */}
-            <Chart type="bar" data={chartData || []} />
+            {isLoading ? (
+                <div className="flex flex-col items-center justify-center h-64 bg-slate-100 dark:bg-slate-800 rounded-md">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+                    <p className="text-slate-600 dark:text-slate-300">
+                        Loading client data...
+                    </p>
+                </div>
+            ) : chartData?.length ? (
+                <Chart type="bar" data={chartData} />
+            ) : (
+                <div className="flex flex-col items-center justify-center h-64 bg-slate-100 dark:bg-slate-800 rounded-md">
+                    <p className="text-slate-600 dark:text-slate-300">
+                        {search
+                            ? "No clients match your search"
+                            : "No client data available"}
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function DistrictPerformance() {
+    const N = 10;
+    const { date, setDate, toggleType, type } = useFilterDate();
+    const { data: clientsData, isLoading } = useDistrictPerformanceByProducts(
+        date,
+        ["65b91e25c8aeefd5b6171ca1", "65b91da3f46eaa0c8bd42667"]
+    );
+
+    const [showAll, setShowAll] = useState(false);
+    const [search, setSearch] = useState("");
+
+    // 🔁 Filter + sort + slice data
+    const chartData = useMemo(() => {
+        const filtered = clientsData
+            ?.filter((item) =>
+                item.district.toLowerCase().includes(search.toLowerCase())
+            )
+            .map((item) => ({
+                name: item.district,
+                value: item.totalQtySold,
+            }))
+            .sort((a, b) => b.value - a.value);
+
+        const finalData = showAll ? filtered : filtered?.slice(0, N);
+
+        return finalData?.map((entry, index) => ({
+            ...entry,
+            name: `${index + 1}. ${entry.name}`, // Add rank prefix
+        }));
+    }, [search, showAll, clientsData]);
+
+    return (
+        <div className="space-y-4 py-2">
+            <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
+                <h1 className="text-sm lg:text-base uppercase font-semibold">
+                    District Performance
+                </h1>
+
+                <div className="flex space-x-2 w-fit">
+                    <Filter
+                        date={date}
+                        setDate={setDate}
+                        type={type}
+                        toggleType={toggleType}
+                        isLoading={isLoading}
+                        download={false}
+                    >
+                        <Input
+                            type="text"
+                            placeholder="Search client..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            disabled={isLoading}
+                        />
+
+                        {/* 🔁 Toggle */}
+                        <Button
+                            onClick={() => setShowAll((prev) => !prev)}
+                            variant={"secondary"}
+                            className="ml-2"
+                            disabled={isLoading}
+                        >
+                            {showAll ? "Show Top 10" : "Show All"}
+                        </Button>
+                    </Filter>
+                </div>
+            </div>
+
+            {/* 📊 Chart */}
+            {isLoading ? (
+                <div className="flex flex-col items-center justify-center h-64 bg-slate-100 dark:bg-slate-800 rounded-md">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+                    <p className="text-slate-600 dark:text-slate-300">
+                        Loading client data...
+                    </p>
+                </div>
+            ) : chartData?.length ? (
+                <Chart type="bar" data={chartData} />
+            ) : (
+                <div className="flex flex-col items-center justify-center h-64 bg-slate-100 dark:bg-slate-800 rounded-md">
+                    <p className="text-slate-600 dark:text-slate-300">
+                        {search
+                            ? "No clients match your search"
+                            : "No client data available"}
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+}
+function MarketPerformance() {
+    const N = 10;
+    const { date, setDate, toggleType, type } = useFilterDate();
+    const { data: clientsData, isLoading } = useDistrictPerformanceByProducts(
+        date,
+        ["65b91e25c8aeefd5b6171ca1", "65b91da3f46eaa0c8bd42667"]
+    );
+
+    const [showAll, setShowAll] = useState(false);
+    const [search, setSearch] = useState("");
+
+    // 🔁 Filter + sort + slice data
+    const chartData = useMemo(() => {
+        const filtered = clientsData
+            ?.flatMap((d) => {
+                return d.markets.map((m) => ({
+                    ...m,
+                    name: `${m.name} ${d.district}`,
+                }));
+            })
+            ?.filter((item) =>
+                item.name.toLowerCase().includes(search.toLowerCase())
+            )
+            .map((item) => ({
+                name: item.name,
+                value: item.totalQtySold,
+            }))
+            .sort((a, b) => b.value - a.value);
+
+        const finalData = showAll ? filtered : filtered?.slice(0, N);
+
+        return finalData?.map((entry, index) => ({
+            ...entry,
+            name: `${index + 1}. ${entry.name}`, // Add rank prefix
+        }));
+    }, [search, showAll, clientsData]);
+
+    return (
+        <div className="space-y-4 py-2">
+            <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
+                <h1 className="text-sm lg:text-base uppercase font-semibold">
+                    Market Performance
+                </h1>
+
+                <div className="flex space-x-2 w-fit">
+                    <Filter
+                        date={date}
+                        setDate={setDate}
+                        type={type}
+                        toggleType={toggleType}
+                        isLoading={isLoading}
+                        download={false}
+                    >
+                        <Input
+                            type="text"
+                            placeholder="Search client..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            disabled={isLoading}
+                        />
+
+                        {/* 🔁 Toggle */}
+                        <Button
+                            onClick={() => setShowAll((prev) => !prev)}
+                            variant={"secondary"}
+                            className="ml-2"
+                            disabled={isLoading}
+                        >
+                            {showAll ? "Show Top 10" : "Show All"}
+                        </Button>
+                    </Filter>
+                </div>
+            </div>
+
+            {/* 📊 Chart */}
+            {isLoading ? (
+                <div className="flex flex-col items-center justify-center h-64 bg-slate-100 dark:bg-slate-800 rounded-md">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+                    <p className="text-slate-600 dark:text-slate-300">
+                        Loading client data...
+                    </p>
+                </div>
+            ) : chartData?.length ? (
+                <Chart type="bar" data={chartData} />
+            ) : (
+                <div className="flex flex-col items-center justify-center h-64 bg-slate-100 dark:bg-slate-800 rounded-md">
+                    <p className="text-slate-600 dark:text-slate-300">
+                        {search
+                            ? "No clients match your search"
+                            : "No client data available"}
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default function ChartsPage() {
+    return (
+        <div>
+            <ClientPerformance />
+            <DistrictPerformance />
+            <MarketPerformance />
         </div>
     );
 }

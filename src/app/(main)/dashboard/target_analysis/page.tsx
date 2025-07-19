@@ -73,7 +73,7 @@ export default function TargetAnalysisPage() {
             params.append("month", month);
 
             const fromDate = new Date(year, Number(month), 1); // July 1, 2025
-            const toDate = new Date(year, Number(month + 1), 0); // July 31, 2025
+            const toDate = new Date(year, Number(month + 1), 0, 23, 59, 59); // July 31, 2025
 
             params.set("from", fromDate.toUTCString());
             params.set("to", toDate.toUTCString());

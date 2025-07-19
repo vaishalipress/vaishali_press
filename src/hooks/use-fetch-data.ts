@@ -87,18 +87,27 @@ export const useDistrictPerformanceByClient = (date: DateRange | undefined) => {
     });
 };
 
-export const useClientPerformanceStats = (date: DateRange | undefined) => {
+export const useClientPerformanceStats = (
+    date: DateRange | undefined,
+    productIds: string[] = []
+) => {
     return useQuery<ClientPerformance[]>({
         queryKey: [
             "client Performance stats",
             date?.from?.getDate(),
             date?.to?.getDate(),
+            productIds,
         ],
         queryFn: async () => {
             const { data } = await axios.get(
                 `/api/dashboard/clientStats?${
                     date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
-                }&${date?.to && `to=${getDayMax(date.to).toUTCString()}`}`
+                }&${
+                    date?.to &&
+                    `to=${getDayMax(
+                        date.to
+                    ).toUTCString()}&productIds=${productIds.join(",")}`
+                }`
             );
             return data;
         },
@@ -125,19 +134,23 @@ export const useAllProductPerformanceInDetails = (
     });
 };
 export const useDistrictPerformanceByProducts = (
-    date: DateRange | undefined
+    date: DateRange | undefined,
+    productIds: string[] = []
 ) => {
     return useQuery<ProductStatsInEachDistrict[]>({
         queryKey: [
             "DistrictPerformanceByProducts",
             date?.from?.getDate(),
             date?.to?.getDate(),
+            productIds,
         ],
         queryFn: async () => {
             const { data } = await axios.get(
                 `/api/dashboard/districtStatByProduct?${
                     date?.from && `from=${getDayMin(date.from)?.toUTCString()}`
-                }&${date?.to && `to=${getDayMax(date.to).toUTCString()}`}`
+                }&${
+                    date?.to && `to=${getDayMax(date.to).toUTCString()}`
+                }&productIds=${productIds?.join(",")}`
             );
             return data;
         },

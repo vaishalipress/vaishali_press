@@ -1,6 +1,7 @@
 import CONNECT_TO_DB from "@/lib/connectToDb";
 import { isAuth } from "@/lib/isAuth";
 import Sale from "@/models/sale";
+import mongoose from "mongoose";
 
 CONNECT_TO_DB();
 
@@ -26,6 +27,18 @@ export const GET = async (req: Request) => {
             ? new Date(searchParams?.get("to")!)
             : new Date();
 
+        const productIdsParam = searchParams.get("productIds"); // Comma-separated product IDs
+        let productIds: mongoose.Types.ObjectId[] | undefined;
+        if (productIdsParam) {
+            const ids = productIdsParam.split(",");
+            productIds = ids.map((id) => {
+                if (!mongoose.Types.ObjectId.isValid(id)) {
+                    throw new Error(`Invalid product ID format: ${id}`);
+                }
+                return new mongoose.Types.ObjectId(id);
+            });
+        }
+
         const sales = await Sale.aggregate([
             {
                 $match: {
@@ -37,6 +50,8 @@ export const GET = async (req: Request) => {
                         : {
                               $lte: to,
                           },
+
+                    ...(productIds?.length && { product: { $in: productIds } }),
                 },
             },
             {
