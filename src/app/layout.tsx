@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "react-day-picker/style.css";
 import AuthProvider from "@/components/providers/auth-provider";
 import { Analytics } from "@vercel/analytics/react";
 import QueryProvider from "@/components/providers/react-query-provider";

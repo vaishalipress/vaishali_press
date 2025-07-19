@@ -53,8 +53,8 @@ import { useClient, useProduct } from "@/hooks/use-fetch-data";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Calendar } from "../ui/calendar";
 import { useSaleFilter } from "@/hooks/useSaleFilter";
+import { DayPicker } from "react-day-picker";
 
 export const EditSaleModal = () => {
     const { isOpen, onClose, type, data, onOpen } = useModal();
@@ -166,11 +166,12 @@ export const EditSaleModal = () => {
                                                 </Button>
                                             </PopoverTrigger>
                                             <PopoverContent className="w-auto p-0">
-                                                <Calendar
+                                                <DayPicker
+                                                    animate
                                                     mode="single"
+                                                    timeZone="UTC"
                                                     selected={field.value}
                                                     onSelect={field.onChange}
-                                                    initialFocus
                                                 />
                                             </PopoverContent>
                                         </Popover>

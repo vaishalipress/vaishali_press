@@ -1,11 +1,11 @@
 "use client";
 
-import { useAssests } from "@/hooks/use-fetch-data";
+import { useAssets } from "@/hooks/use-fetch-data";
 import { Loader2 } from "lucide-react";
 import { ImageCard } from "./ImageCard";
 
 export const CarouselImageList = () => {
-    const { data, isLoading } = useAssests();
+    const { data, isLoading } = useAssets();
     return (
         <div>
             <h1 className="text-2xl uppercase font-semibold mt-5 mb-5">

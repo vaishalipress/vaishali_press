@@ -51,6 +51,11 @@ interface ApiResponse {
     results?: DistrictData[];
 }
 
+interface ResultStats {
+    pass: number;
+    fail: number;
+}
+
 export default function TargetAnalysisPage() {
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth(); // 0-11
@@ -63,7 +68,19 @@ export default function TargetAnalysisPage() {
         "65b91da3f46eaa0c8bd42667",
     ]);
 
-    // const { data: products } = useProduct();
+    // Generate date range for the selected month/year using UTC timezone
+    const getDateRange = (year: number, monthIndex: number) => {
+        // Create dates in UTC timezone for consistency
+        const fromDate = new Date(Date.UTC(year, monthIndex, 1, 0, 0, 0, 0));
+        const toDate = new Date(
+            Date.UTC(year, monthIndex + 1, 0, 23, 59, 59, 999)
+        );
+
+        return {
+            from: fromDate.toISOString(),
+            to: toDate.toISOString(),
+        };
+    };
 
     const { data, isLoading, error } = useQuery<ApiResponse>({
         queryKey: ["target-analysis", year, month, district, selectedProducts],
@@ -72,75 +89,112 @@ export default function TargetAnalysisPage() {
             params.append("year", year.toString());
             params.append("month", month);
 
-            const fromDate = new Date(year, Number(month), 1); // July 1, 2025
-            const toDate = new Date(year, Number(month + 1), 0, 23, 59, 59); // July 31, 2025
+            const { from, to } = getDateRange(year, Number(month));
+            params.set("from", from);
+            params.set("to", to);
 
-            params.set("from", fromDate.toUTCString());
-            params.set("to", toDate.toUTCString());
-            if (district) params.append("district", district);
+            if (district) {
+                params.append("district", district);
+            }
+
             if (selectedProducts?.length > 0) {
                 params.append("productIds", selectedProducts.join(","));
             }
-            console.log(params.get("productIds"));
-            const res = await axios.get(
+
+            const response = await axios.get(
                 `/api/target/analysis?${params.toString()}`
             );
-            return res.data;
+            return response.data;
         },
+        enabled: Boolean(year && month !== ""), // Only run query when we have required params
     });
 
+    // Calculate pass/fail statistics
+    const resultStats: ResultStats = data?.results?.reduce(
+        (stats, districtData) => {
+            if (districtData.totalQty >= districtData.totalTarget) {
+                stats.pass += 1;
+            } else {
+                stats.fail += 1;
+            }
+            return stats;
+        },
+        { pass: 0, fail: 0 }
+    ) || { pass: 0, fail: 0 };
+
     const exportDataToPDF = async () => {
-        if (isLoading) return;
+        if (isLoading || !data?.results?.length) return;
+
         const doc = new jsPDF();
         const exportData: (number | string)[][] = [];
-        data?.results?.forEach((d, idx) => {
-            const totalTarget = d?.totalTarget;
-            const totalQty = d?.totalQty;
-            const result = totalQty - totalTarget;
+
+        data.results.forEach((districtData, idx) => {
+            const { totalTarget, totalQty, district } = districtData;
+            const result = totalQty >= totalTarget ? "Pass" : "Fail";
+
             exportData.push([
-                `${idx + 1}`,
-                d?.district?.toUpperCase(),
+                idx + 1,
+                district.toUpperCase(),
                 totalTarget,
                 totalQty,
-                result >= 0 ? "Pass" : "Fail",
+                result,
             ]);
         });
 
         autoTable(doc, {
             head: [["S.NO", "DISTRICT", "TARGET", "SOLD", "RESULT"]],
             body: exportData,
+            styles: { fontSize: 10 },
+            headStyles: { fillColor: [255, 165, 0] }, // Orange header
         });
 
-        doc.save("District_Target.pdf");
+        const monthName = MONTHS[Number(month)];
+        doc.save(`District_Target_${monthName}_${year}.pdf`);
     };
-    const [result, setResult] = useState({ pass: 0, fail: 0 });
-    useEffect(() => {
-        const d = { ...result };
-        data?.results?.forEach((r) => {
-            if (r.totalQty >= r.totalTarget) {
-                d.pass += 1;
-            } else {
-                d.fail += 1;
-            }
-            setResult(d);
-        });
-    }, [data]);
+
+    const calculateMarketStats = (markets: MarketData[]) => {
+        return markets.reduce(
+            (stats, market) => {
+                if (market.qty >= market.target) {
+                    stats.pass += 1;
+                } else {
+                    stats.fail += 1;
+                }
+                return stats;
+            },
+            { pass: 0, fail: 0 }
+        );
+    };
+
+    const totalSold =
+        data?.results?.reduce(
+            (total, districtData) => total + districtData.totalQty,
+            0
+        ) || 0;
+
+    const totalTarget =
+        data?.results?.reduce(
+            (total, districtData) => total + districtData.totalTarget,
+            0
+        ) || 0;
 
     return (
         <div className="max-w-full mx-auto p-4">
-            {/* Always visible filter bar */}
+            {/* Filter Bar */}
             <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
-                <h1 className="text-sm lg:text-base uppercase  font-semibold">
+                <h1 className="text-sm lg:text-base uppercase font-semibold">
                     Target Analysis
                 </h1>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                     <Input
                         type="number"
                         value={year}
                         onChange={(e) => setYear(Number(e.target.value))}
                         placeholder="Year"
                         className="w-32"
+                        min="2020"
+                        max="2030"
                     />
 
                     <Select value={month} onValueChange={setMonth}>
@@ -159,22 +213,6 @@ export default function TargetAnalysisPage() {
                         </SelectContent>
                     </Select>
 
-                    {/* <MultiSelect
-                        options={
-                            products
-                                ?.sort((a, b) =>
-                                    a?.name?.localeCompare(b?.name)
-                                )
-                                .map((p) => ({
-                                    id: p?._id,
-                                    name: p?.name,
-                                })) || []
-                        }
-                        selected={selectedProducts}
-                        onChange={setSelectedProducts}
-                        placeholder="Select products"
-                    /> */}
-
                     <Input
                         type="text"
                         value={district}
@@ -183,29 +221,52 @@ export default function TargetAnalysisPage() {
                         className="w-48"
                     />
 
-                    <Button variant={"secondary"} onClick={exportDataToPDF}>
+                    <Button
+                        variant="secondary"
+                        onClick={exportDataToPDF}
+                        disabled={isLoading || !data?.results?.length}
+                    >
                         <Download className="w-5 h-5" />
                     </Button>
                 </div>
             </div>
 
-            {isLoading ? (
+            {/* Loading State */}
+            {isLoading && (
                 <div className="space-y-4">
                     <Skeleton className="h-10 w-full" />
                     {[...Array(5)].map((_, i) => (
                         <Skeleton key={i} className="h-12 w-full" />
                     ))}
                 </div>
-            ) : error ? (
-                <div className="text-red-500 p-4">Error loading data</div>
-            ) : !data?.results?.length ? (
-                <div className="text-gray-500 p-4">
+            )}
+
+            {/* Error State */}
+            {error && (
+                <div className="text-red-500 p-4 bg-red-50 rounded-md">
+                    Error loading data. Please try again.
+                </div>
+            )}
+
+            {/* Empty State */}
+            {!isLoading && !error && !data?.results?.length && (
+                <div className="text-gray-500 p-8 text-center bg-gray-50 rounded-md">
                     No data available for the selected filters
                 </div>
-            ) : (
+            )}
+
+            {/* Data Display */}
+            {!isLoading && !error && data?.results?.length && (
                 <div className="bg-white rounded-lg shadow">
                     <Accordion type="multiple">
                         {data.results.map((districtData, idx) => {
+                            const marketStats = calculateMarketStats(
+                                districtData.markets
+                            );
+                            const isDistrictPassing =
+                                districtData.totalQty >=
+                                districtData.totalTarget;
+
                             return (
                                 <AccordionItem
                                     key={districtData.district}
@@ -227,52 +288,40 @@ export default function TargetAnalysisPage() {
                                                     Sold:{" "}
                                                     {districtData.totalQty}
                                                 </span>
-                                                <span>
+                                                <span
+                                                    className={`font-semibold ${
+                                                        isDistrictPassing
+                                                            ? "text-green-600"
+                                                            : "text-red-600"
+                                                    }`}
+                                                >
                                                     Result:{" "}
-                                                    {districtData?.totalQty >=
-                                                    districtData?.totalTarget
+                                                    {isDistrictPassing
                                                         ? "Pass"
-                                                        : "Fail"}{" "}
+                                                        : "Fail"}
                                                 </span>
                                             </div>
                                         </div>
                                     </AccordionTrigger>
                                     <AccordionContent>
                                         <div className="text-end px-2 py-1 space-x-3">
-                                            <span>
-                                                Pass :{" "}
-                                                {districtData.markets?.reduce(
-                                                    (prev, curr) =>
-                                                        prev +
-                                                        (curr.qty >=
-                                                        curr?.target
-                                                            ? 1
-                                                            : 0),
-                                                    0
-                                                )}
+                                            <span className="text-green-600">
+                                                Pass: {marketStats.pass}
                                             </span>
-                                            <span>
-                                                Fail :{" "}
-                                                {districtData.markets?.reduce(
-                                                    (prev, curr) =>
-                                                        prev +
-                                                        (curr.qty >=
-                                                        curr?.target
-                                                            ? 0
-                                                            : 1),
-                                                    0
-                                                )}
+                                            <span className="text-red-600">
+                                                Fail: {marketStats.fail}
                                             </span>
                                             <Button
-                                                variant={"secondary"}
-                                                size={"icon"}
+                                                variant="secondary"
+                                                size="icon"
                                                 onClick={() =>
                                                     downloadToPDF(
-                                                        isLoading,
+                                                        false,
                                                         `#table${idx}`,
-                                                        districtData?.district
+                                                        districtData.district
                                                     )
                                                 }
+                                                title={`Download ${districtData.district} report`}
                                             >
                                                 <Download className="w-4 h-4" />
                                             </Button>
@@ -294,9 +343,9 @@ export default function TargetAnalysisPage() {
                                             </TableHeader>
                                             <TableBody>
                                                 {districtData.markets.map(
-                                                    (market, idx) => {
-                                                        const result =
-                                                            market.qty -
+                                                    (market, marketIdx) => {
+                                                        const isMarketPassing =
+                                                            market.qty >=
                                                             market.target;
 
                                                         return (
@@ -306,7 +355,9 @@ export default function TargetAnalysisPage() {
                                                                 }
                                                             >
                                                                 <TableCell>
-                                                                    {idx + 1}.{" "}
+                                                                    {marketIdx +
+                                                                        1}
+                                                                    .{" "}
                                                                     {capitalizeWords(
                                                                         market.name
                                                                     )}
@@ -319,8 +370,14 @@ export default function TargetAnalysisPage() {
                                                                 <TableCell>
                                                                     {market.qty}
                                                                 </TableCell>
-                                                                <TableCell>
-                                                                    {result >= 0
+                                                                <TableCell
+                                                                    className={`font-medium ${
+                                                                        isMarketPassing
+                                                                            ? "text-green-600"
+                                                                            : "text-red-600"
+                                                                    }`}
+                                                                >
+                                                                    {isMarketPassing
                                                                         ? "Pass"
                                                                         : "Fail"}
                                                                 </TableCell>
@@ -336,19 +393,19 @@ export default function TargetAnalysisPage() {
                         })}
                     </Accordion>
 
-                    <div className="text-right">
-                        <span className="text-right text-base px-10">
-                            Total Sold :{" "}
-                            {data?.results?.reduce(
-                                (prev, curr) => prev + curr.totalQty,
-                                0
-                            )}
+                    {/* Summary Statistics */}
+                    <div className="text-right px-4 py-3 bg-gray-50 rounded-b-lg space-x-6">
+                        <span className="text-base font-medium">
+                            Total Target: {totalTarget}
                         </span>
-                        <span className="text-right text-base px-10">
-                            Total Pass : {result?.pass}
+                        <span className="text-base font-medium">
+                            Total Sold: {totalSold}
                         </span>
-                        <span className="text-right text-base px-10">
-                            Total Fail : {result?.fail}
+                        <span className="text-base font-medium text-green-600">
+                            Pass: {resultStats.pass}
+                        </span>
+                        <span className="text-base font-medium text-red-600">
+                            Fail: {resultStats.fail}
                         </span>
                     </div>
                 </div>

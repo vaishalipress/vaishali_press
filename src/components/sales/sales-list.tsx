@@ -23,7 +23,7 @@ import { useSale } from "@/hooks/use-fetch-data";
 import { FilterSale } from "@/components/sales/filter-sales";
 import { useSaleFilter } from "@/hooks/useSaleFilter";
 import Pagination from "../pagination/pagination";
-import { downloadToPDF } from "@/lib/utils";
+import { downloadToPDF, formatDateUTC } from "@/lib/utils";
 import { Suspense, useEffect, useState, useRef, useCallback } from "react";
 import { Checkbox } from "../ui/checkbox";
 import { SalesTypeExtended } from "@/lib/types";
@@ -46,15 +46,15 @@ export default function SalesList() {
         setPage,
         setView,
     } = useSaleFilter();
-    const { data, isLoading } = useSale(
+    const { data, isLoading } = useSale({
         date,
         client,
         product,
         district,
         market,
         page,
-        view
-    ); //fetch data
+        view,
+    }); //fetch data
 
     const [amount, setAmount] = useState(0);
     const [qty, setQty] = useState(0);
@@ -385,10 +385,7 @@ export default function SalesList() {
                                     </TableCell>
                                     <TableCell className="text-xs lg:text-sm">
                                         {sale?.date &&
-                                            format(
-                                                new Date(sale?.date),
-                                                "dd-MM-yyyy"
-                                            )}
+                                            formatDateUTC(sale?.date)}
                                     </TableCell>
                                     <TableCell className="text-xs lg:text-sm">
                                         {sale?.client?.name.toUpperCase()}

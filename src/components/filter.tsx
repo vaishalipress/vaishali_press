@@ -5,11 +5,10 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+import { DayPicker } from "react-day-picker";
 import { Button } from "@/components/ui/button";
-import { cn, downloadToPDF } from "@/lib/utils";
+import { cn, downloadToPDF, formatDateUTC } from "@/lib/utils";
 import { CalendarIcon, Download } from "lucide-react";
-import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { filterType } from "@/hooks/useSaleFilter";
 import { HtmlHTMLAttributes } from "react";
@@ -24,6 +23,7 @@ interface props extends HtmlHTMLAttributes<HTMLDivElement> {
     toggleType: (value: filterType) => void;
     setDate: (value: DateRange | undefined) => void;
 }
+
 export const Filter = ({
     toggleType,
     type,
@@ -36,6 +36,20 @@ export const Filter = ({
     className,
     children,
 }: props) => {
+    /**
+     * Generate PDF filename with UTC dates
+     */
+    const generatePDFFileName = (): string => {
+        if (!date?.from) return `${downloadName}.pdf`;
+
+        const fromDate = formatDateUTC(date.from, "yyyy-MM-dd");
+        const toDate = date.to
+            ? formatDateUTC(date.to, "yyyy-MM-dd")
+            : fromDate;
+
+        return `${downloadName}-${fromDate}-${toDate}.pdf`;
+    };
+
     return (
         <div
             className={cn(
@@ -85,11 +99,11 @@ export const Filter = ({
                         {date?.from ? (
                             date.to ? (
                                 <>
-                                    {format(date.from, "LLL dd, y")} -{" "}
-                                    {format(date.to, "LLL dd, y")}
+                                    {formatDateUTC(date.from, "LLL dd, y")} -{" "}
+                                    {formatDateUTC(date.to, "LLL dd, y")}
                                 </>
                             ) : (
-                                format(date.from, "LLL dd, y")
+                                formatDateUTC(date.from, "LLL dd, y")
                             )
                         ) : (
                             <span>Pick a date</span>
@@ -97,9 +111,10 @@ export const Filter = ({
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                        initialFocus
+                    <DayPicker
+                        animate
                         mode="range"
+                        timeZone="UTC"
                         defaultMonth={date?.from}
                         selected={date}
                         onSelect={(val) => {
@@ -110,17 +125,15 @@ export const Filter = ({
                     />
                 </PopoverContent>
             </Popover>
+
             {children}
+
             {download && html && (
                 <Button
                     variant={"ghost"}
                     size={"icon"}
                     onClick={() =>
-                        downloadToPDF(
-                            isLoading,
-                            html,
-                            `${downloadName}-${date?.from?.toDateString()}-${date?.to?.toDateString()}.pdf`
-                        )
+                        downloadToPDF(isLoading, html, generatePDFFileName())
                     }
                 >
                     <Download className="w-5 h-5" />

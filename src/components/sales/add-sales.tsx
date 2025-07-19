@@ -22,7 +22,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -53,6 +52,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useSaleFilter } from "@/hooks/useSaleFilter";
 import { ClientTypeExtented } from "@/lib/types";
+import { DayPicker } from "react-day-picker";
 
 export default function AddSales() {
     const form = useForm<z.infer<typeof salesSchema>>({
@@ -71,7 +71,9 @@ export default function AddSales() {
     const { page, view } = useSaleFilter();
     const { data: products, isLoading: isProductLoading } = useProduct();
     const { data: clientsData, isLoading: isClientLoading } = useClient();
-    const [clients, setClients] = useState<ClientTypeExtented[] | undefined>([])
+    const [clients, setClients] = useState<ClientTypeExtented[] | undefined>(
+        []
+    );
 
     useEffect(() => {
         const sorted = clientsData?.sort(function (a, b) {
@@ -84,8 +86,8 @@ export default function AddSales() {
             return 0;
         });
 
-        setClients(sorted)
-    }, [clientsData])
+        setClients(sorted);
+    }, [clientsData]);
 
     const { mutate, isPending } = useMutation({
         mutationFn: async (values: z.infer<typeof salesSchema>) => {
@@ -129,10 +131,10 @@ export default function AddSales() {
             }
         },
         onSettled: () => {
-            form.resetField("client")
-            form.resetField("product")
-            form.resetField("qty")
-            form.resetField("rate")
+            form.resetField("client");
+            form.resetField("product");
+            form.resetField("qty");
+            form.resetField("rate");
             setTotal(0);
         },
 
@@ -193,7 +195,7 @@ export default function AddSales() {
                                                         className={cn(
                                                             "w-[280px] justify-start text-left font-normal",
                                                             !field.value &&
-                                                            "text-muted-foreground"
+                                                                "text-muted-foreground"
                                                         )}
                                                     >
                                                         <CalendarIcon className="mr-5 h-5 w-4" />
@@ -210,13 +212,14 @@ export default function AddSales() {
                                                     </Button>
                                                 </PopoverTrigger>
                                                 <PopoverContent className="w-auto p-0">
-                                                    <Calendar
+                                                    <DayPicker
+                                                        animate
                                                         mode="single"
+                                                        timeZone="UTC"
                                                         selected={field.value}
                                                         onSelect={
                                                             field.onChange
                                                         }
-                                                        initialFocus
                                                     />
                                                 </PopoverContent>
                                             </Popover>
@@ -361,9 +364,9 @@ export default function AddSales() {
                                                 onChange={(e) => {
                                                     setTotal(
                                                         Number(e.target.value) *
-                                                        form.getValues(
-                                                            "rate"
-                                                        )
+                                                            form.getValues(
+                                                                "rate"
+                                                            )
                                                     );
                                                     field.onChange(
                                                         Number(e.target.value)
@@ -395,9 +398,9 @@ export default function AddSales() {
                                                 onChange={(e) => {
                                                     setTotal(
                                                         Number(e.target.value) *
-                                                        form.getValues(
-                                                            "qty"
-                                                        )
+                                                            form.getValues(
+                                                                "qty"
+                                                            )
                                                     );
                                                     field.onChange(
                                                         Number(e.target.value)

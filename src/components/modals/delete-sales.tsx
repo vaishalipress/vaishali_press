@@ -23,8 +23,6 @@ export const DeleteSalesModal = () => {
     const { sales } = data;
     const { date, client, product, market, district, page, view } =
         useSaleFilter();
-
-    console.log(sales);
     const { removeSales } = useCustumQuery();
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {

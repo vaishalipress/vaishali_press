@@ -146,6 +146,25 @@ export interface ClientPerformance {
     sales: ClientSale[];
 }
 
+// Monthly sales data structure
+export interface MonthlySalesDataOfClient {
+    totalQty: number;
+    year: number;
+    month: number;
+}
+
+export interface MonthlySalesDataOfDistrict {
+    totalQty: number;
+    year: number;
+    month: number;
+}
+
+export interface MonthlySalesDataOfMarket {
+    totalQty: number;
+    year: number;
+    month: number;
+}
+
 /**
  * TARGET
  */

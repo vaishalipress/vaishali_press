@@ -16,12 +16,16 @@ async function getDistrictMarketTargetsWithSales(
 
     let dateFilter = {};
     if (from !== undefined && to !== undefined) {
-        // Create dates directly in UTC
-
+        dateFilter = {
+            date: {
+                $gte: from,
+                $lte: to,
+            },
+        };
+    } else if (to !== undefined) {
         dateFilter = {
             date: {
                 $lte: to,
-                $gte: from,
             },
         };
     }
@@ -143,16 +147,33 @@ export const GET = async (req: Request) => {
 
         const { searchParams } = new URL(req.url);
 
-        const productIdsParam = searchParams.get("productIds"); // Comma-separated product IDs
+        // Parse parameters with consistent timezone handling
+        const productIdsParam = searchParams.get("productIds");
         const districtParam = searchParams.get("district");
-        let from: Date | undefined = !!searchParams.get("from")
-            ? new Date(searchParams.get("from")!)
-            : undefined;
-        let to: Date | undefined = !!searchParams.get("to")
-            ? new Date(searchParams?.get("to")!)
-            : new Date();
+
+        let from: Date | undefined;
+        let to: Date;
+
+        const fromParam = searchParams.get("from");
+        const toParam = searchParams.get("to");
+
+        if (fromParam) {
+            from = new Date(fromParam);
+            // Ensure we start from the beginning of the day in UTC
+            from.setUTCHours(0, 0, 0, 0);
+        }
+
+        if (toParam) {
+            to = new Date(toParam);
+            // Ensure we end at the end of the day in UTC
+            to.setUTCHours(23, 59, 59, 999);
+        } else {
+            to = new Date();
+            to.setUTCHours(23, 59, 59, 999);
+        }
+
         // Parse and validate product IDs
-        let productIds: mongoose.Types.ObjectId[] | undefined;
+        let productIds: mongoose.Types.ObjectId[] = [];
         if (productIdsParam) {
             const ids = productIdsParam.split(",");
             productIds = ids.map((id) => {
@@ -165,8 +186,8 @@ export const GET = async (req: Request) => {
 
         const filteredData = await getDistrictMarketTargetsWithSales(
             {
-                to,
                 from,
+                to,
                 district: districtParam || undefined,
             },
             productIds
@@ -182,7 +203,7 @@ export const GET = async (req: Request) => {
     } catch (err) {
         console.error("Target Analysis API Error:", err);
         return Response.json(
-            { message: "Internal Server Error" },
+            { message: "Internal Server Error", success: false },
             { status: 500 }
         );
     }

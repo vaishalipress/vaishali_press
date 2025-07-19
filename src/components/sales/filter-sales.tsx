@@ -14,15 +14,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
-import { DateRange } from "react-day-picker";
+import { DateRange, DayPicker } from "react-day-picker";
 import { filterType } from "@/hooks/useSaleFilter";
 import { useClient, useProduct } from "@/hooks/use-fetch-data";
-import { ClientTypeExtented, ProductTypeExtended } from "@/lib/types";
+import { ProductTypeExtended } from "@/lib/types";
 import { useEffect, useState } from "react";
 
 export const FilterSale = ({
@@ -53,24 +52,11 @@ export const FilterSale = ({
     setView: (view: number) => void;
 }) => {
     const { data: productsData, isLoading: isProductLoading } = useProduct();
-    const [products, setProducts] = useState<ProductTypeExtended[] | undefined>([])
+    const [products, setProducts] = useState<ProductTypeExtended[] | undefined>(
+        []
+    );
 
-    const { data: clientsData, isLoading: isClientLoading } = useClient();
-    const [clients, setClients] = useState<ClientTypeExtented[] | undefined>([])
-
-    useEffect(() => {
-        const sorted = clientsData?.sort(function (a, b) {
-            if (a.name < b.name) {
-                return -1;
-            }
-            if (a.name > b.name) {
-                return 1;
-            }
-            return 0;
-        });
-
-        setClients(sorted)
-    }, [clientsData])
+    const { data: clients, isLoading: isClientLoading } = useClient();
 
     useEffect(() => {
         const sorted = productsData?.sort(function (a, b) {
@@ -82,9 +68,8 @@ export const FilterSale = ({
             }
             return 0;
         });
-        setProducts(sorted)
-    }, [productsData])
-
+        setProducts(sorted);
+    }, [productsData]);
 
     const onChangeView = (value: string) => {
         setView(Number(value));
@@ -96,24 +81,27 @@ export const FilterSale = ({
             <Badge
                 onClick={() => toggleType("all")}
                 variant={"secondary"}
-                className={`text-sm cursor-pointer hover:bg-indigo-300 ${type === "all" && "bg-indigo-300"
-                    }`}
+                className={`text-sm cursor-pointer hover:bg-indigo-300 ${
+                    type === "all" && "bg-indigo-300"
+                }`}
             >
                 All
             </Badge>
             <Badge
                 onClick={() => toggleType("today")}
                 variant={"secondary"}
-                className={`text-sm cursor-pointer hover:bg-indigo-300 ${type === "today" && "bg-indigo-300"
-                    }`}
+                className={`text-sm cursor-pointer hover:bg-indigo-300 ${
+                    type === "today" && "bg-indigo-300"
+                }`}
             >
                 Today
             </Badge>
             <Badge
                 onClick={() => toggleType("yesterday")}
                 variant={"secondary"}
-                className={`text-sm cursor-pointer hover:bg-indigo-300 ${type === "yesterday" && "bg-indigo-300"
-                    }`}
+                className={`text-sm cursor-pointer hover:bg-indigo-300 ${
+                    type === "yesterday" && "bg-indigo-300"
+                }`}
             >
                 Yesterday
             </Badge>
@@ -144,9 +132,10 @@ export const FilterSale = ({
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                        initialFocus
+                    <DayPicker
+                        animate
                         mode="range"
+                        timeZone="UTC"
                         defaultMonth={date?.from}
                         selected={date}
                         onSelect={(val) => {
