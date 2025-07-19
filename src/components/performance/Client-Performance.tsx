@@ -54,6 +54,7 @@ export const ClientPerformance = () => {
             searchClientByName(e.target.value);
         }, 300);
     };
+
     return (
         <div className="mb-4 w-full">
             <div className="flex justify-between mb-3 items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-3 rounded-md">
