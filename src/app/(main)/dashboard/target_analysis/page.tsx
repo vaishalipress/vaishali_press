@@ -20,8 +20,6 @@ import {
 } from "@/components/ui/select";
 import { MONTHS } from "@/lib/constants";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MultiSelect } from "./component/multi-select";
-import { useProduct } from "@/hooks/use-fetch-data";
 import { Input } from "@/components/ui/input";
 import {
     Accordion,
@@ -33,7 +31,7 @@ import autoTable from "jspdf-autotable";
 import jsPDF from "jspdf";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-import { capitalizeWords, downloadToPDF, getDayMax } from "@/lib/utils";
+import { capitalizeWords, downloadToPDF } from "@/lib/utils";
 
 interface MarketData {
     name: string;
@@ -51,16 +49,6 @@ interface DistrictData {
 interface ApiResponse {
     success: boolean;
     results?: DistrictData[];
-}
-
-function getMaxDateForMonth(year: number, month: number): Date {
-    // Create date for first day of next month
-    const firstDayNextMonth = new Date(year, month + 1, 1);
-
-    // Subtract 1 millisecond to get last moment of current month
-    const lastMomentOfMonth = new Date(firstDayNextMonth.getTime() - 1);
-
-    return lastMomentOfMonth;
 }
 
 export default function TargetAnalysisPage() {

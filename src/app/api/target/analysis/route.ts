@@ -8,13 +8,11 @@ async function getDistrictMarketTargetsWithSales(
     filterOptions: {
         from?: Date;
         to?: Date;
-        month?: number;
-        year?: number;
         district?: string;
     } = {},
     productIds: mongoose.Types.ObjectId[] = []
 ) {
-    const { month, year, district, from, to } = filterOptions;
+    const { district, from, to } = filterOptions;
 
     let dateFilter = {};
     if (from !== undefined && to !== undefined) {
@@ -145,8 +143,6 @@ export const GET = async (req: Request) => {
 
         const { searchParams } = new URL(req.url);
 
-        // const yearParam = searchParams.get("year");
-        // const monthParam = searchParams.get("month");
         const productIdsParam = searchParams.get("productIds"); // Comma-separated product IDs
         const districtParam = searchParams.get("district");
         let from: Date | undefined = !!searchParams.get("from")
@@ -167,35 +163,10 @@ export const GET = async (req: Request) => {
             });
         }
 
-        // let month: number | undefined = undefined;
-        // if (monthParam) {
-        //     month = parseInt(monthParam);
-        //     if (isNaN(month) || month < 0 || month > 11) {
-        //         return Response.json(
-        //             { message: "Invalid month parameter (must be 0-11)" },
-        //             { status: 400 }
-        //         );
-        //     }
-        // }
-
-        // // Validate and parse query parameters
-        // let year: number | undefined = undefined;
-        // if (yearParam) {
-        //     year = parseInt(yearParam);
-        //     if (isNaN(year) || year < 2020 || year > 2100) {
-        //         return Response.json(
-        //             { message: "Invalid year parameter" },
-        //             { status: 400 }
-        //         );
-        //     }
-        // }
-
         const filteredData = await getDistrictMarketTargetsWithSales(
             {
                 to,
                 from,
-                // month,
-                // year,
                 district: districtParam || undefined,
             },
             productIds
