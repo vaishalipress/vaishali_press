@@ -123,7 +123,7 @@ export default function AddSales({
                     client: "",
                     qty: 0,
                     rate: 0,
-                    date: new Date(),
+                    date: form.getValues("date"),
                 });
             },
             onError: handleAxiosError,
