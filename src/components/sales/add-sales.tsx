@@ -40,21 +40,26 @@ import {
 import { toast } from "sonner";
 import { salesSchema } from "@/lib/schema";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { date, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
 import { useClient, useProduct } from "@/hooks/use-fetch-data";
-import { cn } from "@/lib/utils";
+import { cn, createDateQueryKey } from "@/lib/utils";
 import { format } from "date-fns";
 import { useSaleFilter } from "@/hooks/useSaleFilter";
-import { ClientTypeExtented } from "@/lib/types";
 import { DayPicker } from "react-day-picker";
 
-export default function AddSales() {
+export default function AddSales({
+    isFormOpen,
+    setIsFormOpen,
+}: {
+    isFormOpen: boolean;
+    setIsFormOpen: (value: boolean) => void;
+}) {
     const form = useForm<z.infer<typeof salesSchema>>({
         resolver: zodResolver(salesSchema),
         defaultValues: {
@@ -64,88 +69,135 @@ export default function AddSales() {
             rate: 0,
             date: new Date(),
         },
+        mode: "onBlur", // Reduce validation frequency
     });
-    const [isFormOpen, setIsFormOpen] = useState(false);
+
     const { addSale } = useCustumQuery();
-    const [total, setTotal] = useState(0);
-    const { page, view } = useSaleFilter();
+    const { page, view, date } = useSaleFilter();
     const { data: products, isLoading: isProductLoading } = useProduct();
     const { data: clientsData, isLoading: isClientLoading } = useClient();
-    const [clients, setClients] = useState<ClientTypeExtented[] | undefined>(
-        []
-    );
 
-    useEffect(() => {
-        const sorted = clientsData?.sort(function (a, b) {
-            if (a.name < b.name) {
-                return -1;
-            }
-            if (a.name > b.name) {
-                return 1;
-            }
-            return 0;
-        });
-
-        setClients(sorted);
+    // Memoize sorted clients to avoid re-sorting on every render
+    const clients = useMemo(() => {
+        if (!clientsData) return [];
+        return [...clientsData].sort((a, b) => a.name.localeCompare(b.name));
     }, [clientsData]);
 
-    const { mutate, isPending } = useMutation({
-        mutationFn: async (values: z.infer<typeof salesSchema>) => {
-            const { data } = await axios.post(`/api/sale`, values);
-            return data;
-        },
+    // Memoize total calculation
+    const total = useMemo(() => {
+        const qty = form.watch("qty");
+        const rate = form.watch("rate");
+        return qty * rate;
+    }, [form.watch("qty"), form.watch("rate")]);
 
-        onSuccess(data) {
-            toast("✅ " + (data?.message as string).toUpperCase());
-            if (data.success) {
-                // All
-                addSale(
-                    [
-                        "sales-list",
-                        undefined,
-                        new Date().getDate(),
-                        "all",
-                        "all",
-                        undefined,
-                        undefined,
-                        page,
-                        view,
-                    ],
-                    data.sale
-                );
-                // Today
-                addSale(
-                    [
-                        "sales-list",
-                        new Date().getDate(),
-                        new Date().getDate(),
-                        "all",
-                        "all",
-                        undefined,
-                        undefined,
-                        page,
-                        view,
-                    ],
-                    data.sale
-                );
+    // Memoize mutation configuration
+    const mutationConfig = useMemo(
+        () => ({
+            mutationFn: async (values: z.infer<typeof salesSchema>) => {
+                const { data } = await axios.post(`/api/sale`, values);
+                return data;
+            },
+            onSuccess(data: any) {
+                toast("✅ " + (data?.message as string).toUpperCase());
+                if (data.success) {
+                    // All
+                    addSale(
+                        [
+                            "sales-list",
+                            createDateQueryKey(date?.from),
+                            createDateQueryKey(date?.to),
+                            "all",
+                            "all",
+                            null,
+                            null,
+                            1,
+                            view,
+                        ],
+                        data.sale
+                    );
+                    // Today
+                    addSale(
+                        [
+                            "sales-list",
+                            createDateQueryKey(date?.from),
+                            createDateQueryKey(date?.to),
+                            "all",
+                            "all",
+                            undefined,
+                            undefined,
+                            page,
+                            view,
+                        ],
+                        data.sale
+                    );
+                }
+            },
+            onSettled: () => {
+                form.reset({
+                    product: "",
+                    client: "",
+                    qty: 0,
+                    rate: 0,
+                    date: new Date(),
+                });
+            },
+            onError: handleAxiosError,
+        }),
+        [addSale, form, page, view]
+    );
+
+    const { mutate, isPending } = useMutation(mutationConfig);
+
+    // Memoize form submit handler
+    const handleSubmit = useCallback(
+        (values: z.infer<typeof salesSchema>) => {
+            mutate(values);
+        },
+        [mutate]
+    );
+
+    // Memoize input change handlers
+    const handleQtyChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = Number(e.target.value);
+            form.setValue("qty", value);
+        },
+        [form]
+    );
+
+    const handleRateChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = Number(e.target.value);
+            form.setValue("rate", value);
+        },
+        [form]
+    );
+
+    const handleProductChange = useCallback(
+        (productId: string) => {
+            const product = products?.find((p) => p._id === productId);
+            if (product) {
+                form.setValue("rate", Number(product.price));
             }
+            form.setValue("product", productId);
         },
-        onSettled: () => {
-            form.resetField("client");
-            form.resetField("product");
-            form.resetField("qty");
-            form.resetField("rate");
-            setTotal(0);
-        },
+        [form, products]
+    );
 
-        onError: handleAxiosError,
-    });
+    // Memoize toggle handlers
+    const handleToggleOpen = useCallback(() => {
+        setIsFormOpen(true);
+    }, [setIsFormOpen]);
+
+    const handleToggleClose = useCallback(() => {
+        setIsFormOpen(false);
+    }, [setIsFormOpen]);
 
     return (
         <div className="max-w-7xl w-full border px-4 py-3 rounded-md shadow-md">
             {!isFormOpen ? (
                 <div
-                    onClick={() => setIsFormOpen(true)}
+                    onClick={handleToggleOpen}
                     className="flex items-center gap-3 cursor-pointer"
                 >
                     <PlusCircle className="w-6 h-6 text-orange-600" />
@@ -165,16 +217,14 @@ export default function AddSales() {
                         <Button
                             variant={"ghost"}
                             size={"icon"}
-                            onClick={() => setIsFormOpen(false)}
+                            onClick={handleToggleClose}
                         >
                             <X className="w-5 h-5" />
                         </Button>
                     </div>
                     <Form {...form}>
                         <form
-                            onSubmit={form.handleSubmit((value) =>
-                                mutate(value)
-                            )}
+                            onSubmit={form.handleSubmit(handleSubmit)}
                             className="flex flex-col gap-5"
                         >
                             {/* Date */}
@@ -236,22 +286,16 @@ export default function AddSales() {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="flex gap-2 items-center">
-                                            <User className="text-rose-600 w-5 h-5" />{" "}
+                                            <User className="text-rose-600 w-5 h-5" />
                                             <span>CLIENT</span>
                                         </FormLabel>
-
                                         <FormControl>
                                             <Select
                                                 value={field.value}
-                                                defaultValue={field.value}
                                                 onValueChange={field.onChange}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue
-                                                        placeholder={
-                                                            "SELECT CLIENT"
-                                                        }
-                                                    />
+                                                    <SelectValue placeholder="SELECT CLIENT" />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectGroup>
@@ -264,15 +308,14 @@ export default function AddSales() {
                                                                 <Loader2 className="animate-spin" />
                                                             </SelectLabel>
                                                         )}
-
-                                                        {clients?.map((c) => (
+                                                        {clients.map((c) => (
                                                             <SelectItem
-                                                                key={c.name}
+                                                                key={c._id}
                                                                 value={c._id}
                                                             >
                                                                 {c.name.toUpperCase()}
                                                                 {c?.market &&
-                                                                    ` - ${c?.market?.toUpperCase()}`}
+                                                                    ` - ${c.market.toUpperCase()}`}
                                                                 {c?.district &&
                                                                     ` - ${c.district.toUpperCase()}`}
                                                             </SelectItem>
@@ -293,31 +336,18 @@ export default function AddSales() {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="flex gap-2 items-center">
-                                            <Box className="text-teal-600 w-5 h-5" />{" "}
+                                            <Box className="text-teal-600 w-5 h-5" />
                                             <span>PRODUCT</span>
                                         </FormLabel>
                                         <FormControl>
                                             <Select
                                                 value={field.value}
-                                                defaultValue={field.value}
-                                                onValueChange={(e: string) => {
-                                                    const p = products?.filter(
-                                                        (p) => p._id === e
-                                                    );
-
-                                                    form.setValue(
-                                                        "rate",
-                                                        Number(p?.[0].price)
-                                                    );
-                                                    field.onChange(e);
-                                                }}
+                                                onValueChange={
+                                                    handleProductChange
+                                                }
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue
-                                                        placeholder={
-                                                            "SELECT PRODUCT"
-                                                        }
-                                                    />
+                                                    <SelectValue placeholder="SELECT PRODUCT" />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectGroup>
@@ -329,10 +359,9 @@ export default function AddSales() {
                                                                 <Loader2 className="animate-spin" />
                                                             </SelectLabel>
                                                         )}
-
                                                         {products?.map((p) => (
                                                             <SelectItem
-                                                                key={p.name}
+                                                                key={p._id}
                                                                 value={p._id}
                                                             >
                                                                 {p.name.toUpperCase()}
@@ -347,31 +376,21 @@ export default function AddSales() {
                                 )}
                             />
 
-                            {/* qty */}
+                            {/* Qty */}
                             <FormField
                                 control={form.control}
                                 name="qty"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="flex gap-2 items-center">
-                                            <Package className="text-lime-600 w-5 h-5" />{" "}
+                                            <Package className="text-lime-600 w-5 h-5" />
                                             <span>QTY</span>
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 {...field}
                                                 type="number"
-                                                onChange={(e) => {
-                                                    setTotal(
-                                                        Number(e.target.value) *
-                                                            form.getValues(
-                                                                "rate"
-                                                            )
-                                                    );
-                                                    field.onChange(
-                                                        Number(e.target.value)
-                                                    );
-                                                }}
+                                                onChange={handleQtyChange}
                                                 min={0}
                                                 placeholder="Quantity"
                                             />
@@ -388,26 +407,16 @@ export default function AddSales() {
                                 render={({ field }) => (
                                     <FormItem>
                                         <Label className="flex gap-2 items-center">
-                                            <BadgeIndianRupee className="w-5 h-5 text-indigo-600" />{" "}
+                                            <BadgeIndianRupee className="w-5 h-5 text-indigo-600" />
                                             <span>RATE</span>
                                         </Label>
                                         <FormControl>
                                             <Input
                                                 {...field}
                                                 type="number"
-                                                onChange={(e) => {
-                                                    setTotal(
-                                                        Number(e.target.value) *
-                                                            form.getValues(
-                                                                "qty"
-                                                            )
-                                                    );
-                                                    field.onChange(
-                                                        Number(e.target.value)
-                                                    );
-                                                }}
+                                                onChange={handleRateChange}
                                                 min={0}
-                                                placeholder="Quantity"
+                                                placeholder="Rate"
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -418,7 +427,7 @@ export default function AddSales() {
                             {/* Total */}
                             <div className="flex flex-col gap-3">
                                 <Label className="flex gap-1 items-center">
-                                    <IndianRupee className="text-zinc-700 w-5 h-5" />{" "}
+                                    <IndianRupee className="text-zinc-700 w-5 h-5" />
                                     <span>TOTAL</span>
                                 </Label>
                                 <Input readOnly value={total} />

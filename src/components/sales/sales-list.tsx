@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { LoadingCells } from "@/components/loading";
-import { format } from "date-fns";
 import { useSale } from "@/hooks/use-fetch-data";
 import { FilterSale } from "@/components/sales/filter-sales";
 import { useSaleFilter } from "@/hooks/useSaleFilter";
@@ -28,7 +27,7 @@ import { Suspense, useEffect, useState, useRef, useCallback } from "react";
 import { Checkbox } from "../ui/checkbox";
 import { SalesTypeExtended } from "@/lib/types";
 
-export default function SalesList() {
+export default function SalesList({ isFormOpen }: { isFormOpen: boolean }) {
     const { onOpen } = useModal();
     const {
         date,
@@ -190,16 +189,22 @@ export default function SalesList() {
             }
         };
 
-        // Add event listeners
-        document.addEventListener("keydown", handleKeyDown);
-        document.addEventListener("keyup", handleKeyUp);
+        if (isFormOpen) {
+            // Remove event listeners
+            document.removeEventListener("keydown", handleKeyDown);
+            document.removeEventListener("keyup", handleKeyUp);
+        } else {
+            // Add event listeners
+            document.addEventListener("keydown", handleKeyDown);
+            document.addEventListener("keyup", handleKeyUp);
+        }
 
         // Cleanup
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
             document.removeEventListener("keyup", handleKeyUp);
         };
-    }, [isShiftPressed, navigateAndToggle, toggleCurrentRow]);
+    }, [isShiftPressed, navigateAndToggle, toggleCurrentRow, isFormOpen]);
 
     // Handle table focus
     const handleTableFocus = () => {
@@ -354,7 +359,7 @@ export default function SalesList() {
                             {isLoading && <LoadingCells cols={8} />}
                             {data?.sales?.map((sale, idx) => (
                                 <TableRow
-                                    key={sale?._id}
+                                    key={sale?._id + idx}
                                     className={`
                                         transition-colors duration-150
                                         ${

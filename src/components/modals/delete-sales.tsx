@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { Loader } from "lucide-react";
 import axios from "axios";
 import { useModal } from "@/hooks/use-modal-store";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { handleAxiosError } from "@/lib/error";
 import { useCustumQuery } from "@/hooks/use-queries";
 import { useSaleFilter } from "@/hooks/useSaleFilter";
@@ -21,9 +21,8 @@ export const DeleteSalesModal = () => {
     const { isOpen, onClose, type, data } = useModal();
     const isModalOpen = isOpen && type === "deleteSales";
     const { sales } = data;
-    const { date, client, product, market, district, page, view } =
-        useSaleFilter();
-    const { removeSales } = useCustumQuery();
+
+    const queryClient = useQueryClient();
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {
             const { data } = await axios.post(`/api/sales/deleteMany`, {
@@ -33,20 +32,7 @@ export const DeleteSalesModal = () => {
         },
         onSuccess(data) {
             toast("😝 " + data?.message.toUpperCase());
-            removeSales(
-                [
-                    "sales-list",
-                    date?.from?.getDate(),
-                    date?.to?.getDate(),
-                    client,
-                    product,
-                    district,
-                    market,
-                    page,
-                    view,
-                ],
-                [...(sales?.keys() || [])]
-            );
+            queryClient.invalidateQueries({ queryKey: ["sales-list"] });
         },
         onError: handleAxiosError,
         onSettled: onClose,
