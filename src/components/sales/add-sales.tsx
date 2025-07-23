@@ -9,15 +9,6 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
     Popover,
     PopoverContent,
     PopoverTrigger,
@@ -40,7 +31,7 @@ import {
 import { toast } from "sonner";
 import { salesSchema } from "@/lib/schema";
 import { useForm } from "react-hook-form";
-import { date, z } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -52,6 +43,60 @@ import { cn, createDateQueryKey } from "@/lib/utils";
 import { format } from "date-fns";
 import { useSaleFilter } from "@/hooks/useSaleFilter";
 import { DayPicker } from "react-day-picker";
+import Select from "react-select";
+
+// Custom styles for react-select to match your UI theme
+const customSelectStyles = {
+    control: (provided: any, state: any) => ({
+        ...provided,
+        minHeight: "40px",
+        borderColor: state.isFocused ? "#e2e8f0" : "#e2e8f0",
+        borderRadius: "6px",
+        boxShadow: state.isFocused
+            ? "0 0 0 2px rgba(59, 130, 246, 0.1)"
+            : "none",
+        "&:hover": {
+            borderColor: "#cbd5e1",
+        },
+    }),
+    placeholder: (provided: any) => ({
+        ...provided,
+        color: "#9ca3af",
+        fontSize: "14px",
+    }),
+    singleValue: (provided: any) => ({
+        ...provided,
+        color: "#374151",
+        fontSize: "14px",
+    }),
+    option: (provided: any, state: any) => ({
+        ...provided,
+        backgroundColor: state.isSelected
+            ? "#3b82f6"
+            : state.isFocused
+            ? "#f1f5f9"
+            : "white",
+        color: state.isSelected ? "white" : "#374151",
+        fontSize: "14px",
+        "&:hover": {
+            backgroundColor: state.isSelected ? "#3b82f6" : "#f1f5f9",
+        },
+    }),
+    menu: (provided: any) => ({
+        ...provided,
+        borderRadius: "6px",
+        boxShadow:
+            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    }),
+    loadingMessage: (provided: any) => ({
+        ...provided,
+        color: "#6b7280",
+    }),
+    noOptionsMessage: (provided: any) => ({
+        ...provided,
+        color: "#6b7280",
+    }),
+};
 
 export default function AddSales({
     isFormOpen,
@@ -82,6 +127,25 @@ export default function AddSales({
         if (!clientsData) return [];
         return [...clientsData].sort((a, b) => a.name.localeCompare(b.name));
     }, [clientsData]);
+
+    // Memoize client options for react-select
+    const clientOptions = useMemo(() => {
+        return clients.map((client) => ({
+            value: client._id,
+            label: `${client.name.toUpperCase()}${
+                client?.market ? ` - ${client.market.toUpperCase()}` : ""
+            }${client?.district ? ` - ${client.district.toUpperCase()}` : ""}`,
+        }));
+    }, [clients]);
+
+    // Memoize product options for react-select
+    const productOptions = useMemo(() => {
+        if (!products) return [];
+        return products.map((product) => ({
+            value: product._id,
+            label: product.name.toUpperCase(),
+        }));
+    }, [products]);
 
     // Memoize total calculation
     const total = useMemo(() => {
@@ -159,7 +223,8 @@ export default function AddSales({
     );
 
     const handleProductChange = useCallback(
-        (productId: string) => {
+        (selectedOption: any) => {
+            const productId = selectedOption?.value || "";
             const product = products?.find((p) => p._id === productId);
             if (product) {
                 form.setValue("rate", Number(product.price));
@@ -167,6 +232,14 @@ export default function AddSales({
             form.setValue("product", productId);
         },
         [form, products]
+    );
+
+    const handleClientChange = useCallback(
+        (selectedOption: any) => {
+            const clientId = selectedOption?.value || "";
+            form.setValue("client", clientId);
+        },
+        [form]
     );
 
     // Memoize toggle handlers
@@ -177,6 +250,14 @@ export default function AddSales({
     const handleToggleClose = useCallback(() => {
         setIsFormOpen(false);
     }, [setIsFormOpen]);
+
+    // Get selected values for react-select
+    const selectedClient = clientOptions.find(
+        (option) => option.value === form.watch("client")
+    );
+    const selectedProduct = productOptions.find(
+        (option) => option.value === form.watch("product")
+    );
 
     return (
         <div className="max-w-7xl w-full border px-4 py-3 rounded-md shadow-md">
@@ -264,7 +345,7 @@ export default function AddSales({
                                 )}
                             />
 
-                            {/* Client */}
+                            {/* Client with Search */}
                             <FormField
                                 control={form.control}
                                 name="client"
@@ -276,45 +357,41 @@ export default function AddSales({
                                         </FormLabel>
                                         <FormControl>
                                             <Select
-                                                value={field.value}
-                                                onValueChange={field.onChange}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="SELECT CLIENT" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectGroup>
-                                                        <SelectLabel className="uppercase">
-                                                            Clients - market -
-                                                            district
-                                                        </SelectLabel>
-                                                        {isClientLoading && (
-                                                            <SelectLabel className="text-center">
-                                                                <Loader2 className="animate-spin" />
-                                                            </SelectLabel>
-                                                        )}
-                                                        {clients.map((c) => (
-                                                            <SelectItem
-                                                                key={c._id}
-                                                                value={c._id}
-                                                            >
-                                                                {c.name.toUpperCase()}
-                                                                {c?.market &&
-                                                                    ` - ${c.market.toUpperCase()}`}
-                                                                {c?.district &&
-                                                                    ` - ${c.district.toUpperCase()}`}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectGroup>
-                                                </SelectContent>
-                                            </Select>
+                                                options={clientOptions}
+                                                value={selectedClient}
+                                                onChange={handleClientChange}
+                                                placeholder="SELECT CLIENT"
+                                                isSearchable
+                                                isClearable
+                                                isMulti={false}
+                                                isLoading={isClientLoading}
+                                                loadingMessage={() =>
+                                                    "Loading clients..."
+                                                }
+                                                noOptionsMessage={() =>
+                                                    "No clients found"
+                                                }
+                                                styles={customSelectStyles}
+                                                className="react-select-container"
+                                                classNamePrefix="react-select"
+                                                filterOption={(
+                                                    option,
+                                                    inputValue
+                                                ) =>
+                                                    option.label
+                                                        .toLowerCase()
+                                                        .includes(
+                                                            inputValue.toLowerCase()
+                                                        )
+                                                }
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
 
-                            {/* Product */}
+                            {/* Product with Search */}
                             <FormField
                                 control={form.control}
                                 name="product"
@@ -326,35 +403,34 @@ export default function AddSales({
                                         </FormLabel>
                                         <FormControl>
                                             <Select
-                                                value={field.value}
-                                                onValueChange={
-                                                    handleProductChange
+                                                options={productOptions}
+                                                value={selectedProduct}
+                                                onChange={handleProductChange}
+                                                placeholder="SELECT PRODUCT"
+                                                isSearchable
+                                                isClearable
+                                                isMulti={false}
+                                                isLoading={isProductLoading}
+                                                loadingMessage={() =>
+                                                    "Loading products..."
                                                 }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="SELECT PRODUCT" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectGroup>
-                                                        <SelectLabel>
-                                                            Products
-                                                        </SelectLabel>
-                                                        {isProductLoading && (
-                                                            <SelectLabel className="text-center">
-                                                                <Loader2 className="animate-spin" />
-                                                            </SelectLabel>
-                                                        )}
-                                                        {products?.map((p) => (
-                                                            <SelectItem
-                                                                key={p._id}
-                                                                value={p._id}
-                                                            >
-                                                                {p.name.toUpperCase()}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectGroup>
-                                                </SelectContent>
-                                            </Select>
+                                                noOptionsMessage={() =>
+                                                    "No products found"
+                                                }
+                                                styles={customSelectStyles}
+                                                className="react-select-container"
+                                                classNamePrefix="react-select"
+                                                filterOption={(
+                                                    option,
+                                                    inputValue
+                                                ) =>
+                                                    option.label
+                                                        .toLowerCase()
+                                                        .includes(
+                                                            inputValue.toLowerCase()
+                                                        )
+                                                }
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
