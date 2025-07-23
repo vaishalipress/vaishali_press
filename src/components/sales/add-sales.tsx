@@ -110,21 +110,6 @@ export default function AddSales({
                             "all",
                             null,
                             null,
-                            1,
-                            view,
-                        ],
-                        data.sale
-                    );
-                    // Today
-                    addSale(
-                        [
-                            "sales-list",
-                            createDateQueryKey(date?.from),
-                            createDateQueryKey(date?.to),
-                            "all",
-                            "all",
-                            undefined,
-                            undefined,
                             page,
                             view,
                         ],
