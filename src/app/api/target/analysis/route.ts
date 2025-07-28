@@ -1,6 +1,7 @@
 import { isAuth } from "@/lib/isAuth";
-import Market from "@/models/market";
+import Market, { MarketI } from "@/models/market";
 import mongoose, { PipelineStage } from "mongoose";
+import { FilterQuery } from "mongoose";
 
 export const dynamic = "force-dynamic";
 
@@ -14,28 +15,31 @@ async function getDistrictMarketTargetsWithSales(
 ) {
     const { district, from, to } = filterOptions;
 
+    // --- Build Date Filter ---
     let dateFilter = {};
-    if (from !== undefined && to !== undefined) {
-        dateFilter = {
-            date: {
-                $gte: from,
-                $lte: to,
-            },
-        };
-    } else if (to !== undefined) {
-        dateFilter = {
-            date: {
-                $lte: to,
-            },
-        };
+    if (from && to) {
+        dateFilter = { date: { $gte: from, $lte: to } };
+    } else if (to) {
+        dateFilter = { date: { $lte: to } };
+    }
+
+    // --- Build Initial Match Query ---
+    // This is the main change: we create a query object.
+    const initialMatch: FilterQuery<MarketI> = {
+        // We now require the target to be greater than 0.
+        target: { $gt: 0 },
+    };
+
+    // If a district is provided, add it to the query.
+    if (district) {
+        initialMatch.district = { $regex: district, $options: "i" };
     }
 
     const pipeline: PipelineStage[] = [
-        // 1. First filter markets by district (partial word match)
+        // 1. First, filter markets.
+        // This stage now filters for target > 0 AND optionally by district.
         {
-            $match: district
-                ? { district: { $regex: district, $options: "i" } }
-                : {},
+            $match: initialMatch,
         },
 
         // 2. Link clients by market name AND district
@@ -44,7 +48,7 @@ async function getDistrictMarketTargetsWithSales(
                 from: "clients",
                 let: {
                     marketName: "$name",
-                    marketDistrict: "$district", // Capture market's district
+                    marketDistrict: "$district",
                 },
                 pipeline: [
                     {
@@ -52,7 +56,7 @@ async function getDistrictMarketTargetsWithSales(
                             $expr: {
                                 $and: [
                                     { $eq: ["$market", "$$marketName"] },
-                                    { $eq: ["$district", "$$marketDistrict"] }, // Match district too
+                                    { $eq: ["$district", "$$marketDistrict"] },
                                 ],
                             },
                         },
@@ -68,27 +72,20 @@ async function getDistrictMarketTargetsWithSales(
                 from: "sales",
                 let: { clientIds: "$marketClients._id" },
                 pipeline: [
-                    // Base client match
                     { $match: { $expr: { $in: ["$client", "$$clientIds"] } } },
-
-                    // Date filter (if month/year provided)
                     ...(Object.keys(dateFilter).length > 0
                         ? [{ $match: dateFilter }]
                         : []),
-
-                    // Product filter (if productIds provided)
                     ...(productIds.length > 0
                         ? [{ $match: { product: { $in: productIds } } }]
                         : []),
-
-                    // Group quantities
                     { $group: { _id: null, totalQty: { $sum: "$qty" } } },
                 ],
                 as: "marketSales",
             },
         },
 
-        // Rest of the pipeline remains the same...
+        // 4. Add totalQty field for easier access
         {
             $addFields: {
                 totalQty: {
@@ -99,6 +96,8 @@ async function getDistrictMarketTargetsWithSales(
                 },
             },
         },
+
+        // 5. Group by district to aggregate totals
         {
             $group: {
                 _id: "$district",
@@ -113,6 +112,8 @@ async function getDistrictMarketTargetsWithSales(
                 },
             },
         },
+
+        // 6. Sort markets within each district by quantity
         {
             $addFields: {
                 markets: {
@@ -123,6 +124,8 @@ async function getDistrictMarketTargetsWithSales(
                 },
             },
         },
+
+        // 7. Project final fields
         {
             $project: {
                 _id: 0,
@@ -132,6 +135,8 @@ async function getDistrictMarketTargetsWithSales(
                 markets: 1,
             },
         },
+
+        // 8. Sort final districts by quantity
         { $sort: { totalQty: -1 } },
     ];
 
