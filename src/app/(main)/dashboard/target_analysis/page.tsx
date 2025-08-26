@@ -32,19 +32,8 @@ import jsPDF from "jspdf";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { capitalizeWords, downloadToPDF } from "@/lib/utils";
-
-interface MarketData {
-    name: string;
-    target: number;
-    qty: number;
-}
-
-interface DistrictData {
-    district: string;
-    totalTarget: number;
-    totalQty: number;
-    markets: MarketData[];
-}
+import { DistrictData, MarketData } from "@/lib/types";
+import { useModal } from "@/hooks/use-modal-store";
 
 interface ApiResponse {
     success: boolean;
@@ -59,7 +48,7 @@ interface ResultStats {
 export default function TargetAnalysisPage() {
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth(); // 0-11
-
+    const { onOpen } = useModal();
     const [year, setYear] = useState(currentYear);
     const [month, setMonth] = useState(currentMonth.toString());
     const [district, setDistrict] = useState("");
@@ -353,6 +342,16 @@ export default function TargetAnalysisPage() {
                                                                 key={
                                                                     market.name
                                                                 }
+                                                                onClick={() =>
+                                                                    onOpen(
+                                                                        "marketTargetInfo",
+                                                                        {
+                                                                            marketTarget:
+                                                                                market,
+                                                                        }
+                                                                    )
+                                                                }
+                                                                className="cursor-pointer"
                                                             >
                                                                 <TableCell>
                                                                     {marketIdx +

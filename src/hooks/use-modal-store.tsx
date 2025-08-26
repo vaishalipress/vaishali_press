@@ -5,6 +5,7 @@ import {
     SalesTypeExtended,
     EachClientTypeInMarket,
     ProductStats,
+    MarketData,
 } from "@/lib/types";
 
 export type ModalType =
@@ -18,7 +19,8 @@ export type ModalType =
     | "market"
     | "deleteUser"
     | "productSalesWithClient"
-    | "deleteSales";
+    | "deleteSales"
+    | "marketTargetInfo";
 
 interface ModalData {
     client?: ClientTypeExtented;
@@ -34,6 +36,7 @@ interface ModalData {
     };
     productSalesWithClients?: ProductStats;
     sales?: Map<string, string>;
+    marketTarget?: MarketData;
 }
 
 interface modalStore {

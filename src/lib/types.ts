@@ -177,3 +177,21 @@ export interface DistinctValues {
     }[];
     districts: string[];
 }
+
+export interface MarketData {
+    name: string;
+    target: number;
+    qty: number;
+    clients: {
+        clientId: string;
+        clientName: string;
+        qty: number;
+    }[];
+}
+
+export interface DistrictData {
+    district: string;
+    totalTarget: number;
+    totalQty: number;
+    markets: MarketData[];
+}

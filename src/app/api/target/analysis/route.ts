@@ -79,7 +79,35 @@ async function getDistrictMarketTargetsWithSales(
                     ...(productIds.length > 0
                         ? [{ $match: { product: { $in: productIds } } }]
                         : []),
-                    { $group: { _id: null, totalQty: { $sum: "$qty" } } },
+
+                    // 👇 Group sales by client (to compute client total)
+                    {
+                        $group: {
+                            _id: "$client",
+                            totalQty: { $sum: "$qty" },
+                        },
+                    },
+
+                    // 👇 Join back with client info (name, district, etc.)
+                    {
+                        $lookup: {
+                            from: "clients",
+                            localField: "_id",
+                            foreignField: "_id",
+                            as: "clientInfo",
+                        },
+                    },
+                    { $unwind: "$clientInfo" },
+
+                    // 👇 Shape client data
+                    {
+                        $project: {
+                            _id: 0,
+                            clientId: "$clientInfo._id",
+                            clientName: "$clientInfo.name",
+                            qty: "$totalQty",
+                        },
+                    },
                 ],
                 as: "marketSales",
             },
@@ -90,7 +118,9 @@ async function getDistrictMarketTargetsWithSales(
             $addFields: {
                 totalQty: {
                     $ifNull: [
-                        { $arrayElemAt: ["$marketSales.totalQty", 0] },
+                        {
+                            $sum: "$marketSales.qty", // 👈 total from all clients
+                        },
                         0,
                     ],
                 },
@@ -108,6 +138,7 @@ async function getDistrictMarketTargetsWithSales(
                         name: "$name",
                         target: "$target",
                         qty: "$totalQty",
+                        clients: "$marketSales", // 👈 include clients here
                     },
                 },
             },
