@@ -1,9 +1,11 @@
+import CONNECT_TO_DB from "@/lib/connectToDb";
 import { isAuth } from "@/lib/isAuth";
 import Market, { MarketI } from "@/models/market";
 import mongoose, { PipelineStage } from "mongoose";
 import { FilterQuery } from "mongoose";
 
 export const dynamic = "force-dynamic";
+CONNECT_TO_DB();
 
 // async function getDistrictMarketTargetsWithSales(
 //     filterOptions: {
@@ -175,290 +177,296 @@ export const dynamic = "force-dynamic";
 // }
 
 async function getDistrictMarketTargetsWithSales(
-    filterOptions: {
-        from?: Date;
-        to?: Date;
-        district?: string;
-    } = {},
-    productIds: mongoose.Types.ObjectId[] = []
+  filterOptions: {
+    from?: Date;
+    to?: Date;
+    district?: string;
+  } = {},
+  productIds: mongoose.Types.ObjectId[] = []
 ) {
-    const { district, from, to } = filterOptions;
+  const { district, from, to } = filterOptions;
 
-    // --- Build Date Filter ---
-    let dateFilter = {};
-    if (from && to) {
-        dateFilter = { date: { $gte: from, $lte: to } };
-    } else if (to) {
-        dateFilter = { date: { $lte: to } };
-    }
+  // --- Build Date Filter ---
+  let dateFilter = {};
+  if (from && to) {
+    dateFilter = { date: { $gte: from, $lte: to } };
+  } else if (to) {
+    dateFilter = { date: { $lte: to } };
+  }
 
-    // --- Build Initial Match Query ---
-    const initialMatch: FilterQuery<MarketI> = {
-        target: { $gt: 0 },
-    };
+  // --- Build Initial Match Query ---
+  const initialMatch: FilterQuery<MarketI> = {
+    target: { $gt: 0 },
+  };
 
-    if (district) {
-        initialMatch.district = { $regex: district, $options: "i" };
-    }
+  if (district) {
+    initialMatch.district = { $regex: district, $options: "i" };
+  }
 
-    const pipeline: PipelineStage[] = [
-        // 1. First, filter markets
-        {
-            $match: initialMatch,
+  const pipeline: PipelineStage[] = [
+    // 1. First, filter markets
+    {
+      $match: initialMatch,
+    },
+
+    // 2. Link clients by market name AND district
+    {
+      $lookup: {
+        from: "clients",
+        let: {
+          marketName: "$name",
+          marketDistrict: "$district",
         },
-
-        // 2. Link clients by market name AND district
-        {
-            $lookup: {
-                from: "clients",
-                let: {
-                    marketName: "$name",
-                    marketDistrict: "$district",
-                },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: {
-                                $and: [
-                                    { $eq: ["$market", "$$marketName"] },
-                                    { $eq: ["$district", "$$marketDistrict"] },
-                                ],
-                            },
-                        },
-                    },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$market", "$$marketName"] },
+                  { $eq: ["$district", "$$marketDistrict"] },
                 ],
-                as: "marketClients",
+              },
             },
-        },
+          },
+        ],
+        as: "marketClients",
+      },
+    },
 
-        // 3. Process each market to get client sales
-        {
-            $addFields: {
-                marketSales: {
-                    $map: {
-                        input: "$marketClients",
-                        as: "client",
-                        in: {
-                            clientId: "$$client._id",
-                            clientName: "$$client.name",
-                            // This will be replaced with actual qty in next step
-                            qty: 0,
-                        },
-                    },
-                },
+    // 3. Process each market to get client sales
+    {
+      $addFields: {
+        marketSales: {
+          $map: {
+            input: "$marketClients",
+            as: "client",
+            in: {
+              clientId: "$$client._id",
+              clientName: "$$client.name",
+              // This will be replaced with actual qty in next step
+              qty: 0,
             },
+          },
         },
+      },
+    },
 
-        // 4. Get sales and merge with client data
-        {
-            $lookup: {
-                from: "sales",
-                let: { 
-                    clientIds: "$marketClients._id",
-                    marketSalesTemp: "$marketSales"
-                },
-                pipeline: [
-                    { $match: { $expr: { $in: ["$client", "$$clientIds"] } } },
-                    ...(Object.keys(dateFilter).length > 0
-                        ? [{ $match: dateFilter }]
-                        : []),
-                    ...(productIds.length > 0
-                        ? [{ $match: { product: { $in: productIds } } }]
-                        : []),
-
-                    // Group sales by client
-                    {
-                        $group: {
-                            _id: "$client",
-                            totalQty: { $sum: "$qty" },
-                        },
-                    },
-
-                    // Create a map of client sales
-                    {
-                        $group: {
-                            _id: null,
-                            salesMap: {
-                                $push: {
-                                    k: { $toString: "$_id" },
-                                    v: "$totalQty"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        $replaceRoot: {
-                            newRoot: { $arrayToObject: "$salesMap" }
-                        }
-                    }
-                ],
-                as: "salesData",
-            },
+    // 4. Get sales and merge with client data
+    {
+      $lookup: {
+        from: "sales",
+        let: {
+          clientIds: "$marketClients._id",
+          marketSalesTemp: "$marketSales",
         },
+        pipeline: [
+          { $match: { $expr: { $in: ["$client", "$$clientIds"] } } },
+          ...(Object.keys(dateFilter).length > 0
+            ? [{ $match: dateFilter }]
+            : []),
+          ...(productIds.length > 0
+            ? [{ $match: { product: { $in: productIds } } }]
+            : []),
 
-        // 5. Merge sales data with all clients
-        {
-            $addFields: {
-                salesMap: { $ifNull: [{ $first: "$salesData" }, {}] },
-            }
-        },
-
-        // 6. Update marketSales with actual quantities
-        {
-            $addFields: {
-                marketSales: {
-                    $map: {
-                        input: "$marketClients",
-                        as: "client",
-                        in: {
-                            clientId: "$$client._id",
-                            clientName: "$$client.name",
-                            qty: {
-                                $ifNull: [
-                                    { $getField: { 
-                                        field: { $toString: "$$client._id" },
-                                        input: "$salesMap"
-                                    }},
-                                    0
-                                ]
-                            }
-                        }
-                    }
-                }
-            }
-        },
-
-        // 7. Calculate total quantity
-        {
-            $addFields: {
-                totalQty: {
-                    $sum: "$marketSales.qty"
-                },
-            },
-        },
-
-        // 8. Sort clients within each market by quantity (descending)
-        {
-            $addFields: {
-                marketSales: {
-                    $sortArray: {
-                        input: "$marketSales",
-                        sortBy: { qty: -1 }
-                    }
-                }
-            }
-        },
-
-        // 9. Group by district to aggregate totals
-        {
+          // Group sales by client
+          {
             $group: {
-                _id: "$district",
-                totalTarget: { $sum: "$target" },
-                totalQty: { $sum: "$totalQty" },
-                markets: {
-                    $push: {
-                        name: "$name",
-                        target: "$target",
-                        qty: "$totalQty",
-                        clients: "$marketSales", // Include all clients
-                    },
+              _id: "$client",
+              totalQty: { $sum: "$qty" },
+            },
+          },
+
+          // Create a map of client sales
+          {
+            $group: {
+              _id: null,
+              salesMap: {
+                $push: {
+                  k: { $toString: "$_id" },
+                  v: "$totalQty",
                 },
+              },
             },
-        },
+          },
+          {
+            $replaceRoot: {
+              newRoot: { $arrayToObject: "$salesMap" },
+            },
+          },
+        ],
+        as: "salesData",
+      },
+    },
 
-        // 10. Sort markets within each district by quantity
-        {
-            $addFields: {
-                markets: {
-                    $sortArray: {
-                        input: "$markets",
-                        sortBy: { qty: -1 },
+    // 5. Merge sales data with all clients
+    {
+      $addFields: {
+        salesMap: { $ifNull: [{ $first: "$salesData" }, {}] },
+      },
+    },
+
+    // 6. Update marketSales with actual quantities
+    {
+      $addFields: {
+        marketSales: {
+          $map: {
+            input: "$marketClients",
+            as: "client",
+            in: {
+              clientId: "$$client._id",
+              clientName: "$$client.name",
+              qty: {
+                $ifNull: [
+                  {
+                    $getField: {
+                      field: { $toString: "$$client._id" },
+                      input: "$salesMap",
                     },
-                },
+                  },
+                  0,
+                ],
+              },
             },
+          },
         },
+      },
+    },
 
-        // 11. Project final fields
-        {
-            $project: {
-                _id: 0,
-                district: "$_id",
-                totalTarget: 1,
-                totalQty: 1,
-                markets: 1,
-            },
+    // 7. Calculate total quantity
+    {
+      $addFields: {
+        totalQty: {
+          $sum: "$marketSales.qty",
         },
+      },
+    },
 
-        // 12. Sort final districts by quantity
-        { $sort: { totalQty: -1 } },
-    ];
+    // 8. Sort clients within each market by quantity (descending)
+    {
+      $addFields: {
+        marketSales: {
+          $sortArray: {
+            input: "$marketSales",
+            sortBy: { qty: -1 },
+          },
+        },
+      },
+    },
 
-    return await Market.aggregate(pipeline).exec();
+    // 9. Group by district to aggregate totals
+    {
+      $group: {
+        _id: "$district",
+        totalTarget: { $sum: "$target" },
+        totalQty: { $sum: "$totalQty" },
+        markets: {
+          $push: {
+            name: "$name",
+            target: "$target",
+            qty: "$totalQty",
+            clients: "$marketSales", // Include all clients
+          },
+        },
+      },
+    },
+
+    // 10. Sort markets within each district by quantity
+    {
+      $addFields: {
+        markets: {
+          $sortArray: {
+            input: "$markets",
+            sortBy: { qty: -1 },
+          },
+        },
+      },
+    },
+
+    // 11. Project final fields
+    {
+      $project: {
+        _id: 0,
+        district: "$_id",
+        totalTarget: 1,
+        totalQty: 1,
+        markets: 1,
+      },
+    },
+
+    // 12. Sort final districts by quantity
+    { $sort: { totalQty: -1 } },
+  ];
+
+  return await Market.aggregate(pipeline).exec();
 }
 
 export const GET = async (req: Request) => {
-    try {
-        const isauth = await isAuth();
-        if (!isauth) {
-            return Response.json({ message: "Unauthorized" }, { status: 401 });
-        }
-
-        const { searchParams } = new URL(req.url);
-
-        // Parse parameters with consistent timezone handling
-        const productIdsParam = searchParams.get("productIds");
-        const districtParam = searchParams.get("district");
-
-        let from: Date | undefined;
-        let to: Date;
-
-        const fromParam = searchParams.get("from");
-        const toParam = searchParams.get("to");
-
-        // Parse dates as UTC from ISO string params
-        if (fromParam) {
-            from = new Date(fromParam);
-        }
-
-        if (toParam) {
-            to = new Date(toParam);
-        } else {
-            to = new Date();
-        }
-
-        // Parse and validate product IDs
-        let productIds: mongoose.Types.ObjectId[] = [];
-        if (productIdsParam) {
-            const ids = productIdsParam.split(",");
-            productIds = ids.map((id) => {
-                if (!mongoose.Types.ObjectId.isValid(id)) {
-                    throw new Error(`Invalid product ID format: ${id}`);
-                }
-                return new mongoose.Types.ObjectId(id);
-            });
-        }
-
-        const filteredData = await getDistrictMarketTargetsWithSales(
-            {
-                from,
-                to,
-                district: districtParam || undefined,
-            },
-            productIds
-        );
-
-        return Response.json(
-            {
-                results: filteredData,
-                success: true,
-            },
-            { status: 200 }
-        );
-    } catch (err) {
-        console.error("Target Analysis API Error:", err);
-        return Response.json(
-            { message: "Internal Server Error", success: false },
-            { status: 500 }
-        );
+  try {
+    const isauth = await isAuth();
+    if (!isauth) {
+      return Response.json({ message: "Unauthorized" }, { status: 401 });
     }
+
+    const { searchParams } = new URL(req.url);
+
+    // Parse parameters with consistent timezone handling
+    const productIdsParam = searchParams.get("productIds");
+    const districtParam = searchParams.get("district");
+
+    let from: Date | undefined;
+    let to: Date;
+
+    const fromParam = searchParams.get("from");
+    const toParam = searchParams.get("to");
+
+    if (fromParam) {
+      from = new Date(fromParam);
+      // Ensure we start from the beginning of the day in UTC
+      from.setUTCHours(0, 0, 0, 0);
+    }
+
+    if (toParam) {
+      to = new Date(toParam);
+      // Ensure we end at the end of the day in UTC
+      to.setUTCHours(23, 59, 59, 999);
+    } else {
+      to = new Date();
+      to.setUTCHours(23, 59, 59, 999);
+    }
+
+    // Parse and validate product IDs
+    let productIds: mongoose.Types.ObjectId[] = [];
+    if (productIdsParam) {
+      const ids = productIdsParam.split(",");
+      productIds = ids.map((id) => {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+          throw new Error(`Invalid product ID format: ${id}`);
+        }
+        return new mongoose.Types.ObjectId(id);
+      });
+    }
+
+    const filteredData = await getDistrictMarketTargetsWithSales(
+      {
+        from,
+        to,
+        district: districtParam || undefined,
+      },
+      productIds
+    );
+
+    return Response.json(
+      {
+        results: filteredData,
+        success: true,
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error("Target Analysis API Error:", err);
+    return Response.json(
+      { message: "Internal Server Error", success: false },
+      { status: 500 }
+    );
+  }
 };

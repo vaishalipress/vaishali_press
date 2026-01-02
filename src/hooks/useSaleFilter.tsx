@@ -26,7 +26,10 @@ export const useSaleFilter = create<StoreType>((set) => ({
     setPage: (page: number) => set({ page }),
     setView: (view: number) => set({ view }),
     type: "all",
-    date: { to: new Date(), from: undefined },
+    date: { 
+        to: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 
+        from: undefined 
+    },
     client: "all",
     product: "all",
     market: undefined,
@@ -38,25 +41,27 @@ export const useSaleFilter = create<StoreType>((set) => ({
         set({
             type,
         });
+        const now = new Date();
         switch (type) {
             case "all":
                 set({
-                    date: { from: undefined, to: new Date() },
+                    date: { from: undefined, to: now },
                 });
                 break;
 
             case "today":
+                // Create today's date at local midnight
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
                 set({
                     date: {
-                        from: new Date(),
-                        to: new Date(),
+                        from: today,
+                        to: today,
                     },
                 });
                 break;
             case "yesterday":
-                let currentDate = new Date();
-                let yesterday = new Date(currentDate);
-                yesterday.setDate(yesterday.getDate() - 1);
+                // Create yesterday's date at local midnight
+                const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
                 set({
                     date: {
                         from: yesterday,

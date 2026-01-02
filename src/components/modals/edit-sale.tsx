@@ -131,9 +131,17 @@ export const EditSaleModal = () => {
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit((value) => {
+                            // Convert date to UTC ISO string at midnight of selected date
+                            const selectedDate = value.date;
+                            const utcDate = new Date(Date.UTC(
+                                selectedDate.getFullYear(),
+                                selectedDate.getMonth(),
+                                selectedDate.getDate(),
+                                0, 0, 0, 0
+                            ));
                             const payload: Omit<z.infer<typeof salesSchema>, 'date'> & { date: string } = {
                                 ...value,
-                                date: value.date.toISOString(),
+                                date: utcDate.toISOString(),
                             };
                             mutate(payload);
                         })}

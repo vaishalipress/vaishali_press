@@ -200,10 +200,17 @@ export default function AddSales({
     // Memoize form submit handler
     const handleSubmit = useCallback(
         (values: z.infer<typeof salesSchema>) => {
-            // Convert date to UTC ISO string before sending to server
+            // Convert date to UTC ISO string at midnight of selected date
+            const selectedDate = values.date;
+            const utcDate = new Date(Date.UTC(
+                selectedDate.getFullYear(),
+                selectedDate.getMonth(),
+                selectedDate.getDate(),
+                0, 0, 0, 0
+            ));
             const utcValues: Omit<z.infer<typeof salesSchema>, 'date'> & { date: string } = {
                 ...values,
-                date: values.date.toISOString(),
+                date: utcDate.toISOString(),
             };
             mutate(utcValues);
         },

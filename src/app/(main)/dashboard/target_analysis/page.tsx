@@ -46,8 +46,10 @@ interface ResultStats {
 }
 
 export default function TargetAnalysisPage() {
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth(); // 0-11
+    // Use local time for UI display (user's perspective)
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth(); // 0-11
     const { onOpen } = useModal();
     const [year, setYear] = useState(currentYear);
     const [month, setMonth] = useState(currentMonth.toString());
@@ -75,8 +77,6 @@ export default function TargetAnalysisPage() {
         queryKey: ["target-analysis", year, month, district, selectedProducts],
         queryFn: async () => {
             const params = new URLSearchParams();
-            params.append("year", year.toString());
-            params.append("month", month);
 
             const { from, to } = getDateRange(year, Number(month));
             params.set("from", from);
