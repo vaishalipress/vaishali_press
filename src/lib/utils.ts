@@ -63,7 +63,8 @@ export const createDateQueryKey = (date: Date | undefined): string | null => {
     return date ? date.toISOString() : null;
 };
 
-// Simple helper to safely format dates in UTC
+// Format dates for display - shows the date in user's local timezone
+// For dates stored as UTC, this converts them to local time for display
 export const formatDateUTC = (
     date: string | Date | null | undefined,
     pattern: string = "dd-MM-yyyy"
@@ -73,9 +74,9 @@ export const formatDateUTC = (
     const dateObj = new Date(date);
     if (!isValid(dateObj)) return "";
 
-    // Convert to UTC to avoid timezone conflicts
-    const utcDate = toZonedTime(dateObj, "UTC");
-    return format(utcDate, pattern);
+    // Format the date in user's local timezone
+    // The date from DB (UTC) is automatically converted to local time
+    return format(dateObj, pattern);
 };
 
 // Create UTC date from date components (preserving the visual date)

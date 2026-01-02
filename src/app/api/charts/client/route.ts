@@ -102,7 +102,7 @@ export const GET = async (req: Request) => {
 
         const clientId = new mongoose.Types.ObjectId(clientIdParam);
 
-        // Get date range
+        // Get date range - Parse dates as UTC from ISO string params
         let from: Date | undefined = !!searchParams.get("from")
             ? new Date(searchParams.get("from")!)
             : undefined;

@@ -7,6 +7,7 @@ export const GET = async (request: Request) => {
     try {
         const { searchParams } = new URL(request.url);
 
+        // Parse dates as UTC from ISO string params
         let from: Date | undefined = !!searchParams.get("from")
             ? new Date(searchParams.get("from")!)
             : undefined;

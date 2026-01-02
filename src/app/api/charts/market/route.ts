@@ -119,7 +119,7 @@ export const GET = async (req: Request) => {
             );
         }
 
-        // Get date range
+        // Get date range - Parse dates as UTC from ISO string params
         let from: Date | undefined = !!searchParams.get("from")
             ? new Date(searchParams.get("from")!)
             : undefined;

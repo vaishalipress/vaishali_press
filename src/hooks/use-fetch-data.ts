@@ -35,22 +35,21 @@ const buildURLParams = (
 };
 
 // UTC date helpers for consistent date handling
-const formatDateToUTCString = (date: Date): string => {
-    return date.toISOString().split("T")[0]; // Returns YYYY-MM-DD in UTC
-};
-
+// These functions ensure dates are sent to the server in UTC
 const getUTCDateStart = (date: Date): string => {
-    const utcDate = new Date(
-        date.toISOString().split("T")[0] + "T00:00:00.000Z"
-    );
-    return utcDate.toISOString();
+    // Get the date part only, then create UTC midnight
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    return new Date(Date.UTC(year, month, day, 0, 0, 0, 0)).toISOString();
 };
 
 const getUTCDateEnd = (date: Date): string => {
-    const utcDate = new Date(
-        date.toISOString().split("T")[0] + "T23:59:59.999Z"
-    );
-    return utcDate.toISOString();
+    // Get the date part only, then create UTC end of day
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    return new Date(Date.UTC(year, month, day, 23, 59, 59, 999)).toISOString();
 };
 
 interface UseSaleParams {

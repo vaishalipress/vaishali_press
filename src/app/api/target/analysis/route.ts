@@ -415,19 +415,15 @@ export const GET = async (req: Request) => {
         const fromParam = searchParams.get("from");
         const toParam = searchParams.get("to");
 
+        // Parse dates as UTC from ISO string params
         if (fromParam) {
             from = new Date(fromParam);
-            // Ensure we start from the beginning of the day in UTC
-            from.setUTCHours(0, 0, 0, 0);
         }
 
         if (toParam) {
             to = new Date(toParam);
-            // Ensure we end at the end of the day in UTC
-            to.setUTCHours(23, 59, 59, 999);
         } else {
             to = new Date();
-            to.setUTCHours(23, 59, 59, 999);
         }
 
         // Parse and validate product IDs

@@ -5,11 +5,11 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { DayPicker } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { cn, downloadToPDF, formatDateUTC } from "@/lib/utils";
 import { CalendarIcon, Download } from "lucide-react";
 import { DateRange } from "react-day-picker";
+import { Calendar } from "@/components/ui/calendar";
 import { filterType } from "@/hooks/useSaleFilter";
 import { HtmlHTMLAttributes } from "react";
 
@@ -111,16 +111,17 @@ export const Filter = ({
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                    <DayPicker
-                        animate
+                    <Calendar
                         mode="range"
-                        timeZone="UTC"
                         defaultMonth={date?.from}
                         selected={date}
                         onSelect={(val) => {
                             setDate(val);
                             toggleType("none");
                         }}
+                        captionLayout="dropdown"
+                        startMonth={new Date(2020, 0)}
+                        endMonth={new Date(2030, 11)}
                         numberOfMonths={1}
                     />
                 </PopoverContent>

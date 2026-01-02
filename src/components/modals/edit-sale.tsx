@@ -54,7 +54,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useSaleFilter } from "@/hooks/useSaleFilter";
-import { DayPicker } from "react-day-picker";
+import { Calendar } from "@/components/ui/calendar";
 
 export const EditSaleModal = () => {
     const { isOpen, onClose, type, data, onOpen } = useModal();
@@ -90,9 +90,14 @@ export const EditSaleModal = () => {
     const { updateSale } = useCustumQuery();
     const { mutate, isPending } = useMutation({
         mutationFn: async (values: z.infer<typeof salesSchema>) => {
+            // Convert date to UTC ISO string before sending to server
+            const utcValues = {
+                ...values,
+                date: values.date.toISOString(),
+            };
             const { data } = await axios.put(
                 `/api/sale?id=${sale?._id}`,
-                values
+                utcValues
             );
             return data;
         },
@@ -166,12 +171,14 @@ export const EditSaleModal = () => {
                                                 </Button>
                                             </PopoverTrigger>
                                             <PopoverContent className="w-auto p-0">
-                                                <DayPicker
-                                                    animate
+                                                <Calendar
                                                     mode="single"
-                                                    timeZone="UTC"
                                                     selected={field.value}
                                                     onSelect={field.onChange}
+                                                    captionLayout="dropdown"
+                                                    startMonth={new Date(2020, 0)}
+                                                    endMonth={new Date(2030, 11)}
+                                                    initialFocus
                                                 />
                                             </PopoverContent>
                                         </Popover>

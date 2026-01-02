@@ -42,7 +42,7 @@ import { useClient, useProduct } from "@/hooks/use-fetch-data";
 import { cn, createDateQueryKey } from "@/lib/utils";
 import { format } from "date-fns";
 import { useSaleFilter } from "@/hooks/useSaleFilter";
-import { DayPicker } from "react-day-picker";
+import { Calendar } from "@/components/ui/calendar";
 import Select from "react-select";
 
 // Custom styles for react-select to match your UI theme
@@ -200,7 +200,12 @@ export default function AddSales({
     // Memoize form submit handler
     const handleSubmit = useCallback(
         (values: z.infer<typeof salesSchema>) => {
-            mutate(values);
+            // Convert date to UTC ISO string before sending to server
+            const utcValues = {
+                ...values,
+                date: values.date.toISOString(),
+            };
+            mutate(utcValues);
         },
         [mutate]
     );
@@ -328,14 +333,14 @@ export default function AddSales({
                                                     </Button>
                                                 </PopoverTrigger>
                                                 <PopoverContent className="w-auto p-0">
-                                                    <DayPicker
-                                                        animate
+                                                    <Calendar
                                                         mode="single"
-                                                        timeZone="UTC"
                                                         selected={field.value}
-                                                        onSelect={
-                                                            field.onChange
-                                                        }
+                                                        onSelect={field.onChange}
+                                                        captionLayout="dropdown"
+                                                        startMonth={new Date(2020, 0)}
+                                                        endMonth={new Date(2030, 11)}
+                                                        initialFocus
                                                     />
                                                 </PopoverContent>
                                             </Popover>
