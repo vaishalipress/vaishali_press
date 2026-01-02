@@ -89,15 +89,10 @@ export const EditSaleModal = () => {
 
     const { updateSale } = useCustumQuery();
     const { mutate, isPending } = useMutation({
-        mutationFn: async (values: z.infer<typeof salesSchema>) => {
-            // Convert date to UTC ISO string before sending to server
-            const utcValues = {
-                ...values,
-                date: values.date.toISOString(),
-            };
+        mutationFn: async (values: Omit<z.infer<typeof salesSchema>, 'date'> & { date: string }) => {
             const { data } = await axios.put(
                 `/api/sale?id=${sale?._id}`,
-                utcValues
+                values
             );
             return data;
         },
@@ -135,7 +130,13 @@ export const EditSaleModal = () => {
                 </DialogHeader>
                 <Form {...form}>
                     <form
-                        onSubmit={form.handleSubmit((value) => mutate(value))}
+                        onSubmit={form.handleSubmit((value) => {
+                            const payload: Omit<z.infer<typeof salesSchema>, 'date'> & { date: string } = {
+                                ...value,
+                                date: value.date.toISOString(),
+                            };
+                            mutate(payload);
+                        })}
                         className="flex flex-col gap-3"
                     >
                         {/* Date */}

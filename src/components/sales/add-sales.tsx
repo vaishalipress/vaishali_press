@@ -157,7 +157,7 @@ export default function AddSales({
     // Memoize mutation configuration
     const mutationConfig = useMemo(
         () => ({
-            mutationFn: async (values: z.infer<typeof salesSchema>) => {
+            mutationFn: async (values: Omit<z.infer<typeof salesSchema>, 'date'> & { date: string }) => {
                 const { data } = await axios.post(`/api/sale`, values);
                 return data;
             },
@@ -201,7 +201,7 @@ export default function AddSales({
     const handleSubmit = useCallback(
         (values: z.infer<typeof salesSchema>) => {
             // Convert date to UTC ISO string before sending to server
-            const utcValues = {
+            const utcValues: Omit<z.infer<typeof salesSchema>, 'date'> & { date: string } = {
                 ...values,
                 date: values.date.toISOString(),
             };
