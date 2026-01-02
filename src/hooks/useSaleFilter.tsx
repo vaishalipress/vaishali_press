@@ -26,10 +26,7 @@ export const useSaleFilter = create<StoreType>((set) => ({
     setPage: (page: number) => set({ page }),
     setView: (view: number) => set({ view }),
     type: "all",
-    date: { 
-        to: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 
-        from: undefined 
-    },
+    date: undefined,
     client: "all",
     product: "all",
     market: undefined,
@@ -45,7 +42,7 @@ export const useSaleFilter = create<StoreType>((set) => ({
         switch (type) {
             case "all":
                 set({
-                    date: { from: undefined, to: now },
+                    date: undefined,
                 });
                 break;
 

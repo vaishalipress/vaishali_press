@@ -136,24 +136,9 @@ export const GET = async (req: Request) => {
     let from: Date | undefined = !!searchParams.get("from")
       ? new Date(searchParams.get("from")!)
       : undefined;
-    let to: Date | undefined;
-    if (searchParams.get("to")) {
-      to = new Date(searchParams.get("to")!);
-    } else {
-      // Create current date in UTC
-      const now = new Date();
-      to = new Date(
-        Date.UTC(
-          now.getUTCFullYear(),
-          now.getUTCMonth(),
-          now.getUTCDate(),
-          23,
-          59,
-          59,
-          999
-        )
-      );
-    }
+    let to: Date | undefined = searchParams.get("to")
+      ? new Date(searchParams.get("to")!)
+      : undefined;
 
     const client = searchParams.get("client") || "all";
     const product = searchParams.get("product") || "all";
@@ -169,11 +154,13 @@ export const GET = async (req: Request) => {
             }
           : {},
 
-        {
-          date: {
-            $lte: to,
-          },
-        },
+        to
+          ? {
+              date: {
+                $lte: to,
+              },
+            }
+          : {},
         client !== "all" ? { client } : {},
         product !== "all" ? { product } : {},
       ],
@@ -193,11 +180,13 @@ export const GET = async (req: Request) => {
             }
           : {},
 
-        {
-          date: {
-            $lte: to,
-          },
-        },
+        to
+          ? {
+              date: {
+                $lte: to,
+              },
+            }
+          : {},
         client !== "all" ? { client: client } : {},
         product !== "all" ? { product: product } : {},
       ],
